@@ -1,4 +1,5 @@
-RC_2016-08
-RC_2016-08.bz2
-data/
+data/RC_2016-08
+data/RC_2016-08.bz2
+data/by_subreddit
+wordclouds/*
 *.pyc

@@ -1,0 +1,2 @@
+subreddit,num_comments,num_words,num_chars,avg_word_length,avg_words_per_comment,positive_score,negative_score
+AskReddit,5116323,135309252,753984631,5.57230654856,26.4465812655,21.9462672072,13.5288901013
