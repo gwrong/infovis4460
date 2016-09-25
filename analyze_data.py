@@ -4,6 +4,7 @@ import os
 from multiprocessing import Pool
 import operator
 from string import ascii_lowercase
+import sys
 from time import time
 from wordcloud import WordCloud
 
@@ -15,12 +16,13 @@ from wordcloud import WordCloud
 # Sentiment analysis words
 positive_emotion_words = set()
 negative_emotion_words = set()
+godwins_law_words = set()
 
 DATA_FILE_NAME = 'data/RC_2016-08'
 #DATA_FILE_NAME = 'data/RC_2016-08.small'
 
 # Number of processes to spawn for comment computation
-NUM_POOLS = 5
+NUM_POOLS = 2
 
 SUBREDDITS = [
         'AskReddit',
@@ -79,7 +81,7 @@ SUBREDDITS = [
 Initialize the sentiment word lists for each multiprocess instance
 """
 def initialize_data_sets():
-    fileNames = {'sentiment/positive_emotions.txt': positive_emotion_words, 'sentiment/negative_emotions.txt': negative_emotion_words}
+    fileNames = {'sentiment/positive_emotions.txt': positive_emotion_words, 'sentiment/negative_emotions.txt': negative_emotion_words, 'sentiment/godwins_law_words.txt': godwins_law_words}
 
     # Read in all files and add the words
     # to the reference of the master data set variable lists
@@ -133,6 +135,9 @@ def compute_positive_emotions(text, count_dict):
 def compute_negative_emotions(text, count_dict):
     compute_count(text, negative_emotion_words, count_dict)
 
+def compute_godwin(text, count_dict):
+    compute_count(text, godwins_law_words, count_dict)
+
 """
 Multiprocessing returns a list of lists
 with results of each pool process
@@ -174,6 +179,7 @@ def compute_comments(comments):
     #print("Subprocess analyzing {} comments".format(len(comments)))
     positive_emotions_total = dict.fromkeys(positive_emotion_words, 0)
     negative_emotions_total = dict.fromkeys(negative_emotion_words, 0)
+    godwins_law_total = dict.fromkeys(godwins_law_words, 0)
     counter = 0
 
     word_count = 0
@@ -181,6 +187,7 @@ def compute_comments(comments):
     for comment in comments:
         if counter % 10000 == 0:
             print("At comment {} for some multiprocess".format(counter))
+            sys.stdout.flush()
         counter += 1
         text = comment['body']
         words = text.split()
@@ -189,7 +196,8 @@ def compute_comments(comments):
         text_length += len(text)
         compute_positive_emotions(text, positive_emotions_total)
         compute_negative_emotions(text, negative_emotions_total)
-    return [word_count, text_length, len(comments), positive_emotions_total, negative_emotions_total]
+        compute_godwin(text, godwins_law_total)
+    return [word_count, text_length, len(comments), positive_emotions_total, negative_emotions_total, godwins_law_total]
 
 
 """
@@ -206,14 +214,14 @@ def process_comments():
 
     sort_sentiment_dicts()
     final_csv_file = open("reddit_august_2016.csv", 'w')
-    final_csv_file.write('subreddit,num_comments,num_words,num_chars,avg_word_length,avg_words_per_comment,positive_score,negative_score\n')
+    final_csv_file.write('subreddit,num_comments,num_words,num_chars,avg_word_length,avg_words_per_comment,positive_score,negative_score,godwins_score\n')
 
-    for subreddit in SUBREDDITS:
+    for subreddit in reversed(SUBREDDITS):
 
         start_time = time()
         comment_counter = 0  # Count total comments
 
-        overall_stats = [0] * 3 + [{}] * 2  # Must match the features array in type and length
+        overall_stats = [0] * 3 + [{}] * 3  # Must match the features array in type and length
         comment_list = []
 
         data_file_name = os.path.join(path, subreddit[0].lower() + '.sorted')
@@ -240,7 +248,28 @@ def process_comments():
                     break
 
         print("Sending r/{} comments for multiprocessing analysis".format(subreddit))
-        overall_stats = multiprocess(comment_list, NUM_POOLS, overall_stats)
+        process_start_time = time()
+
+        print('Reached {} comments. Firing off comment analysis processes'.format(len(comment_list)))
+
+        comment_chunks = list(chunks(comment_list, len(comment_list) / NUM_POOLS))
+        pool = Pool(NUM_POOLS)
+
+        # The map function takes in an iterable and sends
+        # the chunks into separate processes
+        results = pool.map(compute_comments, comment_chunks)
+
+        # Wait for it to be done
+        pool.close()
+        pool.join()
+
+        process_end_time = time()
+
+        pool_results = aggregate_results(results)
+        overall_stats = [merge_two_count_dicts(x, y) if type(x) == dict else x + y for x, y in zip(pool_results, overall_stats)]
+        #return overall_stats
+
+        #overall_stats = multiprocess(comment_list, NUM_POOLS, overall_stats)
 
         end_time = time()
         print('Took {} seconds to process {} comments for r/{}'.format(end_time - start_time, comment_counter, subreddit))
@@ -259,6 +288,8 @@ def final_formatter(subreddit, overall_stats, file_handle):
     positive_sum = sum(pair[1] for pair in positive_counts)
     negative_counts = sorted(overall_stats[4].items(), reverse=True, key=operator.itemgetter(1))
     negative_sum = sum(pair[1] for pair in negative_counts)
+    godwins_law_counts = sorted(overall_stats[5].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_sum = sum(pair[1] for pair in godwins_law_counts)
 
     num_words = overall_stats[0]
     text_lengths = overall_stats[1]
@@ -269,12 +300,14 @@ def final_formatter(subreddit, overall_stats, file_handle):
 
     positive_score = 1000 * positive_sum / float(num_words)
     negative_score = 1000 * negative_sum / float(num_words)
+    godwins_score = 10000000 * godwins_law_sum / float(num_words)
 
-    file_handle.write('{subreddit},{num_comments},{num_words},{num_chars},{avg_word_length},{avg_words_per_comment},{positive_score},{negative_score}\n'.format(
+    file_handle.write('{subreddit},{num_comments},{num_words},{num_chars},{avg_word_length},{avg_words_per_comment},{positive_score},{negative_score},{godwins_score}\n'.format(
         subreddit=subreddit, num_comments=num_comments, num_words=num_words,
         num_chars=text_lengths, avg_word_length=avg_word_length,
         avg_words_per_comment=avg_words_per_comment,
-        positive_score=positive_score, negative_score=negative_score
+        positive_score=positive_score, negative_score=negative_score,
+        godwins_score=godwins_score
     ))
     file_handle.flush()
 
@@ -288,7 +321,14 @@ def final_formatter(subreddit, overall_stats, file_handle):
     Positive Score: {}
     Top Negative Words: {}
     Negative Score: {}
-    """.format(overall_stats[2], overall_stats[0], overall_stats[1], avg_word_length, avg_words_per_comment, positive_counts[:25], positive_score , negative_counts[:25], negative_score))
+    Top Godwins Words: {}
+    Godwins Score: {}
+    """.format(
+        overall_stats[2], overall_stats[0], overall_stats[1],
+        avg_word_length, avg_words_per_comment, positive_counts[:25],
+        positive_score , negative_counts[:25], negative_score,
+        godwins_law_counts[:25], godwins_score
+    ))
 
 
 """
@@ -300,7 +340,7 @@ def multiprocess(comment_list, NUM_POOLS, overall_stats):
     print('Reached {} comments. Firing off comment analysis processes'.format(len(comment_list)))
 
     comment_chunks = list(chunks(comment_list, len(comment_list) / NUM_POOLS))
-    pool = Pool()
+    pool = Pool(NUM_POOLS)
 
     # The map function takes in an iterable and sends
     # the chunks into separate processes

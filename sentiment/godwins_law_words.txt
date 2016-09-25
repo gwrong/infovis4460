@@ -1,0 +1,1 @@
+['nazi', 'nazis', 'hitler', 'holocaust', "hitler's", '卐', 'swastika', 'swastikas']
