@@ -2,7 +2,9 @@ import json
 import os
 from string import ascii_lowercase
 
-DATA_FILE_NAME = 'data/RC_2016-08'
+DATA_FILE_NAME = 'RC_2016-01'
+DATA_FILE_PATH = os.path.join('data', DATA_FILE_NAME)
+OUTPUT_PATH = os.path.join(DATA_FILE_PATH, 'by_subreddit')
 
 """
 Convert the large data file into a bunch of smaller files partitioned
@@ -12,7 +14,7 @@ Takes maybe 30min
 """
 def partition_subreddits():
 
-    data_file = open(DATA_FILE_NAME, 'r')
+    data_file = open(os.path.join(DATA_FILE_PATH, DATA_FILE_NAME), 'r')
     chunk_size = 1000000
     counter = 0
     total_counter = 0
@@ -47,7 +49,7 @@ def write_to_files(comments):
     alphabet = '0123456789' + ascii_lowercase
     comments.sort(key=lambda x: x['subreddit'].lower())
     letter_index = 0
-    letter_file = open('data/by_subreddit/' + alphabet[letter_index], 'a')
+    letter_file = open(os.path.join(OUTPUT_PATH, alphabet[letter_index]), 'a')
     for comment in comments:
         #print(comment['subreddit'])
         #print(letter_index)
@@ -55,7 +57,7 @@ def write_to_files(comments):
             while (comment['subreddit'][0].lower() != alphabet[letter_index]):
                 letter_index += 1
             letter_file.close()
-            letter_file = open('data/by_subreddit/' + alphabet[letter_index], 'a')
+            letter_file = open(os.path.join(OUTPUT_PATH, alphabet[letter_index]), 'a')
         letter_file.write(json.dumps(comment) + '\n')
     letter_file.close()
 
@@ -64,14 +66,13 @@ def write_to_files(comments):
 Sort the resulting files to make our lives easier later
 """
 def sort_files():
-    path = 'data/by_subreddit/'
-    file_names = [file for file in os.listdir(path) if os.path.isfile(os.path.join(path, file))]
+    file_names = [file for file in os.listdir(OUTPUT_PATH) if os.path.isfile(os.path.join(OUTPUT_PATH, file))]
     
     for file_name in file_names:
         print("Starting {}".format(file_name))
         comments = []
         counter = 0
-        file = open(os.path.join(path, file_name), 'r')
+        file = open(os.path.join(OUTPUT_PATH, file_name), 'r')
         for line in file:
             counter += 1
             line = line.rstrip()
@@ -79,7 +80,7 @@ def sort_files():
             if (counter % 50000 == 0):
                 print(str(counter) + ' for ' + str(file_name))
         file.close()
-        sorted_file = open(os.path.join(path, file_name + '.sorted'), 'w')
+        sorted_file = open(os.path.join(OUTPUT_PATH, file_name + '.sorted'), 'w')
         print('Sorting')
         comments.sort(key=lambda x: x['subreddit'])
         print('Sorted')
@@ -93,5 +94,8 @@ def sort_files():
 
 
 if __name__ == "__main__":
+   print(OUTPUT_PATH)
+   print(DATA_FILE_NAME)
+   print(DATA_FILE_PATH)
    #partition_subreddits()
    sort_files()

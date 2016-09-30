@@ -1,5 +1,9 @@
-data/RC_2016-08
-data/RC_2016-08.bz2
-data/by_subreddit
+data/RC_2016-08/RC_2016-08
+data/RC_2016-08/RC_2016-08.bz2
+data/RC_2016-08/by_subreddit
+
+data/RC_2016-01/RC_2016-01
+data/RC_2016-01/RC_2016-01.bz2
+data/RC_2016-01/by_subreddit
 wordclouds/*
 *.pyc
