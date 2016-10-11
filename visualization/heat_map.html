@@ -32,7 +32,11 @@
     <div id="chart"></div>
     <h2 id="subreddit-name"></h2>
     <h2 id="month-name"></h2>
+    <h2 id="filter-name"></h2>
     <div id="dataset-picker">
+    </div>
+    <br><br>
+    <div id="filter-picker">
     </div>
     <br><br>
     <div id="subreddit-picker">
@@ -101,8 +105,19 @@
             'jailbreak'
         ]
 
+      var filters = [
+        'count',
+        'count_topcom',
+        'count_botcom',
+        'count_topauth',
+        'count_toppos',
+        'count_topneg',
+        'count_topgod'
+      ]
+
       var cur_dataset = datasets[0]
       var cur_subreddit = subreddits[0]
+      var cur_filter = filters[0]
 
       var svg = d3.select("#chart").append("svg")
           .attr("width", width + margin.left + margin.right)
@@ -130,6 +145,10 @@
             .attr("transform", "translate(" + gridSize / 2 + ", -6)")
             .attr("class", function(d, i) { return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis"); });
 
+      var count_accessor = function(d) {
+        return d[cur_filter]
+      }
+
       var heatmapChart = function(csv_file, subreddit) {
         d3.csv(csv_file,
         function(d) {
@@ -137,7 +156,7 @@
             return {
               weekday: +d.weekday,
               hour: +d.hour,
-              count: +d.count
+              count: +count_accessor(d)
             };
           }
           
@@ -197,6 +216,7 @@
 
       $('#subreddit-name').text('Subreddit: ' + cur_subreddit)
       $('#month-name').text('Dataset: August 2016')
+      $('#filter-name').text('Filter: ' + cur_filter)
       heatmapChart(datasets[0], subreddits[0]);
 
       var subredditPicker = d3.select("#subreddit-picker").selectAll(".subreddit-button")
@@ -230,6 +250,20 @@
             month = 'January 2016'
           }
           $('#month-name').text('Dataset: ' + month)
+          heatmapChart(cur_dataset, cur_subreddit);
+        });
+
+      var filterpicker = d3.select("#filter-picker").selectAll(".filter-button")
+        .data(filters);
+
+      filterpicker.enter()
+        .append("input")
+        .attr("value", function(d){ return "" + d })
+        .attr("type", "button")
+        .attr("class", "filter-button")
+        .on("click", function(d) {
+          cur_filter = d
+          $('#filter-name').text('Filter: ' + cur_filter)
           heatmapChart(cur_dataset, cur_subreddit);
         });
     </script>

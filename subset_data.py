@@ -2,7 +2,7 @@ import json
 import os
 from string import ascii_lowercase
 
-DATA_FILE_NAME = 'RC_2016-01'
+DATA_FILE_NAME = 'RC_2016-03'
 DATA_FILE_PATH = os.path.join('data', DATA_FILE_NAME)
 OUTPUT_PATH = os.path.join(DATA_FILE_PATH, 'by_subreddit')
 
@@ -97,5 +97,5 @@ if __name__ == "__main__":
    print(OUTPUT_PATH)
    print(DATA_FILE_NAME)
    print(DATA_FILE_PATH)
-   #partition_subreddits()
+   partition_subreddits()
    sort_files()
