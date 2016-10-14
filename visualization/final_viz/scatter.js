@@ -4,6 +4,7 @@ var cur_subreddit = null;
 var cur_subreddit1 = null;
 var cur_subreddit2 = null;
 var cur_filter = null;
+var cur_filter_label = null;
 var initialized_heatmap = false;
 
 var dataset_labels = {
@@ -14,6 +15,17 @@ var dataset_labels = {
 var time_dataset_labels = {
   'January 2016': "reddit_RC_2016-01_time_series.csv",
   'August 2016': "reddit_RC_2016-08_time_series.csv",
+}
+
+var filter_labels = {
+  'All Comments': '',
+  'Top Score Comments': '_topcom',
+  'Bottom Score Comments': '_botcom',
+  'Most Popular Authors': '_topauth',
+  'Top Positive Comments': '_toppos',
+  'Top Negative Comments': '_topneg',
+  'Top Godwin Comments': '_topgod',
+
 }
 var time_datasets = ["reddit_RC_2016-08_time_series.csv", "reddit_RC_2016-01_time_series.csv"];
 var datasets = ["reddit_RC_2016-08.csv", "reddit_RC_2016-01.csv"];
@@ -31,7 +43,7 @@ var subreddits = [];
 // batter = scatter/bar chart
 var margin_batter = {top: 25, right: 0, bottom: 125, left: 0};
 var width_batter = 700 - margin_batter.left - margin_batter.right;
-var height_batter = 600 - margin_batter.top - margin_batter.bottom;
+var height_batter = 450 - margin_batter.top - margin_batter.bottom;
 var padding = 120;
 var yAxisPadding = 100;
 
@@ -52,15 +64,34 @@ var tooltip = d3.select("body").append("div")
 
 var subsetSuffix = ''
 var xVariableLabel = 'Subreddit'
-var xVariable = 'subreddit' + subsetSuffix
+var xVariableBase = 'subreddit'
+var xVariable = 'subreddit'
 var yVariableLabel = 'Number of Comments'
-var yVariable = 'num_comments' + subsetSuffix
+var yVariableBase = 'num_comments'
+var yVariable = 'num_comments'
 
 var axisOptions = {
   'Subreddit': 'subreddit',
   'Number of Comments': 'num_comments',
   'Positive Score': 'positive_score',
-  'Negative Score': 'negative_score'
+  'Negative Score': 'negative_score',
+  'Godwin\'s Score': 'godwins_score'
+}
+
+var cntrlIsPressed = false;
+$(document).keydown(function(event) {
+    if (event.which=="17")
+        cntrlIsPressed = true;
+});
+
+$(document).keyup(function() {
+    cntrlIsPressed = false;
+});
+
+function selectMe(mouseButton) {
+    if(cntrlIsPressed) {
+      alert("Cntrl +  left click");
+    }
 }
 
 // Called if a different axis variable is chosen
@@ -71,28 +102,37 @@ var axisChange = function(picker, options, axis) {
     var prevX = xVariable
     var prevY = yVariable
     if (axis === 'x') {
-      xVariableLabel = selected
-      xVariable = varName + subsetSuffix
+      xVariableLabel = selected;
+      xVariableBase = varName;
+      xVariable = xVariableBase
+      if (xVariable != 'subreddit') {
+        xVariable = xVariable + cur_filter
+      }
       console.log(xVariable)
+      
     } else {
-      yVariableLabel = selected
-      yVariable = varName + subsetSuffix
+      yVariableLabel = selected;
+      yVariableBase = varName;
+      yVariable = yVariableBase + cur_filter
     }
     if (prevX != xVariable || prevY != yVariable) {
       refresh()
     }
+    console.log(xVariable)
 }
 
 
 //Add the select list for department filtering
 var xPicker = d3.select(".xPicker")
     .append("select")
-    .attr("class", "xDropdown")
+    .attr("class", "xDropdown form-control sameLine")
+    .attr("style", "margin-left: 15px")
 
 //Add the select list for department filtering
 var yPicker = d3.select(".yPicker")
     .append("select")
-    .attr("class", "yDropdown")
+    .attr("class", "yDropdown form-control sameLine")
+    .attr("style", "margin-left: 15px")
 
 //Load select items from the CSV (departments)
 var xDrop = xPicker.selectAll("option")
@@ -158,12 +198,12 @@ var createCharts = function() {
         }
       }
     });
-    data.forEach(function(d) {
-      subreddits.push(d['subreddit']);
-    });
     data = data.filter(function(d, i) {
       return i < 25;
     })
+    data.forEach(function(d) {
+      subreddits.push(d['subreddit']);
+    });
     
     if (cur_time_dataset == null) {
       cur_time_dataset = time_datasets[0];
@@ -178,7 +218,8 @@ var createCharts = function() {
       cur_subreddit2 = subreddits[1];
     } 
     if (cur_filter == null) {
-      cur_filter = filters[0];
+      cur_filter_label = 'All Comments';
+      cur_filter = filter_labels[cur_filter_label];
     }
 
     if (xVariable == 'subreddit') {
@@ -213,11 +254,23 @@ var basePlot = d3.select(".basePlot")
 
 var hasLegend = false;
 
+
+var onclick_compare = function(d) {
+  subreddit = d['subreddit'];
+  if (!cntrlIsPressed) {
+    cur_subreddit1 = subreddit;
+  } else {
+    cur_subreddit2 = subreddit;
+  }
+  console.log(subreddit)
+  refresh()
+}
+
 var refreshBarChart = function(data) {
 
-  d3.selectAll(".axis").remove()
-  d3.selectAll('.rect').remove()
-  d3.selectAll('.dot').remove()
+  basePlot.selectAll(".axis").remove()
+  basePlot.selectAll('.rect').remove()
+  basePlot.selectAll('.dot').remove()
 
   var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding, width_batter - 10], 0.15);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
@@ -262,6 +315,9 @@ var refreshBarChart = function(data) {
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
     })
+    .on("click", function(d) {
+      onclick_compare(d);
+    });
 
   basePlot.append("text")
       .attr("class", "label")
@@ -319,46 +375,46 @@ var refreshBarChart = function(data) {
     })
     .on("mouseout", function() {
       return tooltip.style("opacity", 0);
+    })
+    .on("click", function(d) {
+      onclick_compare(d);
     });
-  console.log(basePlot.selectAll(".legend").size())
-  if (!hasLegend) {
-    // Legend shows us the manufacturer
-    var legend = basePlot.selectAll(".legend")
-        .data(color.domain())
-        .enter().append("g")
-        .attr("class", "legend")
-        .attr("transform", function(d, i) {
-          return "translate(" + (padding - 0) + "," + i * 12 + ")";
-        });
 
-    legend.append("rect")
-        .attr("x", width_batter - 20)
-        .attr("width", 18)
-        .attr("height", 18)
-        .attr("transform", "translate(0," + 0 + ")")
-        .style("fill", color);
+  basePlot.selectAll('.legend').remove()
 
-    legend.append("text")
-        .attr("x", width_batter - 23)
-        .attr("y", 9)
-        .attr("dy", ".35em")
-        .attr("fill", "white")
-        .style("text-anchor", "end")
-        .attr("transform", "translate(0," + 0 + ")")
-        .text(function(d) { console.log(d); return d;});
-    legend.exit().remove()
+  var legend = basePlot.selectAll(".legend")
+      .data(color.domain())
+      .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) {
+        return "translate(" + (padding - 0) + "," + i * 12 + ")";
+      });
 
-    hasLegend = true
-  }
-  
+  legend.append("rect")
+      .attr("x", width_batter - 20)
+      .attr("width", 18)
+      .attr("height", 18)
+      .attr("transform", "translate(0," + 0 + ")")
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width_batter - 23)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .attr("fill", "white")
+      .style("text-anchor", "end")
+      .attr("transform", "translate(0," + 0 + ")")
+      .text(function(d) {
+        return d;
+      });
 
 }
 
 var scatterPlot = function(data) {
 
-  d3.selectAll('.rect').remove()
-  d3.selectAll(".axis").remove()
-  d3.selectAll('.dot').remove()
+  basePlot.selectAll('.rect').remove()
+  basePlot.selectAll(".axis").remove()
+  basePlot.selectAll('.dot').remove()
 
   // Now create the scales for the scatterplot
   var xScale = d3.scale.linear().range([yAxisPadding, width_batter - 20])
@@ -441,11 +497,14 @@ var scatterPlot = function(data) {
     })
     .on("mouseout", function() {
       return tooltip.style("opacity", 0);
+    })
+    .on("click", function(d) {
+      onclick_compare(d);
     });
 }
 
 var count_accessor = function(d) {
-    return d[cur_filter]
+    return d['count' + cur_filter]
 }
 
 var margin_heat = { top: 50, right: 0, bottom: 50, left: 30 },
@@ -499,9 +558,8 @@ var createHeatMap = function(id_selector) {
     heat_svg2 = heat_svg;
   }
 
-  $('#subreddit-name').text('Subreddit: ' + cur_subreddit)
   $('#month-name').text('Dataset: August 2016')
-  $('#filter-name').text('Filter: ' + cur_filter)
+  $('#filter-name').text('Filter: ' + cur_filter_label)
 
   var subredditPicker = d3.select("#subreddit-picker").selectAll(".subreddit-button")
     .data(subreddits);
@@ -512,7 +570,7 @@ var createHeatMap = function(id_selector) {
       return "" + d;
     })
     .attr("type", "button")
-    .attr("class", "subreddit-button")
+    .attr("class", "subreddit-button btn btn-primary")
     .on("click", function(d) {
       cur_subreddit = d;
       $('#subreddit-name').text('Subreddit: ' + cur_subreddit);
@@ -525,7 +583,7 @@ var createHeatMap = function(id_selector) {
     .append("input")
     .attr("value", function(d){ return "" + d })
     .attr("type", "button")
-    .attr("class", "dataset-button")
+    .attr("class", "dataset-button btn btn-primary")
     .on("click", function(month) {
       cur_time_dataset = time_dataset_labels[month]
       cur_dataset = dataset_labels[month]
@@ -534,7 +592,7 @@ var createHeatMap = function(id_selector) {
     });
 
   var filterpicker = d3.select("#filter-picker").selectAll(".filter-button")
-    .data(filters);
+    .data(Object.keys(filter_labels));
 
   filterpicker.enter()
     .append("input")
@@ -542,10 +600,16 @@ var createHeatMap = function(id_selector) {
       return "" + d
     })
     .attr("type", "button")
-    .attr("class", "filter-button")
+    .attr("class", "filter-button btn btn-primary")
     .on("click", function(d) {
-      cur_filter = d;
-      $('#filter-name').text('Filter: ' + cur_filter);
+      cur_filter_label = d;
+      cur_filter = filter_labels[cur_filter_label];
+      if (xVariable != 'subreddit') {
+        xVariable = xVariableBase + cur_filter;
+      }
+      console.log(yVariable)
+      yVariable = yVariableBase + cur_filter
+      $('#filter-name').text('Filter: ' + cur_filter_label);
       refresh();
     });
 }
@@ -570,7 +634,8 @@ var refreshHeatMap = function(id_selector) {
     },
     function(error, data) {
       heat_svg.selectAll(".scale").remove();
-      heat_svg.append("text").text(cur_subreddit).attr("x", width_heat / 2 - 25).attr("y", height_heat - 2).style('fill', 'darkOrange')
+      heat_svg.selectAll(".cur_subreddit").remove();
+      heat_svg.append("text").text(cur_subreddit).attr("class", "cur_subreddit").attr("x", width_heat / 2 - 25).attr("y", height_heat - 2).style('fill', 'darkOrange')
       var colorScale = d3.scale.quantile()
           .domain([0, d3.max(data, function (d) {
             return d.count;
@@ -595,6 +660,9 @@ var refreshHeatMap = function(id_selector) {
           .style("fill", colors[0]);
 
       cards.transition().duration(1000)
+          .delay(function(d, i) {
+            return 6 * i + 2 * d.hour
+          })
           .style("fill", function(d) {
             return colorScale(d.count);
           });
@@ -605,11 +673,11 @@ var refreshHeatMap = function(id_selector) {
       
       cards.exit().remove();
 
-      var legend = heat_svg.selectAll(".legend")
+      var legend = heat_svg.selectAll(".heatLegend")
           .data([0].concat(colorScale.quantiles()), function(d) { return d; });
 
       legend.enter().append("g")
-          .attr("class", "legend");
+          .attr("class", "heatLegend");
 
       legend.append("rect")
         .attr("x", function(d, i) {

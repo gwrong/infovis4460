@@ -73,6 +73,16 @@ table {
   display: inline-block;
 }
 
+.xDropdown {
+  width: 210px;
+  height: 30px;
+}
+
+.yDropdown {
+  width: 210px;
+  height: 30px;
+}
+
 .extent{
   color: #202020;
   fill-opacity: .5;
