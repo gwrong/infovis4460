@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8">
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='style.css' rel='stylesheet' type='text/css'>
+    
+
   </head>
 
   <body>
@@ -16,17 +19,43 @@
     </div>
     <br><br>
     <div class="wrap">
-      <div class="scatterplot"></div>
-      <div class="barchart"></div>
+      <div class="basePlot"></div>
+    </div>
+    <br><br>
+    <div class="sameLine">
+        <div id="heatmap1" class="sameLine"></div>
+        <div id="heatmap2" class="sameLine"></div>
+    </div>
+    <h2 id="subreddit-name"></h2>
+    <h2 id="month-name"></h2>
+    <h2 id="filter-name"></h2>
+    <div id="dataset-picker">
+    </div>
+    <br><br>
+    <div id="filter-picker">
+    </div>
+    <br><br>
+    <div id="subreddit-picker">
     </div>
 
+    <script
+        src="jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    <!-- D3 library -->
+    <script src="d3.js" charset="utf-8"></script>
 
-
+    <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
     <!-- D3 library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
 
     <!-- Our js files -->
     <script src="scatter.js"></script>
+
+
 
 
   </body>
