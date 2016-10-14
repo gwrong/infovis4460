@@ -96,7 +96,7 @@ rect.bordered {
 text.mono {
   font-size: 7pt;
   font-family: Consolas, courier;
-  fill: #aaa;
+  fill: #FFFFFF;
 }
 
 text.axis-workweek {
