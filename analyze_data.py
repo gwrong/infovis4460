@@ -14,9 +14,9 @@ from time import time
 from wordcloud import WordCloud
 
 #Possible data files
-MONTH_FILES = ['RC_2016-01', 'RC_2016-03', 'RC_2016-05', 'RC_2016-08']
+MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08']
 # Set this manually
-MONTH_FILE = 'RC_2016-05'
+MONTH_FILE = 'RC_2016-02'
 LOOKUP_PATH = 'lookup_data'
 RESULTS_PATH = 'results'
 
@@ -28,10 +28,12 @@ TOP_GODWIN_CUTOFF = 0
 positive_emotion_words = set()
 negative_emotion_words = set()
 godwins_law_words = set()
+swear_words = set()
 
 POSITIVE_MULTIPLIER = 1000
 NEGATIVE_MULTIPLIER = 1000
 GODWIN_MULTIPLIER = 1000000
+SWEAR_MULTIPLIER = 10000
 
 # Number of processes to spawn for comment computation
 NUM_POOLS = 5
@@ -58,42 +60,13 @@ SUBREDDITS = [
         'todayilearned',
         'nfl',
         'wow',
-        'GlobalOffensive',
-        'nba',
-        'gifs',
-        'relationships',
-        'Showerthoughts',
-        'MMA',
-        'olympics',
-        'hearthstone',
-        'DestinyTheGame',
-        'BigBrother',
-        'pokemontrades',
-        'WTF',
-        'AdviceAnimals',
-        'anime',
-        'CFB',
-        'GlobalOffensiveTrade',
-        'hiphopheads',
-        'friendsafari',
-        'TheSilphRoad',
-        'Games',
-        'stevenuniverse',
-        'pokemon',
-        'baseball',
-        'buildapc',
-        '2007scape',
-        'fantasyfootball',
-        'aww',
-        'Fitness',
-        'jailbreak',
     ]
 
 """
 Initialize the sentiment word lists for each multiprocess instance
 """
 def initialize_data_sets():
-    fileNames = {'sentiment/positive_emotions.txt': positive_emotion_words, 'sentiment/negative_emotions.txt': negative_emotion_words, 'sentiment/godwins_law_words.txt': godwins_law_words}
+    fileNames = {'sentiment/positive_emotions.txt': positive_emotion_words, 'sentiment/negative_emotions.txt': negative_emotion_words, 'sentiment/godwins_law_words.txt': godwins_law_words, 'sentiment/swear_words.txt': swear_words}
 
     # Read in all files and add the words
     # to the reference of the master data set variable lists
@@ -170,6 +143,10 @@ def compute_negative_emotions(text, count_dict):
 def compute_godwin(text, count_dict):
     num_found, num_words = compute_count(text, godwins_law_words, count_dict)
     return compute_score(num_found, num_words, GODWIN_MULTIPLIER)
+
+def compute_swear(text, count_dict):
+    num_found, num_words = compute_count(text, swear_words, count_dict)
+    return compute_score(num_found, num_words, SWEAR_MULTIPLIER)
 
 def compute_time_buckets(timestamp, count_dict):
     from_zone = tz.gettz('UTC')
@@ -280,30 +257,37 @@ def compute_comments(comments):
     positive_emotions_total = dict.fromkeys(positive_emotion_words, 0)
     negative_emotions_total = dict.fromkeys(negative_emotion_words, 0)
     godwins_law_total = dict.fromkeys(godwins_law_words, 0)
+    swear_total = dict.fromkeys(swear_words, 0)
 
     positive_emotions_total_topcom = positive_emotions_total.copy()
     negative_emotions_total_topcom = negative_emotions_total.copy()
     godwins_law_total_topcom = godwins_law_total.copy()
+    swear_total_topcom = swear_total.copy()
 
     positive_emotions_total_botcom = positive_emotions_total.copy()
     negative_emotions_total_botcom = negative_emotions_total.copy()
     godwins_law_total_botcom = godwins_law_total.copy()
+    swear_total_botcom = swear_total.copy()
 
     positive_emotions_total_topauth = positive_emotions_total.copy()
     negative_emotions_total_topauth = negative_emotions_total.copy()
     godwins_law_total_topauth = godwins_law_total.copy()
+    swear_total_topauth = swear_total.copy()
 
     positive_emotions_total_toppos = positive_emotions_total.copy()
     negative_emotions_total_toppos = negative_emotions_total.copy()
     godwins_law_total_toppos = godwins_law_total.copy()
+    swear_total_toppos = swear_total.copy()
 
     positive_emotions_total_topneg = positive_emotions_total.copy()
     negative_emotions_total_topneg = negative_emotions_total.copy()
     godwins_law_total_topneg = godwins_law_total.copy()
+    swear_total_topneg = swear_total.copy()
 
     positive_emotions_total_topgod = positive_emotions_total.copy()
     negative_emotions_total_topgod = negative_emotions_total.copy()
     godwins_law_total_topgod = godwins_law_total.copy()
+    swear_total_topgod = swear_total.copy()
 
     time_buckets = dict()
     for weekday in range(7):
@@ -363,6 +347,7 @@ def compute_comments(comments):
         comment_positive_score = compute_positive_emotions(text, positive_emotions_total)
         comment_negative_score = compute_negative_emotions(text, negative_emotions_total)
         comment_godwins_score = compute_godwin(text, godwins_law_total)
+        comment_swear_score = compute_swear(text, swear_total)
 
         timestamp = int(comment['created_utc'])
         compute_time_buckets(timestamp, time_buckets)
@@ -373,6 +358,7 @@ def compute_comments(comments):
             compute_positive_emotions(text, positive_emotions_total_topcom)
             compute_negative_emotions(text, negative_emotions_total_topcom)
             compute_godwin(text, godwins_law_total_topcom)
+            compute_swear(text, swear_total_topcom)
 
             compute_time_buckets(timestamp, time_buckets_topcom)
             comments_topcom += 1
@@ -383,6 +369,7 @@ def compute_comments(comments):
             compute_positive_emotions(text, positive_emotions_total_botcom)
             compute_negative_emotions(text, negative_emotions_total_botcom)
             compute_godwin(text, godwins_law_total_botcom)
+            compute_swear(text, swear_total_botcom)
 
             compute_time_buckets(timestamp, time_buckets_botcom)
             comments_botcom += 1
@@ -393,6 +380,7 @@ def compute_comments(comments):
             compute_positive_emotions(text, positive_emotions_total_topauth)
             compute_negative_emotions(text, negative_emotions_total_topauth)
             compute_godwin(text, godwins_law_total_topauth)
+            compute_swear(text, swear_total_topauth)
 
             compute_time_buckets(timestamp, time_buckets_topauth)
             comments_topauth += 1
@@ -404,6 +392,7 @@ def compute_comments(comments):
                 compute_positive_emotions(text, positive_emotions_total_toppos)
                 compute_negative_emotions(text, negative_emotions_total_toppos)
                 compute_godwin(text, godwins_law_total_toppos)
+                compute_swear(text, swear_total_toppos)
 
                 compute_time_buckets(timestamp, time_buckets_toppos)
                 comments_toppos += 1
@@ -415,6 +404,7 @@ def compute_comments(comments):
                 compute_positive_emotions(text, positive_emotions_total_topneg)
                 compute_negative_emotions(text, negative_emotions_total_topneg)
                 compute_godwin(text, godwins_law_total_topneg)
+                compute_swear(text, swear_total_topneg)
 
                 compute_time_buckets(timestamp, time_buckets_topneg)
                 comments_topneg += 1
@@ -426,18 +416,19 @@ def compute_comments(comments):
                 compute_positive_emotions(text, positive_emotions_total_topgod)
                 compute_negative_emotions(text, negative_emotions_total_topgod)
                 compute_godwin(text, godwins_law_total_topgod)
+                compute_swear(text, swear_total_topgod)
 
                 compute_time_buckets(timestamp, time_buckets_topgod)
                 comments_topgod += 1
 
     return [
-        word_count, text_length, len(comments), positive_emotions_total, negative_emotions_total, godwins_law_total, time_buckets, subreddit_mentions,
-        word_count_topcom, text_length_topcom, comments_topcom, positive_emotions_total_topcom, negative_emotions_total_topcom, godwins_law_total_topcom, time_buckets_topcom,
-        word_count_botcom, text_length_botcom, comments_botcom, positive_emotions_total_botcom, negative_emotions_total_botcom, godwins_law_total_botcom, time_buckets_botcom,
-        word_count_topauth, text_length_topauth, comments_topauth, positive_emotions_total_topauth, negative_emotions_total_topauth, godwins_law_total_topauth, time_buckets_topauth,
-        word_count_toppos, text_length_toppos, comments_toppos, positive_emotions_total_toppos, negative_emotions_total_toppos, godwins_law_total_toppos, time_buckets_toppos,
-        word_count_topneg, text_length_topneg, comments_topneg, positive_emotions_total_topneg, negative_emotions_total_topneg, godwins_law_total_topneg, time_buckets_topneg,
-        word_count_topgod, text_length_topgod, comments_topgod, positive_emotions_total_topgod, negative_emotions_total_topgod, godwins_law_total_topgod, time_buckets_topgod
+        word_count, text_length, len(comments), positive_emotions_total, negative_emotions_total, godwins_law_total, swear_total, time_buckets, subreddit_mentions,
+        word_count_topcom, text_length_topcom, comments_topcom, positive_emotions_total_topcom, negative_emotions_total_topcom, godwins_law_total_topcom, swear_total_topcom, time_buckets_topcom,
+        word_count_botcom, text_length_botcom, comments_botcom, positive_emotions_total_botcom, negative_emotions_total_botcom, godwins_law_total_botcom, swear_total_botcom, time_buckets_botcom,
+        word_count_topauth, text_length_topauth, comments_topauth, positive_emotions_total_topauth, negative_emotions_total_topauth, godwins_law_total_topauth, swear_total_topauth, time_buckets_topauth,
+        word_count_toppos, text_length_toppos, comments_toppos, positive_emotions_total_toppos, negative_emotions_total_toppos, godwins_law_total_toppos, swear_total_toppos, time_buckets_toppos,
+        word_count_topneg, text_length_topneg, comments_topneg, positive_emotions_total_topneg, negative_emotions_total_topneg, godwins_law_total_topneg, swear_total_topneg, time_buckets_topneg,
+        word_count_topgod, text_length_topgod, comments_topgod, positive_emotions_total_topgod, negative_emotions_total_topgod, godwins_law_total_topgod, swear_total_topgod, time_buckets_topgod
     ]
 
 
@@ -455,26 +446,26 @@ def process_comments():
 
     sort_sentiment_dicts()
     final_csv_file = open("reddit_{}.csv".format(MONTH_FILE), 'w')
-    final_csv_file.write("subreddit,num_comments,num_words,num_chars,avg_word_length,avg_words_per_comment,positive_score,negative_score,godwins_score,"
-                         "num_comments_topcom,num_words_topcom,num_chars_topcom,avg_word_length_topcom,avg_words_per_comment_topcom,positive_score_topcom,negative_score_topcom,godwins_score_topcom,"
-                         "num_comments_botcom,num_words_botcom,num_chars_botcom,avg_word_length_botcom,avg_words_per_comment_botcom,positive_score_botcom,negative_score_botcom,godwins_score_botcom,"
-                         "num_comments_topauth,num_words_topauth,num_chars_topauth,avg_word_length_topauth,avg_words_per_comment_topauth,positive_score_topauth,negative_score_topauth,godwins_score_topauth,"
-                         "num_comments_toppos,num_words_toppos,num_chars_toppos,avg_word_length_toppos,avg_words_per_comment_toppos,positive_score_toppos,negative_score_toppos,godwins_score_toppos,"
-                         "num_comments_topneg,num_words_topneg,num_chars_topneg,avg_word_length_topneg,avg_words_per_comment_topneg,positive_score_topneg,negative_score_topneg,godwins_score_topneg,"
-                         "num_comments_topgod,num_words_topgod,num_chars_topgod,avg_word_length_topgod,avg_words_per_comment_topgod,positive_score_topgod,negative_score_topgod,godwins_score_topgod\n")
+    final_csv_file.write("subreddit,num_comments,num_words,num_chars,avg_word_length,avg_words_per_comment,positive_score,negative_score,godwins_score,swear_score,"
+                         "num_comments_topcom,num_words_topcom,num_chars_topcom,avg_word_length_topcom,avg_words_per_comment_topcom,positive_score_topcom,negative_score_topcom,godwins_score_topcom,swear_score_topcom,"
+                         "num_comments_botcom,num_words_botcom,num_chars_botcom,avg_word_length_botcom,avg_words_per_comment_botcom,positive_score_botcom,negative_score_botcom,godwins_score_botcom,swear_score_botcom,"
+                         "num_comments_topauth,num_words_topauth,num_chars_topauth,avg_word_length_topauth,avg_words_per_comment_topauth,positive_score_topauth,negative_score_topauth,godwins_score_topauth,swear_score_topauth,"
+                         "num_comments_toppos,num_words_toppos,num_chars_toppos,avg_word_length_toppos,avg_words_per_comment_toppos,positive_score_toppos,negative_score_toppos,godwins_score_toppos,swear_score_toppos,"
+                         "num_comments_topneg,num_words_topneg,num_chars_topneg,avg_word_length_topneg,avg_words_per_comment_topneg,positive_score_topneg,negative_score_topneg,godwins_score_topneg,swear_score_topneg,"
+                         "num_comments_topgod,num_words_topgod,num_chars_topgod,avg_word_length_topgod,avg_words_per_comment_topgod,positive_score_topgod,negative_score_topgod,godwins_score_topgod,swear_score_topgod\n")
     
     time_csv_file = open('reddit_{}_time_series.csv'.format(MONTH_FILE), 'w')
     time_csv_file.write('subreddit,weekday,hour,count,count_topcom,count_botcom,count_topauth,count_toppos,count_topneg,count_topgod\n')
 
     mention_adjacency_matrix = dict()
 
-    for subreddit in SUBREDDITS[-1:]:
+    for subreddit in SUBREDDITS:
 
         start_time = time()
         comment_counter = 0  # Count total comments
 
         # Must match the features array in type and length
-        overall_stats = [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 4 + [0] * 3 + [{}] * 4 + [0] * 3 + [{}] * 4 + [0] * 3 + [{}] * 4 + [0] * 3 + [{}] * 4 + [0] * 3 + [{}] * 4
+        overall_stats = [0] * 3 + [{}] * 6 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5
         comment_list = []
 
         data_file_name = os.path.join(path, subreddit[0].lower() + '.sorted')
@@ -507,8 +498,8 @@ def process_comments():
         print('Took {} seconds to process {} comments for r/{}'.format(end_time - start_time, comment_counter, subreddit))
 
         final_formatter(subreddit, overall_stats, final_csv_file, time_csv_file)
-        mention_adjacency_matrix[subreddit] = overall_stats[7]
-        print(overall_stats[7])
+        mention_adjacency_matrix[subreddit] = overall_stats[8]
+        print(overall_stats[8])
 
     final_csv_file.close()
 
@@ -526,6 +517,7 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_counts = sorted(overall_stats[3].items(), reverse=True, key=operator.itemgetter(1))
     negative_counts = sorted(overall_stats[4].items(), reverse=True, key=operator.itemgetter(1))
     godwins_law_counts = sorted(overall_stats[5].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts = sorted(overall_stats[6].items(), reverse=True, key=operator.itemgetter(1))
 
     num_words = overall_stats[0]
     text_lengths = overall_stats[1]
@@ -541,17 +533,20 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_score = compute_score(positive_counts, num_words, POSITIVE_MULTIPLIER)
     negative_score = compute_score(negative_counts, num_words, NEGATIVE_MULTIPLIER)
     godwins_score = compute_score(godwins_law_counts, num_words, GODWIN_MULTIPLIER)
+    swear_score = compute_score(swear_counts, num_words, SWEAR_MULTIPLIER)
 
-    time_buckets = overall_stats[6]
+    time_buckets = overall_stats[7]
+    # overall_stats[8] is handled in the parent caller
 
 
-    positive_counts_topcom = sorted(overall_stats[11].items(), reverse=True, key=operator.itemgetter(1))
-    negative_counts_topcom = sorted(overall_stats[12].items(), reverse=True, key=operator.itemgetter(1))
-    godwins_law_counts_topcom = sorted(overall_stats[13].items(), reverse=True, key=operator.itemgetter(1))
+    positive_counts_topcom = sorted(overall_stats[12].items(), reverse=True, key=operator.itemgetter(1))
+    negative_counts_topcom = sorted(overall_stats[13].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_counts_topcom = sorted(overall_stats[14].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts_topcom = sorted(overall_stats[15].items(), reverse=True, key=operator.itemgetter(1))
 
-    num_words_topcom = overall_stats[8]
-    text_lengths_topcom = overall_stats[9]
-    num_comments_topcom = overall_stats[10]
+    num_words_topcom = overall_stats[9]
+    text_lengths_topcom = overall_stats[10]
+    num_comments_topcom = overall_stats[11]
 
     if num_comments_topcom == 0:
         num_comments_topcom = 1
@@ -563,17 +558,19 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_score_topcom = compute_score(positive_counts_topcom, num_words_topcom, POSITIVE_MULTIPLIER)
     negative_score_topcom = compute_score(negative_counts_topcom, num_words_topcom, NEGATIVE_MULTIPLIER)
     godwins_score_topcom = compute_score(godwins_law_counts_topcom, num_words_topcom, GODWIN_MULTIPLIER)
+    swear_score_topcom = compute_score(swear_counts_topcom, num_words_topcom, SWEAR_MULTIPLIER)
 
-    time_buckets_topcom = overall_stats[14]
+    time_buckets_topcom = overall_stats[16]
 
 
-    positive_counts_botcom = sorted(overall_stats[18].items(), reverse=True, key=operator.itemgetter(1))
-    negative_counts_botcom = sorted(overall_stats[19].items(), reverse=True, key=operator.itemgetter(1))
-    godwins_law_counts_botcom = sorted(overall_stats[20].items(), reverse=True, key=operator.itemgetter(1))
+    positive_counts_botcom = sorted(overall_stats[20].items(), reverse=True, key=operator.itemgetter(1))
+    negative_counts_botcom = sorted(overall_stats[21].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_counts_botcom = sorted(overall_stats[22].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts_botcom = sorted(overall_stats[23].items(), reverse=True, key=operator.itemgetter(1))
 
-    num_words_botcom = overall_stats[15]
-    text_lengths_botcom = overall_stats[16]
-    num_comments_botcom = overall_stats[17]
+    num_words_botcom = overall_stats[17]
+    text_lengths_botcom = overall_stats[18]
+    num_comments_botcom = overall_stats[19]
 
     if num_comments_botcom == 0:
         num_comments_botcom = 1
@@ -585,17 +582,20 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_score_botcom = compute_score(positive_counts_botcom, num_words_botcom, POSITIVE_MULTIPLIER)
     negative_score_botcom = compute_score(negative_counts_botcom, num_words_botcom, NEGATIVE_MULTIPLIER)
     godwins_score_botcom = compute_score(godwins_law_counts_botcom, num_words_botcom, GODWIN_MULTIPLIER)
+    swear_score_botcom = compute_score(swear_counts_botcom, num_words_botcom, SWEAR_MULTIPLIER)
 
-    time_buckets_botcom = overall_stats[21]
+    time_buckets_botcom = overall_stats[24]
 
 
-    positive_counts_topauth = sorted(overall_stats[25].items(), reverse=True, key=operator.itemgetter(1))
-    negative_counts_topauth = sorted(overall_stats[26].items(), reverse=True, key=operator.itemgetter(1))
-    godwins_law_counts_topauth = sorted(overall_stats[27].items(), reverse=True, key=operator.itemgetter(1))
+    positive_counts_topauth = sorted(overall_stats[28].items(), reverse=True, key=operator.itemgetter(1))
+    negative_counts_topauth = sorted(overall_stats[29].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_counts_topauth = sorted(overall_stats[30].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts_topauth = sorted(overall_stats[31].items(), reverse=True, key=operator.itemgetter(1))
 
-    num_words_topauth = overall_stats[22]
-    text_lengths_topauth = overall_stats[23]
-    num_comments_topauth = overall_stats[24]
+
+    num_words_topauth = overall_stats[25]
+    text_lengths_topauth = overall_stats[26]
+    num_comments_topauth = overall_stats[27]
 
     if num_comments_topauth == 0:
         num_comments_topauth = 1
@@ -607,17 +607,19 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_score_topauth = compute_score(positive_counts_topauth, num_words_topauth, POSITIVE_MULTIPLIER)
     negative_score_topauth = compute_score(negative_counts_topauth, num_words_topauth, NEGATIVE_MULTIPLIER)
     godwins_score_topauth = compute_score(godwins_law_counts_topauth, num_words_topauth, GODWIN_MULTIPLIER)
+    swear_score_topauth = compute_score(swear_counts_topauth, num_words_topauth, SWEAR_MULTIPLIER)
 
-    time_buckets_topauth = overall_stats[28]
+    time_buckets_topauth = overall_stats[32]
 
 
-    positive_counts_toppos = sorted(overall_stats[32].items(), reverse=True, key=operator.itemgetter(1))
-    negative_counts_toppos = sorted(overall_stats[33].items(), reverse=True, key=operator.itemgetter(1))
-    godwins_law_counts_toppos = sorted(overall_stats[34].items(), reverse=True, key=operator.itemgetter(1))
+    positive_counts_toppos = sorted(overall_stats[36].items(), reverse=True, key=operator.itemgetter(1))
+    negative_counts_toppos = sorted(overall_stats[37].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_counts_toppos = sorted(overall_stats[38].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts_toppos = sorted(overall_stats[39].items(), reverse=True, key=operator.itemgetter(1))
 
-    num_words_toppos = overall_stats[29]
-    text_lengths_toppos = overall_stats[30]
-    num_comments_toppos = overall_stats[31]
+    num_words_toppos = overall_stats[33]
+    text_lengths_toppos = overall_stats[34]
+    num_comments_toppos = overall_stats[35]
 
     if num_comments_toppos == 0:
         num_comments_toppos = 1
@@ -629,17 +631,19 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_score_toppos = compute_score(positive_counts_toppos, num_words_toppos, POSITIVE_MULTIPLIER)
     negative_score_toppos = compute_score(negative_counts_toppos, num_words_toppos, NEGATIVE_MULTIPLIER)
     godwins_score_toppos = compute_score(godwins_law_counts_toppos, num_words_toppos, GODWIN_MULTIPLIER)
+    swear_score_toppos = compute_score(swear_counts_toppos, num_words_toppos, SWEAR_MULTIPLIER)
 
-    time_buckets_toppos = overall_stats[35]
+    time_buckets_toppos = overall_stats[40]
 
 
-    positive_counts_topneg = sorted(overall_stats[39].items(), reverse=True, key=operator.itemgetter(1))
-    negative_counts_topneg = sorted(overall_stats[40].items(), reverse=True, key=operator.itemgetter(1))
-    godwins_law_counts_topneg = sorted(overall_stats[41].items(), reverse=True, key=operator.itemgetter(1))
+    positive_counts_topneg = sorted(overall_stats[44].items(), reverse=True, key=operator.itemgetter(1))
+    negative_counts_topneg = sorted(overall_stats[45].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_counts_topneg = sorted(overall_stats[46].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts_topneg = sorted(overall_stats[47].items(), reverse=True, key=operator.itemgetter(1))
 
-    num_words_topneg = overall_stats[36]
-    text_lengths_topneg = overall_stats[37]
-    num_comments_topneg = overall_stats[38]
+    num_words_topneg = overall_stats[41]
+    text_lengths_topneg = overall_stats[42]
+    num_comments_topneg = overall_stats[43]
 
     if num_comments_topneg == 0:
         num_comments_topneg = 1
@@ -651,17 +655,21 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_score_topneg = compute_score(positive_counts_topneg, num_words_topneg, POSITIVE_MULTIPLIER)
     negative_score_topneg = compute_score(negative_counts_topneg, num_words_topneg, NEGATIVE_MULTIPLIER)
     godwins_score_topneg = compute_score(godwins_law_counts_topneg, num_words_topneg, GODWIN_MULTIPLIER)
+    swear_score_topneg = compute_score(swear_counts_topneg, num_words_topneg, SWEAR_MULTIPLIER)
 
-    time_buckets_topneg = overall_stats[42]
+
+    time_buckets_topneg = overall_stats[48]
 
 
-    positive_counts_topgod = sorted(overall_stats[46].items(), reverse=True, key=operator.itemgetter(1))
-    negative_counts_topgod = sorted(overall_stats[47].items(), reverse=True, key=operator.itemgetter(1))
-    godwins_law_counts_topgod = sorted(overall_stats[48].items(), reverse=True, key=operator.itemgetter(1))
+    positive_counts_topgod = sorted(overall_stats[52].items(), reverse=True, key=operator.itemgetter(1))
+    negative_counts_topgod = sorted(overall_stats[53].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_counts_topgod = sorted(overall_stats[54].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts_topgod = sorted(overall_stats[55].items(), reverse=True, key=operator.itemgetter(1))
 
-    num_words_topgod = overall_stats[43]
-    text_lengths_topgod = overall_stats[44]
-    num_comments_topgod = overall_stats[45]
+
+    num_words_topgod = overall_stats[49]
+    text_lengths_topgod = overall_stats[50]
+    num_comments_topgod = overall_stats[51]
 
     if num_comments_topgod == 0:
         num_comments_topgod = 1
@@ -673,70 +681,70 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     positive_score_topgod = compute_score(positive_counts_topgod, num_words_topgod, POSITIVE_MULTIPLIER)
     negative_score_topgod = compute_score(negative_counts_topgod, num_words_topgod, NEGATIVE_MULTIPLIER)
     godwins_score_topgod = compute_score(godwins_law_counts_topgod, num_words_topgod, GODWIN_MULTIPLIER)
+    swear_score_topgod = compute_score(swear_counts_topgod, num_words_topgod, SWEAR_MULTIPLIER)
 
-    time_buckets_topgod = overall_stats[49]
-
+    time_buckets_topgod = overall_stats[56]
 
 
 
     template = ("{subreddit},{num_comments},{num_words},{num_chars},"
                 "{avg_word_length},{avg_words_per_comment},{positive_score},"
-                "{negative_score},{godwins_score},"
+                "{negative_score},{godwins_score},{swear_score},"
                 "{num_comments_topcom},{num_words_topcom},{num_chars_topcom},"
                 "{avg_word_length_topcom},{avg_words_per_comment_topcom},{positive_score_topcom},"
-                "{negative_score_topcom},{godwins_score_topcom},"
+                "{negative_score_topcom},{godwins_score_topcom},{swear_score_topcom},"
                 "{num_comments_botcom},{num_words_botcom},{num_chars_botcom},"
                 "{avg_word_length_botcom},{avg_words_per_comment_botcom},{positive_score_botcom},"
-                "{negative_score_botcom},{godwins_score_botcom},"
+                "{negative_score_botcom},{godwins_score_botcom},{swear_score_botcom},"
                 "{num_comments_topauth},{num_words_topauth},{num_chars_topauth},"
                 "{avg_word_length_topauth},{avg_words_per_comment_topauth},{positive_score_topauth},"
-                "{negative_score_topauth},{godwins_score_topauth},"
+                "{negative_score_topauth},{godwins_score_topauth},{swear_score_topauth},"
                 "{num_comments_toppos},{num_words_toppos},{num_chars_toppos},"
                 "{avg_word_length_toppos},{avg_words_per_comment_toppos},{positive_score_toppos},"
-                "{negative_score_toppos},{godwins_score_toppos},"
+                "{negative_score_toppos},{godwins_score_toppos},{swear_score_toppos},"
                 "{num_comments_topneg},{num_words_topneg},{num_chars_topneg},"
                 "{avg_word_length_topneg},{avg_words_per_comment_topneg},{positive_score_topneg},"
-                "{negative_score_topneg},{godwins_score_topneg},"
+                "{negative_score_topneg},{godwins_score_topneg},{swear_score_topneg},"
                 "{num_comments_topgod},{num_words_topgod},{num_chars_topgod},"
                 "{avg_word_length_topgod},{avg_words_per_comment_topgod},{positive_score_topgod},"
-                "{negative_score_topgod},{godwins_score_topgod}\n")
+                "{negative_score_topgod},{godwins_score_topgod},{swear_score_topgod},\n")
 
     final_handle.write(template.format(
         subreddit=subreddit, num_comments=num_comments, num_words=num_words,
         num_chars=text_lengths, avg_word_length=avg_word_length,
         avg_words_per_comment=avg_words_per_comment,
         positive_score=positive_score, negative_score=negative_score,
-        godwins_score=godwins_score,
+        godwins_score=godwins_score,swear_score=swear_score,
         num_comments_topcom=num_comments_topcom, num_words_topcom=num_words_topcom,
         num_chars_topcom=text_lengths_topcom, avg_word_length_topcom=avg_word_length_topcom,
         avg_words_per_comment_topcom=avg_words_per_comment_topcom,
         positive_score_topcom=positive_score_topcom, negative_score_topcom=negative_score_topcom,
-        godwins_score_topcom=godwins_score_topcom,
+        godwins_score_topcom=godwins_score_topcom,swear_score_topcom=swear_score_topcom,
         num_comments_botcom=num_comments_botcom, num_words_botcom=num_words_botcom,
         num_chars_botcom=text_lengths_botcom, avg_word_length_botcom=avg_word_length_botcom,
         avg_words_per_comment_botcom=avg_words_per_comment_botcom,
         positive_score_botcom=positive_score_botcom, negative_score_botcom=negative_score_botcom,
-        godwins_score_botcom=godwins_score_botcom,
+        godwins_score_botcom=godwins_score_botcom,swear_score_botcom=swear_score_botcom,
         num_comments_topauth=num_comments_topauth, num_words_topauth=num_words_topauth,
         num_chars_topauth=text_lengths_topauth, avg_word_length_topauth=avg_word_length_topauth,
         avg_words_per_comment_topauth=avg_words_per_comment_topauth,
         positive_score_topauth=positive_score_topauth, negative_score_topauth=negative_score_topauth,
-        godwins_score_topauth=godwins_score_topauth,
+        godwins_score_topauth=godwins_score_topauth,swear_score_topauth=swear_score_topauth,
         num_comments_toppos=num_comments_toppos, num_words_toppos=num_words_toppos,
         num_chars_toppos=text_lengths_toppos, avg_word_length_toppos=avg_word_length_toppos,
         avg_words_per_comment_toppos=avg_words_per_comment_toppos,
         positive_score_toppos=positive_score_toppos, negative_score_toppos=negative_score_toppos,
-        godwins_score_toppos=godwins_score_toppos,
+        godwins_score_toppos=godwins_score_toppos,swear_score_toppos=swear_score_toppos,
         num_comments_topneg=num_comments_topneg, num_words_topneg=num_words_topneg,
         num_chars_topneg=text_lengths_topneg, avg_word_length_topneg=avg_word_length_topneg,
         avg_words_per_comment_topneg=avg_words_per_comment_topneg,
         positive_score_topneg=positive_score_topneg, negative_score_topneg=negative_score_topneg,
-        godwins_score_topneg=godwins_score_topneg,
+        godwins_score_topneg=godwins_score_topneg,swear_score_topneg=swear_score_topneg,
         num_comments_topgod=num_comments_topgod, num_words_topgod=num_words_topgod,
         num_chars_topgod=text_lengths_topgod, avg_word_length_topgod=avg_word_length_topgod,
         avg_words_per_comment_topgod=avg_words_per_comment_topgod,
         positive_score_topgod=positive_score_topgod, negative_score_topgod=negative_score_topgod,
-        godwins_score_topgod=godwins_score_topgod
+        godwins_score_topgod=godwins_score_topgod,swear_score_topgod=swear_score_topgod,
     ))
     final_handle.flush()
 
@@ -999,7 +1007,6 @@ def comment_author_percentiles():
         
         upper = int(num_unique_authors * AUTHOR_PERCENTILE)
         top_authors = author_counts[:upper]
-        print(top_authors[:35])
         print(len(top_authors))
 
         author_percentiles[subreddit] = set([pair[0] for pair in top_authors])
@@ -1015,12 +1022,13 @@ Sort and dedupe dictionaries so if you add more words manually
 it's still easy to read
 """
 def sort_sentiment_dicts():
-    file_names = {'sentiment/positive_emotions.txt', 'sentiment/negative_emotions.txt'}
+    file_names = {'sentiment/positive_emotions.txt', 'sentiment/negative_emotions.txt', 'sentiment/swear_words.txt'}
     for file_name in file_names:
         file = open(file_name, 'r')
         words = ast.literal_eval(file.read())
         words = list(set(words))
         words.sort()
+        words = [word.lower() for word in words]
         file.close()
         file = open(file_name, 'w')
         file.write(repr(words))
