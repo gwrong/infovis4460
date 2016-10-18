@@ -2,7 +2,7 @@ import json
 import os
 from string import ascii_lowercase
 
-DATA_FILE_NAME = 'RC_2016-03'
+DATA_FILE_NAME = 'RC_2016-02'
 DATA_FILE_PATH = os.path.join('data', DATA_FILE_NAME)
 OUTPUT_PATH = os.path.join(DATA_FILE_PATH, 'by_subreddit')
 
@@ -67,7 +67,7 @@ Sort the resulting files to make our lives easier later
 """
 def sort_files():
     file_names = [file for file in os.listdir(OUTPUT_PATH) if os.path.isfile(os.path.join(OUTPUT_PATH, file))]
-    
+
     for file_name in file_names:
         print("Starting {}".format(file_name))
         comments = []
@@ -97,5 +97,5 @@ if __name__ == "__main__":
    print(OUTPUT_PATH)
    print(DATA_FILE_NAME)
    print(DATA_FILE_PATH)
-   partition_subreddits()
-   sort_files()
+   #partition_subreddits()
+   #sort_files()
