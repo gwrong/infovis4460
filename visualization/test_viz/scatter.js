@@ -41,7 +41,7 @@ var scatter = d3.select("body")
 .append("g")
 
 // Actually load our data
-d3.csv("reddit_august_2016.csv", function(error, data) {
+d3.csv("reddit_RC_2016-01.csv", function(error, data) {
 
   // Scale the data
   xScale.domain(data.map(function(d) {
