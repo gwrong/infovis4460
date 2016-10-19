@@ -402,7 +402,9 @@ var initialize_pickers = function() {
     .attr("type", "button")
     .attr("class", "dataset-button btn btn-primary")
     .on("click", function(subreddit_subset) {
-      cur_subreddit_subset = subreddit_subset
+      cur_subreddit_subset = subreddit_subset;
+      cur_subreddit1 = subreddit_subsets[subreddit_subset][0]
+      cur_subreddit2 = subreddit_subsets[subreddit_subset][1]
       refresh();
     });
 
