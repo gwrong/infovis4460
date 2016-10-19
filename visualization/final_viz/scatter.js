@@ -7,14 +7,135 @@ var cur_filter = null;
 var cur_filter_label = null;
 var initialized_heatmap = false;
 var sort_by = null;
+var cur_subreddit_subset = null;
+var initialized_pickers = false;
+
+var subreddit_subsets = {
+  'Top 25': [
+    'relationships',
+    'gifs',
+    'nba',
+    'GlobalOffensive',
+    'wow',
+    'nfl',
+    'todayilearned',
+    'gaming',
+    'pcmasterrace',
+    'soccer',
+    'pics',
+    'movies',
+    'videos',
+    'DotA2',
+    'funny',
+    'news',
+    'SquaredCircle',
+    'worldnews',
+    'leagueoflegends',
+    'The_Donald',
+    'Overwatch',
+    'pokemongo',
+    'NoMansSkyTheGame',
+    'politics',
+    'AskReddit',
+  ],
+  'Political': [
+    'politics',
+    'The_Donald',
+    'Libertarian',
+    'Anarchism',
+    'socialism',
+    'progressive',
+    'Conservative',
+    'democrats',
+    'Republican',
+    'hillaryclinton',
+  ],
+  'Science, History, Technology': [
+    'science',
+    'askscience',
+    'space',
+    'Astronomy',
+    'gadgets',
+    'Futurology',
+    'technology',
+    'Android',
+    'iphone',
+    'history',
+    'AskHistorians',
+    'engineering',
+  ],
+  'University': [
+    'rit',
+    'ucla',
+    'berkeley',
+    'UIUC',
+    'VirginiaTech',
+    'RPI',
+    'rutgers',
+    'aggies',
+    'gatech',
+    'UCSantaBarbara',
+    'msu',
+    'uofm',
+    'UCSD',
+    'UVA',
+    'uofmn',
+  ],
+  'Miscellaneous': [
+    'meirl',
+    'nosleep',
+    'woahdude',
+    'DeepIntoYouTube',
+    'SubredditSimulator',
+    'depression',
+    'cringe',
+    'Showerthoughts',
+    'travel',
+    'wikipedia',
+  ],
+  'Sports': [
+    'nba',
+    'soccer',
+    'hockey',
+    'nfl',
+    'NASCAR',
+    'formula1',
+    'baseball',
+    'tennis',
+    'golf',
+    'MMA',
+    'Archery',
+    'Boxing',
+    'lacrosse',
+    'Cricket',
+    'SquaredCircle',
+    'fantasyfootball',
+    'olympics',
+    'tabletennis',
+    'Bowling',
+    'volleyball',
+  ]
+}
 
 var dataset_labels = {
   'January 2016': "reddit_RC_2016-01.csv",
+  'February 2016': "reddit_RC_2016-02.csv",
+  'March 2016': "reddit_RC_2016-03.csv",
+  'April 2016': "reddit_RC_2016-04.csv",
+  'May 2016': "reddit_RC_2016-05.csv",
+  'June 2016': "reddit_RC_2016-06.csv",
+  'July 2016': "reddit_RC_2016-07.csv",
   'August 2016': "reddit_RC_2016-08.csv",
 }
 
 var time_dataset_labels = {
   'January 2016': "reddit_RC_2016-01_time_series.csv",
+  'February 2016': "reddit_RC_2016-02_time_series.csv",
+  'March 2016': "reddit_RC_2016-03_time_series.csv",
+  'April 2016': "reddit_RC_2016-04_time_series.csv",
+  'May 2016': "reddit_RC_2016-05_time_series.csv",
+  'June 2016': "reddit_RC_2016-06_time_series.csv",
+  'July 2016': "reddit_RC_2016-07_time_series.csv",
   'August 2016': "reddit_RC_2016-08_time_series.csv",
 }
 
@@ -77,19 +198,13 @@ var axisOptions = {
 
 var cntrlIsPressed = false;
 $(document).keydown(function(event) {
-    if (event.which=="17")
+    if (event.which == "17")
         cntrlIsPressed = true;
 });
 
 $(document).keyup(function() {
     cntrlIsPressed = false;
 });
-
-function selectMe(mouseButton) {
-    if(cntrlIsPressed) {
-      alert("Cntrl +  left click");
-    }
-}
 
 // Called if a different axis variable is chosen
 var axisChange = function(picker, options, axis) {
@@ -206,8 +321,12 @@ var createCharts = function() {
         }
       }
     });
+    if (cur_subreddit_subset == null) {
+      cur_subreddit_subset = "Top 25";
+    }
+    cur_subreddit_subset_list = subreddit_subsets[cur_subreddit_subset];
     data = data.filter(function(d, i) {
-      return i < 25;
+      return cur_subreddit_subset_list.indexOf(d['subreddit']) > -1;
     })
     if (sort_by == null) {
       sort_by = 'subreddit';
@@ -243,7 +362,10 @@ var createCharts = function() {
       cur_filter_label = 'All Comments';
       cur_filter = filter_labels[cur_filter_label];
     }
-
+    if (!initialized_pickers) {
+      initialized_pickers = true;
+      initialize_pickers();
+    }
     if (xVariable == 'subreddit') {
       refreshBarChart(data)
     } else {
@@ -265,6 +387,60 @@ var createCharts = function() {
     refreshHeatMap("#heatmap1");
     refreshHeatMap("#heatmap2");
   });
+}
+
+var initialize_pickers = function() {
+  $('#month-name').text('Dataset: August 2016')
+  $('#filter-name').text('Filter: ' + cur_filter_label)
+
+  var subredditsubsetpicker = d3.select("#subredditsubset-picker").selectAll(".subredditsubset-button")
+    .data(Object.keys(subreddit_subsets));
+
+  subredditsubsetpicker.enter()
+    .append("input")
+    .attr("value", function(d){ return "" + d })
+    .attr("type", "button")
+    .attr("class", "dataset-button btn btn-primary")
+    .on("click", function(subreddit_subset) {
+      cur_subreddit_subset = subreddit_subset
+      refresh();
+    });
+
+  var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
+    .data(Object.keys(dataset_labels));
+
+  datasetpicker.enter()
+    .append("input")
+    .attr("value", function(d){ return "" + d })
+    .attr("type", "button")
+    .attr("class", "dataset-button btn btn-primary")
+    .on("click", function(month) {
+      cur_time_dataset = time_dataset_labels[month]
+      cur_dataset = dataset_labels[month]
+      $('#month-name').text('Dataset: ' + month)
+      refresh();
+    });
+
+  var filterpicker = d3.select("#filter-picker").selectAll(".filter-button")
+    .data(Object.keys(filter_labels));
+
+  filterpicker.enter()
+    .append("input")
+    .attr("value", function(d) {
+      return "" + d
+    })
+    .attr("type", "button")
+    .attr("class", "filter-button btn btn-primary")
+    .on("click", function(d) {
+      cur_filter_label = d;
+      cur_filter = filter_labels[cur_filter_label];
+      if (xVariable != 'subreddit') {
+        xVariable = xVariableBase + cur_filter;
+      }
+      yVariable = yVariableBase + cur_filter
+      $('#filter-name').text('Filter: ' + cur_filter_label);
+      refresh();
+    });
 }
 
 function indexOfSubreddit(data, subreddit) {
@@ -414,7 +590,8 @@ var refreshBarChart = function(data) {
       d3.select(this)
         .attr("width", xScale.rangeBand() * 1.5)
         .attr("x", function(d) {
-          return xScale(this.__data__['subreddit']) - 5;
+          console.log(data.length)
+          return xScale(this.__data__['subreddit']) - (data.length >= 20 ? 5 : 10);
         })
         .attr("y", function(d) {
           return yScale(this.__data__[yVariable]) - 25;
@@ -625,45 +802,6 @@ var createHeatMap = function(id_selector) {
   } else {
     heat_svg2 = heat_svg;
   }
-
-  $('#month-name').text('Dataset: August 2016')
-  $('#filter-name').text('Filter: ' + cur_filter_label)
-
-  var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
-    .data(Object.keys(dataset_labels));
-
-  datasetpicker.enter()
-    .append("input")
-    .attr("value", function(d){ return "" + d })
-    .attr("type", "button")
-    .attr("class", "dataset-button btn btn-primary")
-    .on("click", function(month) {
-      cur_time_dataset = time_dataset_labels[month]
-      cur_dataset = dataset_labels[month]
-      $('#month-name').text('Dataset: ' + month)
-      refresh();
-    });
-
-  var filterpicker = d3.select("#filter-picker").selectAll(".filter-button")
-    .data(Object.keys(filter_labels));
-
-  filterpicker.enter()
-    .append("input")
-    .attr("value", function(d) {
-      return "" + d
-    })
-    .attr("type", "button")
-    .attr("class", "filter-button btn btn-primary")
-    .on("click", function(d) {
-      cur_filter_label = d;
-      cur_filter = filter_labels[cur_filter_label];
-      if (xVariable != 'subreddit') {
-        xVariable = xVariableBase + cur_filter;
-      }
-      yVariable = yVariableBase + cur_filter
-      $('#filter-name').text('Filter: ' + cur_filter_label);
-      refresh();
-    });
 }
 
 var refreshHeatMap = function(id_selector) {

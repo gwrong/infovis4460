@@ -16,7 +16,7 @@ from wordcloud import WordCloud
 #Possible data files
 MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08']
 # Set this manually
-MONTH_FILE = 'RC_2016-04'
+MONTH_FILE = 'RC_2016-01'
 LOOKUP_PATH = 'lookup_data'
 RESULTS_PATH = 'results'
 
@@ -173,9 +173,9 @@ def aggregate_results(results):
 """
 Retrieves the comment score percentiles for the subreddit
 """
-def get_subreddit_comment_percentiles(subreddit):
+def get_subreddit_comment_percentiles(subreddit, month_file):
     lookup_path = 'lookup_data'
-    with open(os.path.join(LOOKUP_PATH, 'comment_percentiles_{}.json'.format(MONTH_FILE)), 'r') as percentiles_file:
+    with open(os.path.join(LOOKUP_PATH, 'comment_percentiles_{}.json'.format(month_file)), 'r') as percentiles_file:
         percentiles = json.load(percentiles_file)
     low, high = percentiles[subreddit].split(',')
     return (int(low), int(high))
@@ -183,8 +183,8 @@ def get_subreddit_comment_percentiles(subreddit):
 """
 Retrieves set of top authors for the subreddit
 """
-def get_top_authors(subreddit):
-    with open(os.path.join(LOOKUP_PATH, 'top_authors_{}.p'.format(MONTH_FILE)), 'rb') as output:
+def get_top_authors(subreddit, month_file):
+    with open(os.path.join(LOOKUP_PATH, 'top_authors_{}.p'.format(month_file)), 'rb') as output:
         return pickle.load(output)[subreddit]
 
 """
@@ -192,8 +192,8 @@ Convert the mention dictionary to a 2d array of
 the number of mentions between subreddits
 in alphabetical order
 """
-def format_adj_matrix(mention_dict, LOOKUP_PATH):
-    with open(os.path.join(LOOKUP_PATH, 'mention_adj_matrix_{}.json'.format(MONTH_FILE)), 'wb') as output:
+def format_adj_matrix(mention_dict, LOOKUP_PATH, month_file):
+    with open(os.path.join(LOOKUP_PATH, 'mention_adj_matrix_{}.json'.format(month_file)), 'wb') as output:
         json.dump(mention_dict, output)
     adj_matrix = []
     for x in range(len(SUBREDDITS)):
@@ -210,9 +210,11 @@ def format_adj_matrix(mention_dict, LOOKUP_PATH):
                 adj_matrix[row][column] = mention_dict[subreddit1][subreddit2]
             column += 1
         row += 1
-    with open(os.path.join(LOOKUP_PATH, 'mention_adj_matrix_d3_{}.json'.format(MONTH_FILE)), 'w') as out:
+    with open(os.path.join(LOOKUP_PATH, 'mention_adj_matrix_d3_{}.json'.format(month_file)), 'w') as out:
         json.dump(adj_matrix, out)
 
+def compute_comments_helper(comments_month):
+    return compute_comments(*comments_month)
 
 """
 Every comment is passed through here. Define all
@@ -225,12 +227,12 @@ Returns: A list of comment features
 3: Positive word counts
 4: Negative word counts
 """
-def compute_comments(comments):
+def compute_comments(comments, month_file):
     # Load the sentiment words for this multiprocess instance
     initialize_data_sets()
     subreddit = comments[0]['subreddit']
-    lower_percentile, upper_percentile = get_subreddit_comment_percentiles(subreddit)
-    top_authors = get_top_authors(subreddit)
+    lower_percentile, upper_percentile = get_subreddit_comment_percentiles(subreddit, month_file)
+    top_authors = get_top_authors(subreddit, month_file)
     subreddit_mentions = {subreddit.lower(): 0 for subreddit in SUBREDDITS}
 
     positive_emotions_total = dict.fromkeys(positive_emotion_words, 0)
@@ -414,17 +416,17 @@ def compute_comments(comments):
 """
 Master analysis function. Calculates stats for all subreddits
 """
-def process_comments():
+def process_comments(month_file):
     # One comment JSON per line. File format:
     # {"gilded":0,"author_flair_text":"Male","author_flair_css_class":"male","retrieved_on":1425124228,"ups":3,"subreddit_id":"t5_2s30g","edited":false,"controversiality":0,"parent_id":"t1_cnapn0k","subreddit":"AskMen","body":"I can't agree with passing the blame, but I'm glad to hear it's at least helping you with the anxiety. I went the other direction and started taking responsibility for everything. I had to realize that people make mistakes including myself and it's gonna be alright. I don't have to be shackled to my mistakes and I don't have to be afraid of making them. ","created_utc":"1420070668","downs":0,"score":3,"author":"TheDukeofEtown","archived":false,"distinguished":null,"id":"cnasd6x","score_hidden":false,"name":"t1_cnasd6x","link_id":"t3_2qyhmp"}
 
     # Data file is 32GB
     # 69,654,819 comments
     
-    path = os.path.join('data', MONTH_FILE, 'by_subreddit')
+    path = os.path.join('data', month_file, 'by_subreddit')
 
     sort_sentiment_dicts()
-    final_csv_file = open("reddit_{}.csv".format(MONTH_FILE), 'w')
+    final_csv_file = open("reddit_{}.csv".format(month_file), 'w')
     final_csv_file.write("subreddit,num_comments,num_words,num_chars,avg_word_length,avg_words_per_comment,positive_score,negative_score,godwins_score,swear_score,"
                          "num_comments_topcom,num_words_topcom,num_chars_topcom,avg_word_length_topcom,avg_words_per_comment_topcom,positive_score_topcom,negative_score_topcom,godwins_score_topcom,swear_score_topcom,"
                          "num_comments_botcom,num_words_botcom,num_chars_botcom,avg_word_length_botcom,avg_words_per_comment_botcom,positive_score_botcom,negative_score_botcom,godwins_score_botcom,swear_score_botcom,"
@@ -433,12 +435,12 @@ def process_comments():
                          "num_comments_topneg,num_words_topneg,num_chars_topneg,avg_word_length_topneg,avg_words_per_comment_topneg,positive_score_topneg,negative_score_topneg,godwins_score_topneg,swear_score_topneg,"
                          "num_comments_topgod,num_words_topgod,num_chars_topgod,avg_word_length_topgod,avg_words_per_comment_topgod,positive_score_topgod,negative_score_topgod,godwins_score_topgod,swear_score_topgod\n")
     
-    time_csv_file = open('reddit_{}_time_series.csv'.format(MONTH_FILE), 'w')
+    time_csv_file = open('reddit_{}_time_series.csv'.format(month_file), 'w')
     time_csv_file.write('subreddit,weekday,hour,count,count_topcom,count_botcom,count_topauth,count_toppos,count_topneg,count_topgod\n')
 
     mention_adjacency_matrix = dict()
 
-    for subreddit in reversed(SUBREDDITS):
+    for subreddit in SUBREDDITS[:2]:
 
         start_time = time()
         comment_counter = 0  # Count total comments
@@ -483,7 +485,7 @@ def process_comments():
     final_csv_file.close()
 
     print(mention_adjacency_matrix)
-    format_adj_matrix(mention_adjacency_matrix, LOOKUP_PATH)
+    format_adj_matrix(mention_adjacency_matrix, LOOKUP_PATH, month_file)
 
 
         
@@ -776,7 +778,7 @@ def multiprocess(comment_list, NUM_POOLS, overall_stats):
 
     # The map function takes in an iterable and sends
     # the chunks into separate processes
-    results = pool.map(compute_comments, comment_chunks)
+    results = pool.map(compute_comments_helper, [(chunk, month_file) for chunk in comment_chunks])
 
     # Wait for it to be done
     pool.close()
@@ -793,9 +795,9 @@ def multiprocess(comment_list, NUM_POOLS, overall_stats):
 Check the top occurring subreddits in the first comment_limit comments
 Test
 """
-def top_occurring():
+def top_occurring(month_file):
     
-    path = os.path.join('data', MONTH_FILE, MONTH_FILE)
+    path = os.path.join('data', month_file, month_file)
     data_file = open(path, 'r')
     subreddits = dict()
     counter = 0
@@ -813,7 +815,7 @@ def top_occurring():
         else:
             subreddits[subreddit] = 1
 
-    output_file = open(os.path.join(RESULTS_PATH, 'subreddit_counts_{}.txt'.format(MONTH_FILE)), 'w')
+    output_file = open(os.path.join(RESULTS_PATH, 'subreddit_counts_{}.txt'.format(month_file)), 'w')
     sorted_subreddits = sorted(subreddits.items(), reverse=True, key=operator.itemgetter(1))
     for entry in sorted_subreddits:
         output_file.write('{subreddit}: {count}\n'.format(subreddit=entry[0], count=entry[1]))
@@ -824,14 +826,14 @@ def top_occurring():
 """
 Create word clouds for the list of subreddits
 """
-def word_clouds():
+def word_clouds(month_file):
 
     # Word cloud probably doesn't change much after
     # enough comments
     subreddit_comment_limit = 1000000
 
-    cloud_path = os.path.join('wordclouds', MONTH_FILE)
-    path = os.path.join('data', MONTH_FILE, 'by_subreddit')
+    cloud_path = os.path.join('wordclouds', month_file)
+    path = os.path.join('data', month_file, 'by_subreddit')
 
     found_subreddit = False
 
@@ -893,7 +895,7 @@ def word_clouds():
 """
 Create word clouds for the list of subreddits
 """
-def comment_author_percentiles():
+def comment_author_percentiles(month_file):
 
     # For comments
     UPPER_PERCENTILE = .95
@@ -905,10 +907,10 @@ def comment_author_percentiles():
     comment_percentiles = dict()
     author_percentiles = dict()
 
-    path = os.path.join('data', MONTH_FILE, 'by_subreddit')
+    path = os.path.join('data', month_file, 'by_subreddit')
     found_subreddit = False
 
-    for subreddit in reversed(SUBREDDITS):
+    for subreddit in SUBREDDITS[:2]:
 
         start_time = time()
         comment_counter = 0  # Count total comments
@@ -993,9 +995,9 @@ def comment_author_percentiles():
         author_percentiles[subreddit] = set([pair[0] for pair in top_authors])
         print('subreddit {}: {}'.format(subreddit, int(upper)))
 
-    with open(os.path.join(LOOKUP_PATH, 'top_authors_{}.p'.format(MONTH_FILE)), 'wb') as output:
+    with open(os.path.join(LOOKUP_PATH, 'top_authors_{}.p'.format(month_file)), 'wb') as output:
         pickle.dump(author_percentiles, output)
-    with open(os.path.join(LOOKUP_PATH, 'comment_percentiles_{}.json'.format(MONTH_FILE)), 'w') as output:
+    with open(os.path.join(LOOKUP_PATH, 'comment_percentiles_{}.json'.format(month_file)), 'w') as output:
         json.dump(comment_percentiles, output)
 
 """
@@ -1017,8 +1019,14 @@ def sort_sentiment_dicts():
 
 if __name__ == "__main__":
     t0 = time()
-    comment_author_percentiles()
+    
+    for month_file in MONTH_FILES:
+        print("Running month {}".format(month_file))
+        comment_author_percentiles(month_file)
+    
     #top_occurring()
     #word_clouds()
-    process_comments()
+    for month_file in MONTH_FILES:
+        print("Running month {}".format(month_file))
+        process_comments(month_file)
     print("Took {} seconds to run process".format(time() - t0))
