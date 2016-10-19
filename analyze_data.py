@@ -16,7 +16,7 @@ from wordcloud import WordCloud
 #Possible data files
 MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08']
 # Set this manually
-MONTH_FILE = 'RC_2016-02'
+MONTH_FILE = 'RC_2016-04'
 LOOKUP_PATH = 'lookup_data'
 RESULTS_PATH = 'results'
 
@@ -38,29 +38,7 @@ SWEAR_MULTIPLIER = 10000
 # Number of processes to spawn for comment computation
 NUM_POOLS = 5
 
-SUBREDDITS = [
-        'AskReddit',
-        'politics',
-        'NoMansSkyTheGame',
-        'pokemongo',
-        'Overwatch',
-        'The_Donald',
-        'leagueoflegends',
-        'worldnews',
-        'SquaredCircle',
-        'news',
-        'funny',
-        'DotA2',
-        'videos',
-        'movies',
-        'pics',
-        'soccer',
-        'pcmasterrace',
-        'gaming',
-        'todayilearned',
-        'nfl',
-        'wow',
-    ]
+SUBREDDITS = get_all_subreddits()
 
 """
 Initialize the sentiment word lists for each multiprocess instance
@@ -203,6 +181,13 @@ def get_subreddit_comment_percentiles(subreddit):
     return (int(low), int(high))
 
 """
+Retrieves set of top authors for the subreddit
+"""
+def get_top_authors(subreddit):
+    with open(os.path.join(LOOKUP_PATH, 'top_authors_{}.p'.format(MONTH_FILE)), 'rb') as output:
+        return pickle.load(output)[subreddit]
+
+"""
 Convert the mention dictionary to a 2d array of
 the number of mentions between subreddits
 in alphabetical order
@@ -228,12 +213,6 @@ def format_adj_matrix(mention_dict, LOOKUP_PATH):
     with open(os.path.join(LOOKUP_PATH, 'mention_adj_matrix_d3_{}.json'.format(MONTH_FILE)), 'w') as out:
         json.dump(adj_matrix, out)
 
-"""
-Retrieves set of top authors for the subreddit
-"""
-def get_top_authors(subreddit):
-    with open(os.path.join(LOOKUP_PATH, 'top_authors_{}.p'.format(MONTH_FILE)), 'rb') as output:
-        return pickle.load(output)[subreddit]
 
 """
 Every comment is passed through here. Define all
@@ -459,7 +438,7 @@ def process_comments():
 
     mention_adjacency_matrix = dict()
 
-    for subreddit in SUBREDDITS:
+    for subreddit in reversed(SUBREDDITS):
 
         start_time = time()
         comment_counter = 0  # Count total comments
@@ -968,6 +947,8 @@ def comment_author_percentiles():
                     author_counts[author] += 1
                 else:
                     author_counts[author] = 1
+            elif comment_json['subreddit'].lower() == subreddit.lower():
+                raise Exception("Better fix the capitalization on {} {}".format(comment_json['subreddit'], subreddit))
             else:
                 if found_subreddit == True:
                     break
@@ -1001,7 +982,7 @@ def comment_author_percentiles():
         print(str(lower_percentile_score) + ',' + str(upper_percentile_score))
         ignore_users = {'[deleted]', 'autotldr', 'Ric_Flair_Bot', 'Mentioned_Videos', 'dota_reponses_bot'}
         print('Generating author percentiles')
-        author_counts = [item for item in author_counts.items() if item[1] > 10 and 'moderator' not in item[0].lower() and item[0] not in ignore_users]
+        author_counts = [item for item in author_counts.items() if 'moderator' not in item[0].lower() and item[0] not in ignore_users]
         num_unique_authors = len(author_counts)
         author_counts.sort(reverse=True, key=operator.itemgetter(1))
         
@@ -1035,7 +1016,9 @@ def sort_sentiment_dicts():
 
 
 if __name__ == "__main__":
+    t0 = time()
     comment_author_percentiles()
     #top_occurring()
     #word_clouds()
-    #process_comments()
+    process_comments()
+    print("Took {} seconds to run process".format(time() - t0))

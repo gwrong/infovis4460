@@ -71,7 +71,8 @@ var axisOptions = {
   'Number of Comments': 'num_comments',
   'Positive Score': 'positive_score',
   'Negative Score': 'negative_score',
-  'Godwin\'s Score': 'godwins_score'
+  'Godwin\'s Score': 'godwins_score',
+  'Swear Score': 'swear_score',
 }
 
 var cntrlIsPressed = false;
@@ -828,7 +829,6 @@ var refreshSmallMultiples = function(data, yMultiples) {
   }) + 4
   yScale.domain([minY, maxY]).nice();
 
-
   // Set up the axes and labels
   multiplesPlot.append("g")
       .attr("class", "x axis")
@@ -838,8 +838,15 @@ var refreshSmallMultiples = function(data, yMultiples) {
 
   // Rotate labels so they are easier to read
   multiplesPlot.selectAll("text")
-    .attr("transform", "translate(" + 10 + "," + 5 + ") rotate(50)")
-    .style("text-anchor", "start")
+    .style("text-anchor", "left")
+    .style("font-size", function(d) {
+      size = 12;
+      console.log(d)
+      if (cur_subreddit1.length > 10 || cur_subreddit2.length > 10) {
+        size = 10;
+      }
+      return size + "px"
+    })
     .on("mouseover", function(subreddit) {
       d = multiplesData[indexOfSubreddit(multiplesData, subreddit)]
       tooltip.style("opacity", 1);
@@ -856,17 +863,6 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .on("mouseout", function() {
       return tooltip.style("opacity", 0);
     })
-
-    multiplesPlot.selectAll("text").remove()
-
-  multiplesPlot.append("text")
-      .attr("class", "label subreddit_text")
-      .attr("x", width_multiples + 35)
-      .attr("y", height_multiples - 5)
-      .attr("fill", "white")
-      .attr("transform", "translate(" + (-10) + "," + 20 + ")")
-      .style("text-anchor", "end")
-      .text("Subreddit");
 
   // Set up the y axis
   multiplesPlot.append("g")

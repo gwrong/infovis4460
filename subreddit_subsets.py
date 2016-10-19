@@ -28,7 +28,7 @@ political_subreddits = [
     'Libertarian',
     'Anarchism',
     'socialism',
-    'progressive'
+    'progressive',
     'Conservative',
     'democrats',
     'Republican',
@@ -39,26 +39,21 @@ university_subreddits = [
     'rit',
     'ucla',
     'berkeley',
-    'uiuc',
-    'virginiatech',
-    'rpi',
+    'UIUC',
+    'VirginiaTech',
+    'RPI',
     'rutgers',
     'aggies',
     'gatech',
-    'ucsantabarbara',
+    'UCSantaBarbara',
     'msu',
     'uofm',
-    'ucsd',
-    'uva',
+    'UCSD',
+    'UVA',
     'uofmn',
-    'ucf',
-    'uoft',
-    'fsu',
-    'calpoly',
 ]
 
 sports_subreddits = [
-    'sports',
     'nba',
     'soccer',
     'hockey',
@@ -74,13 +69,9 @@ sports_subreddits = [
     'lacrosse',
     'Cricket',
     'SquaredCircle',
-    'chess',
-    'poker',
     'fantasyfootball',
     'olympics',
-    'billiards',
     'tabletennis',
-    'Fencing',
     'Bowling',
     'volleyball',
 ]
@@ -95,12 +86,9 @@ science_technology_history_subreddits = [
     'technology',
     'Android',
     'iphone',
-    'buildapc',
     'history',
     'AskHistorians',
-    'Physics',
     'engineering',
-    'wikipedia',
 ]
 
 misc_subreddits = [
@@ -111,12 +99,13 @@ misc_subreddits = [
     'SubredditSimulator',
     'depression',
     'cringe',
-    'ShowerThoughts',
-    'travel'
+    'Showerthoughts',
+    'travel',
+    'wikipedia',
 ]
 
 def get_all_subreddits():
-    return list(
+    subreddits = list(
         set(
             top_subreddits + political_subreddits +
             university_subreddits + sports_subreddits +
@@ -124,4 +113,5 @@ def get_all_subreddits():
             misc_subreddits
         )
     )
-
+    print("Gathering stats for {} unique subreddits".format(len(subreddits)))
+    return subreddits
