@@ -440,7 +440,7 @@ def process_comments(month_file):
 
     mention_adjacency_matrix = dict()
 
-    for subreddit in SUBREDDITS[:2]:
+    for subreddit in SUBREDDITS:
 
         start_time = time()
         comment_counter = 0  # Count total comments
@@ -910,7 +910,7 @@ def comment_author_percentiles(month_file):
     path = os.path.join('data', month_file, 'by_subreddit')
     found_subreddit = False
 
-    for subreddit in SUBREDDITS[:2]:
+    for subreddit in SUBREDDITS:
 
         start_time = time()
         comment_counter = 0  # Count total comments
