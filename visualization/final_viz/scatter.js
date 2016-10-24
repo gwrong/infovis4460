@@ -196,6 +196,17 @@ var axisOptions = {
   'Swear Score': 'swear_score',
 }
 
+var inverseAxisOptions = {
+  'subreddit': 'Subreddit',
+  'avg_word_length': 'Average Word Length',
+  'avg_words_per_comment': 'Average Comment Length',
+  'num_comments': 'Number of Comments',
+  'positive_score': 'Positive Score',
+  'negative_score': 'Negative Score',
+  'godwins_score': 'Godwin\'s Score',
+  'swear_score': 'Swear Score',
+}
+
 var cntrlIsPressed = false;
 $(document).keydown(function(event) {
     if (event.which == "17")
@@ -300,6 +311,16 @@ yDrop.text(function(d) {
   return d === yVariableLabel;
 })
 
+var wordcloud1 = d3.select(".wordcloud1Container")
+    .append("img")
+    .attr("class", "wordcloud1")
+    .attr("src", "RC_2016-08/" + cur_subreddit2)
+
+var wordcloud2 = d3.select(".wordcloud2Container")
+    .append("img")
+    .attr("class", "wordcloud2")
+    .attr("src", "RC_2016-08/" + cur_subreddit1)
+
 // Refreshes all the data on the screen
 var refresh = function() {
   createCharts()
@@ -357,7 +378,22 @@ var createCharts = function() {
     } 
     if (cur_subreddit2 == null) {
       cur_subreddit2 = subreddits[1];
-    } 
+    }
+
+    d3.select(".wordcloud1")
+      .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
+
+    d3.select(".wordcloud1Title")
+      .html("Word cloud for " + cur_subreddit1)
+
+    d3.select(".wordcloud2")
+      .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
+
+    d3.select(".wordcloud2Title")
+      .html("Word cloud for " + cur_subreddit2)
+
+
+
     if (cur_filter == null) {
       cur_filter_label = 'All Comments';
       cur_filter = filter_labels[cur_filter_label];
@@ -386,6 +422,8 @@ var createCharts = function() {
     }
     refreshHeatMap("#heatmap1");
     refreshHeatMap("#heatmap2");
+
+
   });
 }
 
@@ -455,9 +493,9 @@ function indexOfSubreddit(data, subreddit) {
 }
 
 // batter = scatter/bar chart
-var margin_batter = {top: 25, right: 0, bottom: 125, left: 0};
-var width_batter = 700 - margin_batter.left - margin_batter.right;
-var height_batter = 400 - margin_batter.top - margin_batter.bottom;
+var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
+var width_batter = 750 - margin_batter.left - margin_batter.right;
+var height_batter = 500 - margin_batter.top - margin_batter.bottom;
 var padding = 140;
 var yAxisPadding = 100;
 
@@ -479,15 +517,27 @@ var onclick_compare = function(subreddit) {
   refresh()
 }
 
+var getToolTip = function(d) {
+  return d["subreddit"] + "<br/>" 
+  + 'Number of Comments: ' + d["num_comments"] + "<br/>"
+  + 'Average Word Length: ' + d["avg_word_length"] + "<br/>"
+  + 'Words Per Comment: ' + d["avg_words_per_comment"] + "<br/>"
+  + 'Positive Score: ' + d["positive_score"] + "<br/>"
+  + 'Negative Score: ' + d["negative_score"] + "<br/>"
+  + 'Godwin\'s Score: ' + d["godwins_score"] + "<br/>"
+  + 'Swear Score: ' + d["swear_score"]
+}
+
 var refreshBarChart = function(data) {
   basePlot.selectAll(".axis").remove()
   basePlot.selectAll('.rect').remove()
   basePlot.selectAll('.dot').remove()
+  basePlot.selectAll('.barTitle').remove()
 
   var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding, width_batter - 10], 0.15);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-  var yScale = d3.scale.linear().range([height_batter, 5])
+  var yScale = d3.scale.linear().range([height_batter, margin_batter.top])
   var yAxis = d3.svg.axis().scale(yScale).orient("left");
 
   // Scale the data
@@ -500,9 +550,9 @@ var refreshBarChart = function(data) {
   })
   var maxY = d3.max(data, function(d) {
     return +d[yVariable];
-  }) + 4
+  })
+  minY *= 0.75
   yScale.domain([minY, maxY]).nice();
-
 
   // Set up the axes and labels
   basePlot.append("g")
@@ -518,13 +568,7 @@ var refreshBarChart = function(data) {
     .on("mouseover", function(subreddit) {
       d = data[indexOfSubreddit(data, subreddit)]
       tooltip.style("opacity", 1);
-      tooltip.html(d["subreddit"] + "<br/>" 
-        + 'Number of Comments: ' + d["num_comments"] + "<br/>"
-        + 'Average Word Length: ' + d["avg_word_length"] + "<br/>"
-        + 'Words Per Comment: ' + d["avg_words_per_comment"] + "<br/>"
-        + 'Positive Score: ' + d["positive_score"] + "<br/>"
-        + 'Negative Score: ' + d["negative_score"] + "<br/>"
-        + 'Godwin\'s Score: ' + d["godwins_score"])
+      tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
     })
@@ -534,6 +578,15 @@ var refreshBarChart = function(data) {
     .on("click", function(d) {
       onclick_compare(d);
     });
+
+  basePlot.append("text")
+    .attr("x", width_batter / 2 + 100)             
+    .attr("y", margin_batter.top - 10)
+    .style("font-size", "14px") 
+    .style("text-anchor", "middle")
+    .attr("fill", "white")
+    .attr("class", "barTitle")
+    .text(inverseAxisOptions[yVariable] + " vs " + inverseAxisOptions[xVariable]);
 
   basePlot.append("text")
       .attr("class", "label subreddit_text")
@@ -552,10 +605,10 @@ var refreshBarChart = function(data) {
       .call(yAxis)
     .append("text")
       .attr("class", "label")
-      .attr("y", height_batter - 249)
+      .attr("y", height_batter - 268)
       .attr("x", 0)
       .attr("dy", ".71em")
-      .attr("transform", "rotate(-90)")
+      .attr("transform", "translate(" + -91 + "," + 25 + ")" + "rotate(-90)")
       .attr("fill", "white")
       .style("text-anchor", "end")
       .text(yVariable);
@@ -580,19 +633,12 @@ var refreshBarChart = function(data) {
     })
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
-      tooltip.html(d["subreddit"] + "<br/>" 
-        + 'Number of Comments: ' + d["num_comments"] + "<br/>"
-        + 'Average Word Length: ' + d["avg_word_length"] + "<br/>"
-        + 'Words Per Comment: ' + d["avg_words_per_comment"] + "<br/>"
-        + 'Positive Score: ' + d["positive_score"] + "<br/>"
-        + 'Negative Score: ' + d["negative_score"] + "<br/>"
-        + 'Godwin\'s Score: ' + d["godwins_score"])
+      tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
       d3.select(this)
         .attr("width", xScale.rangeBand() * 1.5)
         .attr("x", function(d) {
-          console.log(data.length)
           return xScale(this.__data__['subreddit']) - (data.length >= 20 ? 5 : 10);
         })
         .attr("y", function(d) {
@@ -630,7 +676,7 @@ var refreshBarChart = function(data) {
       .attr("x", width_batter - 20)
       .attr("width", 18)
       .attr("height", 18)
-      .attr("transform", "translate(0," + 0 + ")")
+      .attr("transform", "translate(0," + 25 + ")")
       .style("fill", function(d) {
         return color(cValue(d));
       });
@@ -641,7 +687,7 @@ var refreshBarChart = function(data) {
       .attr("dy", "0em")
       .attr("fill", "white")
       .style("text-anchor", "end")
-      .attr("transform", "translate(0," + 0 + ")")
+      .attr("transform", "translate(0," + 25 + ")")
       .text(function(d) {
         return d['subreddit'];
       });
@@ -658,13 +704,13 @@ var scatterPlot = function(data) {
   var xScale = d3.scale.linear().range([yAxisPadding, width_batter - 20])
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-  var yScale = d3.scale.linear().range([height_batter, 5])
+  var yScale = d3.scale.linear().range([height_batter, margin_batter.top])
   var yAxis = d3.svg.axis().scale(yScale).orient("left");
 
   var minX = d3.min(data, function(d) {
     return +d[xVariable];
   })
-  minX *= 0.75
+  minX *= 0.9
   var maxX = d3.max(data, function(d) {
     return +d[xVariable];
   })
@@ -701,7 +747,7 @@ var scatterPlot = function(data) {
       .call(yAxis)
     .append("text")
       .attr("class", "label")
-      .attr("transform", "rotate(-90)")
+      .attr("transform", "translate(" + 0 + "," + 25 + ")" + "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
       .attr("fill", "white")
@@ -725,10 +771,7 @@ var scatterPlot = function(data) {
     })
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
-      tooltip.html(d["subreddit"] + "<br/>" 
-        + 'Positive Score: ' + d["positive_score"] + "<br/>"
-        + 'Negative Score: ' + d["negative_score"] + "<br/>"
-        + 'Godwin\'s Score: ' + d["godwins_score"])
+      tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
       d3.select(this).attr("r", circleSize(d) * 2)
@@ -746,9 +789,9 @@ var count_accessor = function(d) {
     return d['count' + cur_filter]
 }
 
-var margin_heat = { top: 20, right: 0, bottom: 50, left: 30 },
-    width_heat = 600 - margin_heat.left - margin_heat.right,
-    height_heat = 275 - margin_heat.top - margin_heat.bottom,
+var margin_heat = { top: 50, right: 0, bottom: 25, left: 30 },
+    width_heat = 659 - margin_heat.left - margin_heat.right,
+    height_heat = 300 - margin_heat.top - margin_heat.bottom,
     gridSize = Math.floor(width_heat / 24),
     legendElementWidth = gridSize*2,
     buckets = 12,
@@ -827,12 +870,24 @@ var refreshHeatMap = function(id_selector) {
     function(error, data) {
       heat_svg.selectAll(".scale").remove();
       heat_svg.selectAll(".cur_subreddit").remove();
+      heat_svg.selectAll(".heatTitle").remove();
       heat_svg.append("text")
         .text(cur_subreddit)
         .attr("class", "cur_subreddit")
         .attr("x", width_heat / 2 - 25)
         .attr("y", height_heat - 29)
         .style('fill', 'darkOrange')
+
+      heat_svg.append("text")
+        .attr("x", width_heat / 2)             
+        .attr("y", margin_heat.top - 75)
+        .attr("class", "heatTitle")
+        .style("font-size", "14px") 
+        .style("text-anchor", "middle")
+        .attr("fill", "white")
+        .text("Time distribution of comments for " + cur_subreddit);
+
+
       var colorScale = d3.scale.quantile()
           .domain([0, d3.max(data, function (d) {
             return d.count;
@@ -901,14 +956,15 @@ var refreshHeatMap = function(id_selector) {
         });
 
       legend.append("text")
-        .attr("class", "mono scale")
+        .attr("class", "heatLegendLabel scale")
         .text(function(d) {
           return "≥ " + Math.round(d);
         })
         .attr("x", function(d, i) {
-          return legendElementWidth * i;
+          return legendElementWidth * i + (legendElementWidth / 2);
         })
-        .attr("y", height_heat + gridSize - 25);
+        .attr("y", height_heat + gridSize - 25)
+        .style("text-anchor", "middle");
 
       legend.exit().remove();
 
@@ -922,7 +978,7 @@ var refreshHeatMap = function(id_selector) {
   };
 
 // small multiples constants
-var margin_multiples = {top: 10, right: 0, bottom: 20, left: 0};
+var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
 var width_multiples = 200 - margin_multiples.left - margin_multiples.right;
 var height_multiples = 200 - margin_multiples.top - margin_multiples.bottom;
 var padding_multiples = 200;
@@ -952,7 +1008,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
   var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 40], 0.25);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-  var yScale = d3.scale.linear().range([height_multiples, 5])
+  var yScale = d3.scale.linear().range([height_multiples, margin_multiples.top])
   var yAxis = d3.svg.axis().scale(yScale).orient("left");
 
   // Scale the data
@@ -966,7 +1022,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
   minY *= 0.4
   var maxY = d3.max(multiplesData, function(d) {
     return +d[yMultiples];
-  }) + 4
+  })
   yScale.domain([minY, maxY]).nice();
 
   // Set up the axes and labels
@@ -981,7 +1037,6 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .style("text-anchor", "left")
     .style("font-size", function(d) {
       size = 12;
-      console.log(d)
       if (cur_subreddit1.length > 10 || cur_subreddit2.length > 10) {
         size = 10;
       }
@@ -990,13 +1045,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .on("mouseover", function(subreddit) {
       d = multiplesData[indexOfSubreddit(multiplesData, subreddit)]
       tooltip.style("opacity", 1);
-      tooltip.html(d["subreddit"] + "<br/>" 
-        + 'Number of Comments: ' + d["num_comments"] + "<br/>"
-        + 'Average Word Length: ' + d["avg_word_length"] + "<br/>"
-        + 'Words Per Comment: ' + d["avg_words_per_comment"] + "<br/>"
-        + 'Positive Score: ' + d["positive_score"] + "<br/>"
-        + 'Negative Score: ' + d["negative_score"] + "<br/>"
-        + 'Godwin\'s Score: ' + d["godwins_score"])
+      tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
     })
@@ -1010,15 +1059,14 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("transform", "translate(" + yAxisPadding + "," + 0 + ")")
       .attr("fill", "white")
       .call(yAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("y", height_multiples - 165)
-      .attr("x", 0)
-      .attr("dy", ".71em")
-      .attr("transform", "rotate(-90)")
-      .attr("fill", "white")
-      .style("text-anchor", "end")
-      .text(yMultiples);
+
+  multiplesPlot.append("text")
+    .attr("x", width_multiples - 30)             
+    .attr("y", margin_multiples.top - 10)
+    .style("font-size", "14px") 
+    .style("text-anchor", "middle")
+    .attr("fill", "white")
+    .text(inverseAxisOptions[yMultiples]);
 
   //Create the bars
   multiplesPlot.selectAll(".rect")
@@ -1040,13 +1088,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
     })
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
-      tooltip.html(d["subreddit"] + "<br/>" 
-        + 'Number of Comments: ' + d["num_comments"] + "<br/>"
-        + 'Average Word Length: ' + d["avg_word_length"] + "<br/>"
-        + 'Words Per Comment: ' + d["avg_words_per_comment"] + "<br/>"
-        + 'Positive Score: ' + d["positive_score"] + "<br/>"
-        + 'Negative Score: ' + d["negative_score"] + "<br/>"
-        + 'Godwin\'s Score: ' + d["godwins_score"])
+      tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
       d3.select(this)
@@ -1089,7 +1131,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("x", width_multiples - 20)
       .attr("width", 18)
       .attr("height", 18)
-      .attr("transform", "translate(0," + 0 + ")")
+      .attr("transform", "translate(0," + 25 + ")")
       .style("fill", function(d) {
         return color(cValue(d));
       });
@@ -1100,7 +1142,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("dy", ".4em")
       .attr("fill", "white")
       .style("text-anchor", "end")
-      .attr("transform", "translate(0," + 0 + ")")
+      .attr("transform", "translate(0," + 25 + ")")
       .text(function(d) {
         return d['subreddit'];
       });

@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Pathway+Gothic+One|Roboto" rel="stylesheet"> 
     <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='style.css' rel='stylesheet' type='text/css'>
   </head>
@@ -17,23 +18,64 @@
     </div>
     <div id="filter-picker">
     </div>
-    
-    <div class="sorter sameLine">
-    </div>
-    <div class="xPicker sameLine" style="margin-left: 10px">
-        <p class="h3 sameLine">X Axis:</p>
-    </div>
-    <div class="yPicker sameLine" style="margin-left: 25px">
-        <p class="h3 sameLine">Y Axis:</p>
-    </div>
     </center>
     <br>
-    <div class="wra p">
-      <div class="basePlot"></div>
+    <div class="wrap">
+        <table>
+            <tr>
+                <td>
+                    <div class="yPicker sameLine">
+                        <center><p class="h4 sameLine">Y Variable:</p></center>
+                      </div>
+                    <br><br><br><br><br><br><br><br>
+                </td>
+                <td>
+                    <div class="basePlot sameLine"></div>
+                    
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <center>
+                    <div class="sorter sameLine"></div>
+                    <div class="xPicker sameLine" style="margin-left: 10px">
+                        <p class="h4 sameLine">X Variable:</p>
+                      </div>
+                    </center>
+                </td>
+            </tr>
+        </table>
     </div>
+
+    <br>
+      
     <div class="sameLine">
         <div id="heatmap1" class="sameLine"></div>
         <div id="heatmap2" class="sameLine"></div>
+        <table>
+            <tr>
+            <td>
+            <center>
+                <p class="wordcloud1Title sameLine h4" style="margin-right: 150px"></p>
+            </center>
+            </td>
+            <td>
+            <center>
+                <p class="wordcloud2Title sameLine h4" class="sameLine"></p>
+            </center>
+            </td>
+            </tr>
+            <tr>
+            <td>
+                <img class="wordcloud1" style="margin-right: 150px"></img>
+            </td>
+            <td>
+                <img class="wordcloud2"></img>
+            </td>
+            </tr>
+        </table>
+        <br><br>
     </div>
     <div class="smallMultiples"></div>
     <br><br>

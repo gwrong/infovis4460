@@ -870,6 +870,7 @@ def word_clouds(month_file):
                 text = comment_json['body']
                 words = text.split()
                 for word in words:
+                    word = word.lower()
                     if word in word_counts:
                         word_counts[word] += 1
                     else:
@@ -1005,7 +1006,7 @@ Sort and dedupe dictionaries so if you add more words manually
 it's still easy to read
 """
 def sort_sentiment_dicts():
-    file_names = {'sentiment/positive_emotions.txt', 'sentiment/negative_emotions.txt', 'sentiment/swear_words.txt'}
+    file_names = {'sentiment/positive_emotions.txt', 'sentiment/negative_emotions.txt', 'sentiment/godwins_law_words.txt', 'sentiment/swear_words.txt'}
     for file_name in file_names:
         file = open(file_name, 'r')
         words = ast.literal_eval(file.read())
@@ -1019,6 +1020,12 @@ def sort_sentiment_dicts():
 
 if __name__ == "__main__":
     t0 = time()
+
+    for month_file in MONTH_FILES[5:]:
+        print("Running month {}".format(month_file))
+        word_clouds(month_file)
+
+    '''
     
     for month_file in MONTH_FILES:
         print("Running month {}".format(month_file))
@@ -1030,3 +1037,4 @@ if __name__ == "__main__":
         print("Running month {}".format(month_file))
         process_comments(month_file)
     print("Took {} seconds to run process".format(time() - t0))
+    '''

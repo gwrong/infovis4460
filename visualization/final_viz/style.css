@@ -1,9 +1,9 @@
 body {
-  font: 11px sans-serif;
+  font: 12px sans-serif;
   font-weight: 400;
   text-align: center;
   background: #202020;
-  color: #ff0000;
+  color: #ffffff;
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -49,15 +49,6 @@ h2 {
   opacity: .25;
 }
 
-.nutrition-label {
-  float: left;
-  margin: 0px 0px 0px 50px;
-  width: 250px;
-  height: 375px;
-  background: #404040;
-  color: #fff;
-}
-
 .wrap {
   width: 1050px;
   margin: 0 auto 0;
@@ -88,6 +79,11 @@ table {
   fill-opacity: .5;
 }
 
+.wordcloud1, .wordcloud2  {
+  height: 300px;
+  width: 500px;
+}
+
 rect.bordered {
   stroke: #E6E6E6;
   stroke-width:2px;   
@@ -95,7 +91,19 @@ rect.bordered {
 
 text.mono {
   font-size: 7pt;
-  font-family: Consolas, courier;
+  font-family: Roboto, sans-serif;
+  fill: #FFFFFF;
+}
+
+text.heatLegendLabel {
+  font-size: 8pt;
+  font-family: Roboto, sans-serif;
+  fill: #FFFFFF;
+}
+
+text.dayLabel {
+  font-size: 10pt;
+  font-family: Roboto, sans-serif;
   fill: #FFFFFF;
 }
 
@@ -105,4 +113,8 @@ text.axis-workweek {
 
 text.axis-worktime {
   fill: #000;
+}
+
+td {
+    vertical-align: middle;
 }
