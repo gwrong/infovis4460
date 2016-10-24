@@ -1,3 +1,5 @@
+// Global variables are changed and graph refreshes
+// pick up the new variables
 var cur_dataset = null;
 var cur_time_dataset = null;
 var cur_subreddit = null;
@@ -117,11 +119,15 @@ var subreddit_subsets = {
   ]
 }
 
+// Get an array of all subreddits
 var all_subreddits = [];
 var subset_keys = Object.keys(subreddit_subsets);
 for (var i = 0; i < subset_keys.length; i++) {
   all_subreddits = all_subreddits.concat(subreddit_subsets[subset_keys[i]])
 }
+
+// Remove duplicate entries
+all_subreddits = Array.from(new Set(all_subreddits));
 
 var dataset_labels = {
   'January 2016': "reddit_RC_2016-01.csv",
@@ -173,6 +179,7 @@ var circleSize = function(d) {
   return Math.log(d['num_comments'] / 100) * 0.8;
 }
 
+// Assign a color to every subreddit
 var color = d3.scale.category20();
 var cValue = function(d) {
   return d['subreddit'];
@@ -183,6 +190,7 @@ var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
+// Set up some variable defaults
 var subsetSuffix = ''
 var xVariableLabel = 'Subreddit'
 var xVariableBase = 'subreddit'
@@ -213,6 +221,7 @@ var inverseAxisOptions = {
   'swear_score': 'Swear Score',
 }
 
+// Do our CTRL handling for when we want to compare a second subreddit
 var cntrlIsPressed = false;
 $(document).keydown(function(event) {
     if (event.which == "17")
@@ -223,17 +232,17 @@ $(document).keyup(function() {
     cntrlIsPressed = false;
 });
 
-//Shorten long subreddit names if needed
+// Shorten long subreddit names if needed
+// Useful in small multiples x axis labels
 var abbreviateSubreddit = function(subreddit) {
   if (subreddit.length > 9) {
     return subreddit.substring(0, 8) + "...";
   } else {
     return subreddit
   }
-  
 }
 
-// Called if a different axis variable is chosen
+// Called if a different axis variable (x/y) is chosen
 var axisChange = function(picker, options, axis) {
     var selectedIndex = picker.property('selectedIndex')
     var selected = options[0][selectedIndex].__data__;
@@ -262,6 +271,8 @@ var axisChange = function(picker, options, axis) {
     }
 }
 
+// Create the sort button which sorts
+// the x axis by the y variable
 d3.selectAll(".sorter")
   .append("input")
   .attr("value", "Sort Data")
@@ -272,25 +283,25 @@ d3.selectAll(".sorter")
     refresh()
   })
 
-//Add the select list for department filtering
+// Add the select list for department filtering
 var xPicker = d3.select(".xPicker")
     .append("select")
     .attr("class", "xDropdown form-control sameLine")
     .attr("style", "margin-left: 15px")
 
-//Add the select list for department filtering
+// Add the select list for department filtering
 var yPicker = d3.select(".yPicker")
     .append("select")
     .attr("class", "yDropdown form-control sameLine")
     .attr("style", "margin-left: 15px")
 
-//Load select items from the CSV (departments)
+// Load select items from the CSV (departments)
 var xDrop = xPicker.selectAll("option")
     .data(Object.keys(axisOptions))
     .enter()
     .append("option");
 
-//Load select items from the CSV (departments)
+// Load select items from the CSV (departments)
 var yDrop = yPicker.selectAll("option")
     .data(Object.keys(axisOptions).filter(function(d) {
       return d != 'Subreddit';
@@ -305,7 +316,7 @@ yPicker.on("change", function() {
     axisChange(yPicker, yDrop, 'y')
   })
 
-//Define the option items
+// Define the option items
 xDrop.text(function(d) {
   return d;
 })
@@ -316,7 +327,7 @@ xDrop.text(function(d) {
   return d === xVariableLabel;
 })
 
-//Define the option items
+// Define the option items
 yDrop.text(function(d) {
   return d;
 })
@@ -327,6 +338,7 @@ yDrop.text(function(d) {
   return d === yVariableLabel;
 })
 
+// Create word clouds
 var wordcloud1 = d3.select(".wordcloud1Container")
     .append("img")
     .attr("class", "wordcloud1")
@@ -358,20 +370,25 @@ var createCharts = function() {
         }
       }
     });
+
+    // Initialize chosen subreddits to a default
     if (cur_chosen_subreddits == null) {
       cur_chosen_subreddits = subreddit_subsets["Top 25"];
     }
 
-    //Save the unfiltered data for use in small multiples
+    // Save the unfiltered data for use in small multiples
     var full_data = data.slice();
+
+    // Get data for only the subreddits that are chosen
     data = data.filter(function(d, i) {
       return cur_chosen_subreddits.indexOf(d['subreddit']) > -1;
     })
 
-
     if (sort_by == null) {
       sort_by = 'subreddit';
     }
+
+    // Sort the data, supports string or numbers
     if (sort_by === 'subreddit') {
       data.sort(function(a, b) {
         return a[sort_by].localeCompare(b[sort_by]);
@@ -400,6 +417,7 @@ var createCharts = function() {
       cur_subreddit2 = subreddits[1];
     }
 
+    // Put the actual image path. We set our default comparison subreddits
     d3.select(".wordcloud1")
       .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
 
@@ -412,8 +430,6 @@ var createCharts = function() {
     d3.select(".wordcloud2Title")
       .html("Word cloud for " + cur_subreddit2)
 
-
-
     if (cur_filter == null) {
       cur_filter_label = 'All Comments';
       cur_filter = filter_labels[cur_filter_label];
@@ -423,21 +439,23 @@ var createCharts = function() {
       initialize_pickers();
     }
 
+    // Preselect our currend subreddit list on the subreddit picker list
     d3.select(".toggleSubreddits").selectAll("option")
       .property("selected", function(d) {
         if (cur_chosen_subreddits.indexOf(d) > -1) {
-          console.log(d)
           return true;
         } else {
           return false;
         }
       })
 
+    // Go ahead and actually refresh the graphs as necessary
     if (xVariable == 'subreddit') {
       refreshBarChart(data)
     } else {
       scatterPlot(data)
     }
+
     clearSmallMultiples();
     var keys = Object.keys(axisOptions);
     for (var i = 0; i < keys.length; i++) {
@@ -453,15 +471,12 @@ var createCharts = function() {
     }
     refreshHeatMap("#heatmap1");
     refreshHeatMap("#heatmap2");
-
-
   });
 }
 
 
-
+// Do some one-time HTML setup for input things
 var initialize_pickers = function() {
-
   subreddit_toggle = d3.select(".toggleSubreddits").selectAll("option")
   .data(all_subreddits)
   .enter()
@@ -482,25 +497,38 @@ var initialize_pickers = function() {
     var subreddit = $self[0].__data__
 
     if ($self.prop("selected")) {
-      var index = cur_chosen_subreddits.indexOf(subreddit);
-      if (index > -1) {
-        cur_chosen_subreddits.splice(index, 1);
+      //Ignore removal of subreddit if there are only 2 subreddits in the graph
+      if (cur_chosen_subreddits.length < 3) {
+        $self.prop("selected", true);
+      } else {
+        var index = cur_chosen_subreddits.indexOf(subreddit);
+        if (index > -1) {
+          cur_chosen_subreddits.splice(index, 1);
+        }
+        $self.prop("selected", false);
       }
-      $self.prop("selected", false);
     } else {
-      cur_chosen_subreddits.push(subreddit)
-      $self.prop("selected", true);
+      //Ignore removal of subreddit if there are only 2 subreddits in the graph
+      if (cur_chosen_subreddits.length > 24) {
+        $self.prop("selected", false);
+      } else {
+        cur_chosen_subreddits.push(subreddit)
+        $self.prop("selected", true);
+      }
+      
     }
     refresh()
     return false;
   });
 
+  // Update labels at top of page
   $('#month-name').text('Dataset: August 2016')
   $('#filter-name').text('Filter: ' + cur_filter_label)
 
   var subredditsubsetpicker = d3.select("#subredditsubset-picker").selectAll(".subredditsubset-button")
     .data(Object.keys(subreddit_subsets));
 
+  // Add buttons for each subreddit subset preset
   subredditsubsetpicker.enter()
     .append("input")
     .attr("value", function(d){ return "" + d })
@@ -516,6 +544,7 @@ var initialize_pickers = function() {
   var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
     .data(Object.keys(dataset_labels));
 
+  // Add buttons for each month data set
   datasetpicker.enter()
     .append("input")
     .attr("value", function(d){ return "" + d })
@@ -531,6 +560,7 @@ var initialize_pickers = function() {
   var filterpicker = d3.select("#filter-picker").selectAll(".filter-button")
     .data(Object.keys(filter_labels));
 
+  // Add buttons for each filter
   filterpicker.enter()
     .append("input")
     .attr("value", function(d) {
@@ -550,6 +580,8 @@ var initialize_pickers = function() {
     });
 }
 
+// Helper for getting index of subreddit in
+// an array of objects
 function indexOfSubreddit(data, subreddit) {
   for (var i = 0; i < data.length; i++) {
     if (data[i]['subreddit'] == subreddit) {
@@ -572,9 +604,7 @@ var basePlot = d3.select(".basePlot")
   .style("height", height_batter + margin_batter.bottom + "px")  //svg defalt size: 300*150
   .append("g")
 
-var hasLegend = false;
-
-
+// Assign the current subreddit based on the type of click
 var onclick_compare = function(subreddit) {
   if (!cntrlIsPressed) {
     cur_subreddit1 = subreddit;
@@ -584,18 +614,88 @@ var onclick_compare = function(subreddit) {
   refresh()
 }
 
+// http://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
+var format_decimal = function(number) {
+  return Number(Math.round(number + 'e2') + 'e-2').toFixed(2)
+}
+
+// Centralized tooltip function
 var getToolTip = function(d) {
-  return d["subreddit"] + "<br/>" 
-  + 'Number of Comments: ' + d["num_comments"] + "<br/>"
-  + 'Average Word Length: ' + d["avg_word_length"] + "<br/>"
-  + 'Words Per Comment: ' + d["avg_words_per_comment"] + "<br/>"
-  + 'Positive Score: ' + d["positive_score"] + "<br/>"
-  + 'Negative Score: ' + d["negative_score"] + "<br/>"
-  + 'Godwin\'s Score: ' + d["godwins_score"] + "<br/>"
-  + 'Swear Score: ' + d["swear_score"]
+  return "<center><b>" + d["subreddit"] + "</b><table>" 
+  + '<tr><td align="middle" width="155px">Number of Comments: </td><td>' + numberWithCommas(d["num_comments"]) + "</td></tr>"
+  + '<tr><td align="middle">Average Word Length: </td><td>' + format_decimal(d["avg_word_length"]) + "</td></tr>"
+  + '<tr><td align="middle">Words Per Comment: </td><td>' + format_decimal(d["avg_words_per_comment"]) + "</td></tr>"
+  + '<tr><td align="middle">Positive Score: </td><td>' + format_decimal(d["positive_score"]) + "</td></tr>"
+  + '<tr><td align="middle">Negative Score: </td><td>' + format_decimal(d["negative_score"]) + "</td></tr>"
+  + '<tr><td align="middle">Godwin\'s Score: </td><td>' + format_decimal(d["godwins_score"]) + "</td></tr>"
+  + '<tr><td align="middle">Swear Score: </td><td>' + format_decimal(d["swear_score"]) + "</td></tr></table></center>"
+}
+
+// Highlight the chosen subreddit
+var highlight = function(selector, theClass, subreddit) {
+  var chosen_subreddit = subreddit;
+  selector.selectAll(theClass)
+    .filter(function(e) {
+      if (e['subreddit'] == chosen_subreddit) {
+        return false;
+      } else {
+        return true;
+      }
+    })
+    .transition()
+    .duration(250)
+    .delay(function(e, i) {
+      return i * 8
+    })
+    .attr("opacity", 0.25)
+
+  selector.selectAll('.dot')
+    .filter(function(e) {
+      if (e['subreddit'] == chosen_subreddit) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .attr("r", function(e) {
+      return circleSize(e) * 2
+    });
+}
+
+// Make all the subreddits return to normal opacity
+var unHighlight = function(selector, theClass, subreddit) {
+  var chosen_subreddit = subreddit;
+  selector.selectAll(theClass)
+    .filter(function(e) {
+      if (e['subreddit'] == chosen_subreddit) {
+        return false;
+      } else {
+        return true;
+      }
+    })
+    .transition()
+    .duration(250)
+    .delay(function(e, i) {
+      return i * 8
+    })
+    .attr("opacity", 1)
+
+  selector.selectAll('.dot')
+    .filter(function(e) {
+      if (e['subreddit'] == chosen_subreddit) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .attr("r", function(e) {
+      return circleSize(e)
+    });
 }
 
 var refreshBarChart = function(data) {
+
+  // This should probably be made enter-update-exit
   basePlot.selectAll(".axis").remove()
   basePlot.selectAll('.rect').remove()
   basePlot.selectAll('.dot').remove()
@@ -638,8 +738,11 @@ var refreshBarChart = function(data) {
       tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
+      highlight(basePlot, '.rect', subreddit)
+      
     })
-    .on("mouseout", function() {
+    .on("mouseout", function(subreddit) {
+      unHighlight(basePlot, '.rect', subreddit)
       return tooltip.style("opacity", 0);
     })
     .on("click", function(d) {
@@ -653,7 +756,7 @@ var refreshBarChart = function(data) {
     .style("text-anchor", "middle")
     .attr("fill", "white")
     .attr("class", "barTitle")
-    .text(inverseAxisOptions[yVariable] + " vs " + inverseAxisOptions[xVariable]);
+    .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
 
   basePlot.append("text")
       .attr("class", "label subreddit_text")
@@ -703,27 +806,11 @@ var refreshBarChart = function(data) {
       tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
-      d3.select(this)
-        .attr("width", xScale.rangeBand() * 1.5)
-        .attr("x", function(d) {
-          return xScale(this.__data__['subreddit']) - (data.length >= 20 ? 5 : 10);
-        })
-        .attr("y", function(d) {
-          return yScale(this.__data__[yVariable]) - 25;
-        })
-        .attr("height", (height_batter - yScale(this.__data__[yVariable])) + 25);
+      highlight(basePlot, '.rect', d['subreddit'])
     })
-    .on("mouseout", function() {
-      d3.select(this)
-        .attr("width", xScale.rangeBand())
-        .attr("x", function(d) {
-          return xScale(this.__data__['subreddit']) ;
-        })
-        .attr("y", function(d) {
-          return yScale(this.__data__[yVariable]);
-        })
-        .attr("height", height_batter - yScale(this.__data__[yVariable]));
-      return tooltip.style("opacity", 0);
+    .on("mouseout", function(d) {
+      unHighlight(basePlot, '.rect', d['subreddit'])
+      tooltip.style("opacity", 0);
     })
     .on("click", function(d) {
       onclick_compare(d['subreddit']);
@@ -746,6 +833,14 @@ var refreshBarChart = function(data) {
       .attr("transform", "translate(0," + 25 + ")")
       .style("fill", function(d) {
         return color(cValue(d));
+      })
+      .on("mouseover", function(d) {
+        highlight(basePlot, ".rect", d['subreddit'])
+        highlight(basePlot, ".dot", d['subreddit'])
+      })
+      .on("mouseout", function(d) {
+        unHighlight(basePlot, ".rect", d['subreddit'])
+        unHighlight(basePlot, ".dot", d['subreddit'])
       });
 
   legend.append("text")
@@ -757,11 +852,20 @@ var refreshBarChart = function(data) {
       .attr("transform", "translate(0," + 25 + ")")
       .text(function(d) {
         return d['subreddit'];
+      })
+      .on("mouseover", function(d) {
+        highlight(basePlot, ".rect", d['subreddit'])
+        highlight(basePlot, ".dot", d['subreddit'])
+      })
+      .on("mouseout", function(d) {
+        unHighlight(basePlot, ".rect", d['subreddit'])
+        unHighlight(basePlot, ".dot", d['subreddit'])
       });
 }
 
 var scatterPlot = function(data) {
 
+  // This should probably be made enter-update-exit
   basePlot.selectAll('.rect').remove()
   basePlot.selectAll(".axis").remove()
   basePlot.selectAll('.dot').remove()
@@ -842,9 +946,11 @@ var scatterPlot = function(data) {
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
       d3.select(this).attr("r", circleSize(d) * 2)
+      highlight(basePlot, ".dot", d['subreddit'])
     })
     .on("mouseout", function(d) {
       d3.select(this).attr("r", circleSize(d))
+      unHighlight(basePlot, ".dot", d['subreddit'])
       return tooltip.style("opacity", 0);
     })
     .on("click", function(d) {
