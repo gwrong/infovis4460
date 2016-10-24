@@ -27,6 +27,14 @@ h2 {
   margin-bottom: 20px;
 }
 
+.toggleSubreddits {
+  border: 2px solid #ccc;
+  width: 175px;
+  height: 1000px;
+  overflow-y: scroll; 
+  color: #000000;
+}
+
 .axis path,
 .axis line {
   fill: none;

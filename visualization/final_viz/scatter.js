@@ -7,7 +7,7 @@ var cur_filter = null;
 var cur_filter_label = null;
 var initialized_heatmap = false;
 var sort_by = null;
-var cur_subreddit_subset = null;
+var cur_chosen_subreddits = null;
 var initialized_pickers = false;
 
 var subreddit_subsets = {
@@ -117,6 +117,12 @@ var subreddit_subsets = {
   ]
 }
 
+var all_subreddits = [];
+var subset_keys = Object.keys(subreddit_subsets);
+for (var i = 0; i < subset_keys.length; i++) {
+  all_subreddits = all_subreddits.concat(subreddit_subsets[subset_keys[i]])
+}
+
 var dataset_labels = {
   'January 2016': "reddit_RC_2016-01.csv",
   'February 2016': "reddit_RC_2016-02.csv",
@@ -216,6 +222,16 @@ $(document).keydown(function(event) {
 $(document).keyup(function() {
     cntrlIsPressed = false;
 });
+
+//Shorten long subreddit names if needed
+var abbreviateSubreddit = function(subreddit) {
+  if (subreddit.length > 9) {
+    return subreddit.substring(0, 8) + "...";
+  } else {
+    return subreddit
+  }
+  
+}
 
 // Called if a different axis variable is chosen
 var axisChange = function(picker, options, axis) {
@@ -342,13 +358,14 @@ var createCharts = function() {
         }
       }
     });
-    if (cur_subreddit_subset == null) {
-      cur_subreddit_subset = "Top 25";
+    if (cur_chosen_subreddits == null) {
+      cur_chosen_subreddits = subreddit_subsets["Top 25"];
     }
-    cur_subreddit_subset_list = subreddit_subsets[cur_subreddit_subset];
     data = data.filter(function(d, i) {
-      return cur_subreddit_subset_list.indexOf(d['subreddit']) > -1;
+      return cur_chosen_subreddits.indexOf(d['subreddit']) > -1;
     })
+
+
     if (sort_by == null) {
       sort_by = 'subreddit';
     }
@@ -402,6 +419,17 @@ var createCharts = function() {
       initialized_pickers = true;
       initialize_pickers();
     }
+
+    d3.select(".toggleSubreddits").selectAll("option")
+      .property("selected", function(d) {
+        if (cur_chosen_subreddits.indexOf(d) > -1) {
+          console.log(d)
+          return true;
+        } else {
+          return false;
+        }
+      })
+
     if (xVariable == 'subreddit') {
       refreshBarChart(data)
     } else {
@@ -427,7 +455,43 @@ var createCharts = function() {
   });
 }
 
+
+
 var initialize_pickers = function() {
+
+  subreddit_toggle = d3.select(".toggleSubreddits").selectAll("option")
+  .data(all_subreddits)
+  .enter()
+  .append("option")
+  .attr("value", function(d) {
+    return d;
+  })
+  .html(function(d) {
+    return d;
+  })
+
+  d3.select(".toggleSubreddits").attr("size", all_subreddits.length / 4)
+
+  //http://stackoverflow.com/questions/2096259/how-to-toggle-selection-of-an-option-in-a-multi-select-with-jquery 
+  $("select[multiple] option").mousedown(function(){
+    var $self = $(this);
+
+    var subreddit = $self[0].__data__
+
+    if ($self.prop("selected")) {
+      var index = cur_chosen_subreddits.indexOf(subreddit);
+      if (index > -1) {
+        cur_chosen_subreddits.splice(index, 1);
+      }
+      $self.prop("selected", false);
+    } else {
+      cur_chosen_subreddits.push(subreddit)
+      $self.prop("selected", true);
+    }
+    refresh()
+    return false;
+  });
+
   $('#month-name').text('Dataset: August 2016')
   $('#filter-name').text('Filter: ' + cur_filter_label)
 
@@ -440,9 +504,9 @@ var initialize_pickers = function() {
     .attr("type", "button")
     .attr("class", "dataset-button btn btn-primary")
     .on("click", function(subreddit_subset) {
-      cur_subreddit_subset = subreddit_subset;
-      cur_subreddit1 = subreddit_subsets[subreddit_subset][0]
-      cur_subreddit2 = subreddit_subsets[subreddit_subset][1]
+      cur_chosen_subreddits = subreddit_subsets[subreddit_subset];
+      cur_subreddit1 = cur_chosen_subreddits[0]
+      cur_subreddit2 = cur_chosen_subreddits[1]
       refresh();
     });
 
@@ -1032,15 +1096,15 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("fill", "white")
       .call(xAxis)
 
-  // Rotate labels so they are easier to read
+
   multiplesPlot.selectAll("text")
     .style("text-anchor", "left")
     .style("font-size", function(d) {
-      size = 12;
-      if (cur_subreddit1.length > 10 || cur_subreddit2.length > 10) {
-        size = 10;
-      }
-      return size + "px"
+        size = 12;
+        if (cur_subreddit1.length > 9 || cur_subreddit2.length > 9) {
+          size = 10;
+        }
+        return size + "px"
     })
     .on("mouseover", function(subreddit) {
       d = multiplesData[indexOfSubreddit(multiplesData, subreddit)]
@@ -1051,6 +1115,9 @@ var refreshSmallMultiples = function(data, yMultiples) {
     })
     .on("mouseout", function() {
       return tooltip.style("opacity", 0);
+    })
+    .text(function(d) {
+      return abbreviateSubreddit(d);
     })
 
   // Set up the y axis
@@ -1131,7 +1198,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("x", width_multiples - 20)
       .attr("width", 18)
       .attr("height", 18)
-      .attr("transform", "translate(0," + 25 + ")")
+      .attr("transform", "translate(17," + 25 + ")")
       .style("fill", function(d) {
         return color(cValue(d));
       });
@@ -1142,9 +1209,15 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("dy", ".4em")
       .attr("fill", "white")
       .style("text-anchor", "end")
-      .attr("transform", "translate(0," + 25 + ")")
+      .attr("transform", "translate(17," + 25 + ")")
       .text(function(d) {
         return d['subreddit'];
+      }).style("font-size", function(d) {
+        size = 12;
+        if (cur_subreddit1.length > 10 || cur_subreddit2.length > 10) {
+          size = 10;
+        }
+        return size + "px"
       });
 }
 
