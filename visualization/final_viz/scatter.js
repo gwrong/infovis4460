@@ -361,6 +361,9 @@ var createCharts = function() {
     if (cur_chosen_subreddits == null) {
       cur_chosen_subreddits = subreddit_subsets["Top 25"];
     }
+
+    //Save the unfiltered data for use in small multiples
+    var full_data = data.slice();
     data = data.filter(function(d, i) {
       return cur_chosen_subreddits.indexOf(d['subreddit']) > -1;
     })
@@ -439,7 +442,7 @@ var createCharts = function() {
     var keys = Object.keys(axisOptions);
     for (var i = 0; i < keys.length; i++) {
       if (axisOptions[keys[i]] !== 'subreddit') {
-        refreshSmallMultiples(data, axisOptions[keys[i]])
+        refreshSmallMultiples(full_data, axisOptions[keys[i]])
       }
     }
     
