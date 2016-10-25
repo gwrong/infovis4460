@@ -1267,31 +1267,12 @@ var refreshSmallMultiples = function(data, yMultiples) {
       tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
-      d3.select(this)
-        .attr("width", xScale.rangeBand() * 1.25)
-        .attr("x", function(d) {
-          return xScale(this.__data__['subreddit']) - 5;
-        })
-        .attr("y", function(d) {
-          return yScale(this.__data__[yMultiples]) - 10;
-        })
-        .attr("height", (height_multiples - yScale(this.__data__[yMultiples])) + 10);
+      highlight(multiplesPlot, ".rect", d['subreddit'])
     })
-    .on("mouseout", function() {
-      d3.select(this)
-        .attr("width", xScale.rangeBand())
-        .attr("x", function(d) {
-          return xScale(this.__data__['subreddit']) ;
-        })
-        .attr("y", function(d) {
-          return yScale(this.__data__[yMultiples]);
-        })
-        .attr("height", height_multiples - yScale(this.__data__[yMultiples]));
+    .on("mouseout", function(d) {
+      unHighlight(multiplesPlot, ".rect", d['subreddit'])
       return tooltip.style("opacity", 0);
     })
-    .on("click", function(d) {
-      onclick_compare(d['subreddit']);
-    });
 
   multiplesPlot.selectAll('.legend').remove()
 
@@ -1310,6 +1291,12 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("transform", "translate(17," + 25 + ")")
       .style("fill", function(d) {
         return color(cValue(d));
+      })
+      .on("mouseover", function(d) {
+        highlight(multiplesPlot, ".rect", d['subreddit'])
+      })
+      .on("mouseout", function(d) {
+        unHighlight(multiplesPlot, ".rect", d['subreddit'])
       });
 
   legend.append("text")
@@ -1327,6 +1314,12 @@ var refreshSmallMultiples = function(data, yMultiples) {
           size = 10;
         }
         return size + "px"
+      })
+      .on("mouseover", function(d) {
+        highlight(multiplesPlot, ".rect", d['subreddit'])
+      })
+      .on("mouseout", function(d) {
+        unHighlight(multiplesPlot, ".rect", d['subreddit'])
       });
 }
 
