@@ -5,6 +5,7 @@ body {
   background: #202020;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
+  padding-top: 120px;
 }
 
 html {
@@ -125,4 +126,8 @@ text.axis-worktime {
 
 td {
     vertical-align: middle;
+}
+
+.navbar-fixed-top {
+  background: #202020;
 }

@@ -1030,8 +1030,7 @@ var refreshHeatMap = function(id_selector) {
       var heat_svg = heat_svg2;
       var cur_subreddit = cur_subreddit2;
     }
-    d3.csv(cur_time_dataset,
-    function(d) {
+    d3.csv(cur_time_dataset, function(d) {
       if (d['subreddit'] == cur_subreddit) {
         return {
           weekday: +d.weekday,
@@ -1045,14 +1044,14 @@ var refreshHeatMap = function(id_selector) {
       heat_svg.selectAll(".cur_subreddit").remove();
       heat_svg.selectAll(".heatTitle").remove();
       heat_svg.append("text")
-        .text(cur_subreddit)
+        .text("Number of comments gradient thresholds")
         .attr("class", "cur_subreddit")
-        .attr("x", width_heat / 2 - 25)
+        .attr("x", width_heat / 2 - 130)
         .attr("y", height_heat - 29)
-        .style('fill', 'darkOrange')
+        .style('fill', 'white')
 
       heat_svg.append("text")
-        .attr("x", width_heat / 2)             
+        .attr("x", width_heat / 2 - 5)             
         .attr("y", margin_heat.top - 75)
         .attr("class", "heatTitle")
         .style("font-size", "14px") 
