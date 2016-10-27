@@ -513,27 +513,11 @@ var initialize_pickers = function() {
   $('#month-name').text('Dataset: August 2016')
   $('#filter-name').text('Filter: ' + cur_filter_label)
 
-  var subredditsubsetpicker = d3.select("#subredditsubset-picker").selectAll(".subredditsubset-button")
-    .data(Object.keys(subreddit_subsets));
-
-  // Add buttons for each subreddit subset preset
-  subredditsubsetpicker.enter()
-    .append("input")
-    .attr("value", function(d){ return "" + d })
-    .attr("type", "button")
-    .attr("class", "dataset-button btn btn-primary")
-    .on("click", function(subreddit_subset) {
-      cur_chosen_subreddits = subreddit_subsets[subreddit_subset];
-      cur_subreddit1 = cur_chosen_subreddits[0]
-      cur_subreddit2 = cur_chosen_subreddits[1]
-      refresh();
-    });
-
-  var subredditsubsetpicker2 = d3.select("#subredditsubset-picker2").selectAll("option")
+  var subredditsubsetpicker = d3.select("#subredditsubset-picker").selectAll("option")
     .data(Object.keys(subreddit_subsets));
 
   // Add buttons for each filter
-  subredditsubsetpicker2.enter()
+  subredditsubsetpicker.enter()
     .append("option")
     .attr("value", function(d) {
       return "" + d
@@ -542,14 +526,14 @@ var initialize_pickers = function() {
       return "" + d
     })
   
-  $('#subredditsubset-picker2').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
+  $('#subredditsubset-picker').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
     var subreddit_subset = $(e.currentTarget).val();
     cur_chosen_subreddits = subreddit_subsets[subreddit_subset];
     cur_subreddit1 = cur_chosen_subreddits[0]
     cur_subreddit2 = cur_chosen_subreddits[1]
     refresh();
   });
-  $('#subredditsubset-picker2').selectpicker('refresh');
+  $('#subredditsubset-picker').selectpicker('refresh');
 
   var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
     .data(Object.keys(dataset_labels));
@@ -575,34 +559,11 @@ var initialize_pickers = function() {
     refresh();
   });
   
-
-  var filterpicker = d3.select("#filter-picker").selectAll(".filter-button")
+  var filterpicker = d3.select("#filter-picker").selectAll("option")
     .data(Object.keys(filter_labels));
 
   // Add buttons for each filter
   filterpicker.enter()
-    .append("input")
-    .attr("value", function(d) {
-      return "" + d
-    })
-    .attr("type", "button")
-    .attr("class", "filter-button btn btn-primary")
-    .on("click", function(d) {
-      cur_filter_label = d;
-      cur_filter = filter_labels[cur_filter_label];
-      if (xVariable != 'subreddit') {
-        xVariable = xVariableBase + cur_filter;
-      }
-      yVariable = yVariableBase + cur_filter
-      $('#filter-name').text('Filter: ' + cur_filter_label);
-      refresh();
-    });
-
-  var filterpicker2 = d3.select("#filter-picker2").selectAll("option")
-    .data(Object.keys(filter_labels));
-
-  // Add buttons for each filter
-  filterpicker2.enter()
     .append("option")
     .attr("value", function(d) {
       return "" + d
@@ -611,7 +572,7 @@ var initialize_pickers = function() {
       return "" + d
     })
   
-  $('#filter-picker2').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
+  $('#filter-picker').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
     cur_filter_label = $(e.currentTarget).val();
     cur_filter = filter_labels[cur_filter_label];
     if (xVariable != 'subreddit') {
@@ -621,7 +582,7 @@ var initialize_pickers = function() {
     $('#filter-name').text('Filter: ' + cur_filter_label);
     refresh();
   });
-  $('#filter-picker2').selectpicker('refresh');
+  $('#filter-picker').selectpicker('refresh');
 }
 
 // Helper for getting index of subreddit in
@@ -1225,10 +1186,6 @@ var refreshSmallMultiples = function(data, yMultiples) {
     return d['subreddit'] === cur_subreddit1 || d['subreddit'] == cur_subreddit2;
   })
 
-  //multiplesPlot.selectAll(".axis").remove()
-  //multiplesPlot.selectAll('.rect').remove()
-  //multiplesPlot.selectAll('.dot').remove()
-
   var multiplesPlot = d3.select(".smallMultiples")
     .append("svg")
     .attr("class", "smallMultiplesGraph")
@@ -1248,11 +1205,11 @@ var refreshSmallMultiples = function(data, yMultiples) {
   }));
 
   var minY = d3.min(multiplesData, function(d) {
-    return +d[yMultiples];
+    return +d[yMultiples + cur_filter];
   })
   minY *= 0.4
   var maxY = d3.max(multiplesData, function(d) {
-    return +d[yMultiples];
+    return +d[yMultiples + cur_filter];
   })
   yScale.domain([minY, maxY]).nice();
 
@@ -1297,7 +1254,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
   multiplesPlot.selectAll("text")
   .text(function(d) {
     return abbreviate_thousands(d);
-  })
+  });
 
   multiplesPlot.append("text")
     .attr("x", width_multiples - 30)             
@@ -1313,14 +1270,14 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .enter().append("rect")
     .attr("class", "rect")
     .attr("y", function(d) {
-      return yScale(d[yMultiples]);
+      return yScale(d[yMultiples + cur_filter]);
     })
     .attr("x", function(d) {
       return xScale(d['subreddit']);
     })
     .attr("width", xScale.rangeBand())
     .attr("height", function(d) {
-        return height_multiples - yScale(d[yMultiples]);
+        return height_multiples - yScale(d[yMultiples + cur_filter]);
     })
     .style("fill", function(d) {
       return color(cValue(d));
