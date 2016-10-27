@@ -529,6 +529,28 @@ var initialize_pickers = function() {
       refresh();
     });
 
+  var subredditsubsetpicker2 = d3.select("#subredditsubset-picker2").selectAll("option")
+    .data(Object.keys(subreddit_subsets));
+
+  // Add buttons for each filter
+  subredditsubsetpicker2.enter()
+    .append("option")
+    .attr("value", function(d) {
+      return "" + d
+    })
+    .html(function(d) {
+      return "" + d
+    })
+  
+  $('#subredditsubset-picker2').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
+    var subreddit_subset = $(e.currentTarget).val();
+    cur_chosen_subreddits = subreddit_subsets[subreddit_subset];
+    cur_subreddit1 = cur_chosen_subreddits[0]
+    cur_subreddit2 = cur_chosen_subreddits[1]
+    refresh();
+  });
+  $('#subredditsubset-picker2').selectpicker('refresh');
+
   var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
     .data(Object.keys(dataset_labels));
 
@@ -578,8 +600,6 @@ var initialize_pickers = function() {
 
   var filterpicker2 = d3.select("#filter-picker2").selectAll("option")
     .data(Object.keys(filter_labels));
-
-
 
   // Add buttons for each filter
   filterpicker2.enter()
