@@ -509,10 +509,6 @@ var initialize_pickers = function() {
     refresh()
   });
 
-  // Update labels at top of page
-  $('#month-name').text('Dataset: August 2016')
-  $('#filter-name').text('Filter: ' + cur_filter_label)
-
   var subredditsubsetpicker = d3.select("#subredditsubset-picker").selectAll("option")
     .data(Object.keys(subreddit_subsets));
 
@@ -547,7 +543,6 @@ var initialize_pickers = function() {
     .on("click", function(month) {
       cur_time_dataset = time_dataset_labels[month]
       cur_dataset = dataset_labels[month]
-      $('#month-name').text('Dataset: ' + month)
       refresh();
     });
 
@@ -555,7 +550,6 @@ var initialize_pickers = function() {
     var month = month_lookup[slideEvt.value.newValue];
     cur_time_dataset = time_dataset_labels[month];
     cur_dataset = dataset_labels[month];
-    $('#month-name').text('Dataset: ' + month);
     refresh();
   });
   
@@ -579,7 +573,6 @@ var initialize_pickers = function() {
       xVariable = xVariableBase + cur_filter;
     }
     yVariable = yVariableBase + cur_filter
-    $('#filter-name').text('Filter: ' + cur_filter_label);
     refresh();
   });
   $('#filter-picker').selectpicker('refresh');
@@ -805,14 +798,14 @@ var refreshBarChart = function(data) {
     .enter().append("rect")
     .attr("class", "rect")
     .attr("y", function(d) {
-      return yScale(d[yVariable]);
+      return height_batter;
     })
     .attr("x", function(d) {
       return xScale(d['subreddit']);
     })
     .attr("width", xScale.rangeBand())
     .attr("height", function(d) {
-        return height_batter - yScale(d[yVariable]);
+        return 0;
     })
     .style("fill", function(d) {
       return color(cValue(d));
@@ -830,6 +823,14 @@ var refreshBarChart = function(data) {
     })
     .on("click", function(d) {
       onclick_compare(d['subreddit']);
+    })
+    .transition("grow")
+    .duration(2500)
+    .attr("height", function(d) {
+      return height_batter - yScale(d[yVariable]);
+    })
+    .attr("y", function(d) {
+      return yScale(d[yVariable]);
     });
 
   basePlot.selectAll('.legend').remove()
@@ -938,7 +939,7 @@ var scatterPlot = function(data) {
       .call(yAxis)
     .append("text")
       .attr("class", "label")
-      .attr("transform", "translate(" + 0 + "," + 25 + ")" + "rotate(-90)")
+      .attr("transform", "translate(" + -5 + "," + 25 + ")" + "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
       .attr("fill", "white")
@@ -952,10 +953,10 @@ var scatterPlot = function(data) {
     .attr("class", "dot")
     .attr("r", circleSize)
     .attr("cx", function(d) {
-      return xScale(d[xVariable])
+      return Math.random() * (width_batter - 100) + 100;
     })
     .attr("cy", function(d) {
-      return yScale(d[yVariable])
+      return Math.random() * (height_batter - 15);
     })
     .style("fill", function(d) {
       return color(cValue(d));
@@ -975,6 +976,14 @@ var scatterPlot = function(data) {
     })
     .on("click", function(d) {
       onclick_compare(d['subreddit']);
+    })
+    .transition("grow")
+    .duration(2000)
+    .attr("cx", function(d) {
+      return xScale(d[xVariable])
+    })
+    .attr("cy", function(d) {
+      return yScale(d[yVariable])
     });
 }
 
@@ -1270,14 +1279,14 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .enter().append("rect")
     .attr("class", "rect")
     .attr("y", function(d) {
-      return yScale(d[yMultiples + cur_filter]);
+      return height_multiples;
     })
     .attr("x", function(d) {
       return xScale(d['subreddit']);
     })
     .attr("width", xScale.rangeBand())
     .attr("height", function(d) {
-        return height_multiples - yScale(d[yMultiples + cur_filter]);
+        return 0;
     })
     .style("fill", function(d) {
       return color(cValue(d));
@@ -1292,6 +1301,14 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .on("mouseout", function(d) {
       unHighlight(multiplesPlot, ".rect", d['subreddit'])
       return tooltip.style("opacity", 0);
+    })
+    .transition("grow")
+    .duration(2000)
+    .attr("y", function(d) {
+      return yScale(d[yMultiples + cur_filter]);
+    })
+    .attr("height", function(d) {
+      return height_multiples - yScale(d[yMultiples + cur_filter]);
     })
 
   multiplesPlot.selectAll('.legend').remove()
