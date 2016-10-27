@@ -7,6 +7,7 @@
     <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.3.0/css/bootstrap-slider.min.css">
     
     <link href='style.css' rel='stylesheet' type='text/css'>
     <link href='chord.css' rel='stylesheet' type='text/css'>
@@ -16,14 +17,26 @@
 
     <div class="navbar-fixed-top">
         <span class="sameline h3" id="month-name"></span><span class="sameline h3" style="margin-left: 30px" id="filter-name"></span>
-        
         <div id="dataset-picker">
         </div>
         <div id="filter-picker">
         </div>
+        <input id="month-slider" type="text" style="width: 700px; fill: white"
+          data-provide="slider"
+          data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8]"
+          data-slider-ticks-labels='["January 2016", "February 2016", "March 2016", "April 2016", "May 2016", "June 2016", "July 2016", "August 2016"]'
+          data-slider-min="1"
+          data-slider-max="8"
+          data-slider-step="1"
+          data-slider-value="8"
+          data-slider-tooltip="hide"></input>
+        <br>
         <select class="selectpicker" id="filter-picker2"></select>
+        <br>
+        
 
     </div>
+    
     <h1>2016 Reddit Comments</h1>
     <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25">
     </select>
@@ -102,6 +115,9 @@
     <script src="scatter.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.3.0/bootstrap-slider.min.js"></script>
+    
     <script src="chord.js"></script>
   </body>
 </html>

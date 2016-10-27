@@ -161,6 +161,14 @@ var time_dataset_labels = {
   'August 2016': "time_files/reddit_RC_2016-08_time_series.csv",
 }
 
+// For the month slider, it is indexed by integers, so here's a lookup
+// Slider is index + 1
+var month_lookup = {};
+var months = Object.keys(dataset_labels);
+for (var i = 0; i < months.length; i++) {
+  month_lookup[i + 1] = months[i];
+}
+
 var filter_labels = {
   'All Comments': '',
   'Top Score Comments': '_topcom',
@@ -536,6 +544,15 @@ var initialize_pickers = function() {
       $('#month-name').text('Dataset: ' + month)
       refresh();
     });
+
+  $("#month-slider").on("change", function(slideEvt) {
+    var month = month_lookup[slideEvt.value.newValue];
+    cur_time_dataset = time_dataset_labels[month];
+    cur_dataset = dataset_labels[month];
+    $('#month-name').text('Dataset: ' + month);
+    refresh();
+  });
+  
 
   var filterpicker = d3.select("#filter-picker").selectAll(".filter-button")
     .data(Object.keys(filter_labels));
