@@ -140,25 +140,25 @@ for (var i = 0; i < all_subreddits.length; i++) {
 }
 
 var dataset_labels = {
-  'January 2016': "reddit_RC_2016-01.csv",
-  'February 2016': "reddit_RC_2016-02.csv",
-  'March 2016': "reddit_RC_2016-03.csv",
-  'April 2016': "reddit_RC_2016-04.csv",
-  'May 2016': "reddit_RC_2016-05.csv",
-  'June 2016': "reddit_RC_2016-06.csv",
-  'July 2016': "reddit_RC_2016-07.csv",
-  'August 2016': "reddit_RC_2016-08.csv",
+  'January 2016': "core_files/reddit_RC_2016-01.csv",
+  'February 2016': "core_files/reddit_RC_2016-02.csv",
+  'March 2016': "core_files/reddit_RC_2016-03.csv",
+  'April 2016': "core_files/reddit_RC_2016-04.csv",
+  'May 2016': "core_files/reddit_RC_2016-05.csv",
+  'June 2016': "core_files/reddit_RC_2016-06.csv",
+  'July 2016': "core_files/reddit_RC_2016-07.csv",
+  'August 2016': "core_files/reddit_RC_2016-08.csv",
 }
 
 var time_dataset_labels = {
-  'January 2016': "reddit_RC_2016-01_time_series.csv",
-  'February 2016': "reddit_RC_2016-02_time_series.csv",
-  'March 2016': "reddit_RC_2016-03_time_series.csv",
-  'April 2016': "reddit_RC_2016-04_time_series.csv",
-  'May 2016': "reddit_RC_2016-05_time_series.csv",
-  'June 2016': "reddit_RC_2016-06_time_series.csv",
-  'July 2016': "reddit_RC_2016-07_time_series.csv",
-  'August 2016': "reddit_RC_2016-08_time_series.csv",
+  'January 2016': "time_files/reddit_RC_2016-01_time_series.csv",
+  'February 2016': "time_files/reddit_RC_2016-02_time_series.csv",
+  'March 2016': "time_files/reddit_RC_2016-03_time_series.csv",
+  'April 2016': "time_files/reddit_RC_2016-04_time_series.csv",
+  'May 2016': "time_files/reddit_RC_2016-05_time_series.csv",
+  'June 2016': "time_files/reddit_RC_2016-06_time_series.csv",
+  'July 2016': "time_files/reddit_RC_2016-07_time_series.csv",
+  'August 2016': "time_files/reddit_RC_2016-08_time_series.csv",
 }
 
 var filter_labels = {
@@ -171,8 +171,6 @@ var filter_labels = {
   'Top Godwin Comments': '_topgod',
 
 }
-var time_datasets = ["reddit_RC_2016-08_time_series.csv", "reddit_RC_2016-01_time_series.csv"];
-var datasets = ["reddit_RC_2016-08.csv", "reddit_RC_2016-01.csv"];
 var filters = [
   'count',
   'count_topcom',
@@ -367,7 +365,7 @@ var refresh = function() {
 // Constructs the charts to be shown
 var createCharts = function() {
   if (cur_dataset == null) {
-    cur_dataset = datasets[0];
+    cur_dataset = dataset_labels['August 2016'];
   }
 
   // Actually load our data
@@ -415,7 +413,7 @@ var createCharts = function() {
     });
     
     if (cur_time_dataset == null) {
-      cur_time_dataset = time_datasets[0];
+      cur_time_dataset = time_dataset_labels['August 2016'];
     }
     if (cur_subreddit == null) {
       cur_subreddit = subreddits[0];
@@ -629,6 +627,9 @@ var format_decimal = function(number) {
 }
 
 function abbreviate_thousands(num) {
+  if (typeof(num) === 'object') {
+    return num['subreddit']
+  }
   if (num >= 1000000)
     return num / 1000000 + 'm';
   if (num >= 1000)
@@ -916,7 +917,7 @@ var scatterPlot = function(data) {
 
   // Do the axes like we did with the bar chart
   basePlot.append("g")
-    .attr("class", "x axis")
+    .attr("class", "x axis scatterX")
     .attr("transform", "translate(0," + height_batter + ")")
     .attr("fill", "white")
     .call(xAxis)

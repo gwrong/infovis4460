@@ -48,15 +48,23 @@ d3.csv("subreddit_lookup.csv", function(cities) {
 
     // Add the group arc.
     var groupPath = group.append("path")
-      .attr("id", function(d, i) { return "group" + i; })
+      .attr("id", function(d, i) {
+        return "group" + i;
+      })
       .attr("d", arc)
-      .style("fill", function(d, i) { return cities[i].color; });
+      .style("fill", function(d, i) {
+        return cities[i].color;
+      });
 
       group.append("text")
-        .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2);})
+        .each(function(d) {
+          d.angle = ((d.startAngle + d.endAngle) / 2);
+        })
         .attr("dy", ".35em")
         .attr("class", "chordTitles")
-        .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+        .attr("text-anchor", function(d) {
+          return d.angle > Math.PI ? "end" : null;
+        })
         .attr("fill", "white")
         .attr("transform", function(d,i) {
             var c = arc.centroid(d + 10);
@@ -66,19 +74,16 @@ d3.csv("subreddit_lookup.csv", function(cities) {
         })
         .text(function(d,i) { return cities[i].name; });
 
-    // Remove the labels that don't fit. :(
-    //groupText.filter(function(d, i) { return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength(); })
-    //    .remove();
-
     // Add the chords.
     var chord = svg.selectAll(".chord")
         .data(layout.chords)
       .enter().append("path")
         .attr("class", "chord")
         .style("fill", function(d) { return cities[d.source.index].color; })
-        .attr("d", path);
+        .attr("d", path)
+        .on("mouseover", remove_fade);
 
-    // Add an elaborate mouseover title for each chord.
+    // Mouseover
     chord.append("title").text(function(d) {
       return cities[d.source.index].name
           + " → " + cities[d.target.index].name
@@ -92,6 +97,12 @@ d3.csv("subreddit_lookup.csv", function(cities) {
       chord.classed("fade", function(p) {
         return p.source.index != i
             && p.target.index != i;
+      });
+    }
+
+    function remove_fade(d, i) {
+      chord.classed("fade", function(p) {
+        return false
       });
     }
   });
