@@ -127,7 +127,17 @@ for (var i = 0; i < subset_keys.length; i++) {
 }
 
 // Remove duplicate entries
-all_subreddits = Array.from(new Set(all_subreddits));
+all_subreddits = Array.from(new Set(all_subreddits))
+all_subreddits.sort(function (a, b) {
+  return a.toLowerCase().localeCompare(b.toLowerCase());
+})
+
+//We have to hack the bootstrap select picker
+//Need to lookup the index of the subreddit later on
+all_subreddits_lookup = {}
+for (var i = 0; i < all_subreddits.length; i++) {
+  all_subreddits_lookup[i] = all_subreddits[i];
+}
 
 var dataset_labels = {
   'January 2016': "reddit_RC_2016-01.csv",
@@ -440,14 +450,7 @@ var createCharts = function() {
     }
 
     // Preselect our currend subreddit list on the subreddit picker list
-    d3.select(".toggleSubreddits").selectAll("option")
-      .property("selected", function(d) {
-        if (cur_chosen_subreddits.indexOf(d) > -1) {
-          return true;
-        } else {
-          return false;
-        }
-      })
+    $('#toggleSubreddits').selectpicker('val', cur_chosen_subreddits);
 
     // Go ahead and actually refresh the graphs as necessary
     if (xVariable == 'subreddit') {
@@ -477,48 +480,27 @@ var createCharts = function() {
 
 // Do some one-time HTML setup for input things
 var initialize_pickers = function() {
-  subreddit_toggle = d3.select(".toggleSubreddits").selectAll("option")
-  .data(all_subreddits)
-  .enter()
-  .append("option")
-  .attr("value", function(d) {
-    return d;
-  })
-  .html(function(d) {
-    return d;
-  })
+  subreddit_toggle = d3.select("#toggleSubreddits").selectAll("option")
+    .data(all_subreddits)
+    .enter()
+    .append("option")
+    .attr("value", function(d) {
+      return d;
+    })
+    .html(function(d) {
+      return d;
+    })
+  //Update the changes in the picker
+  $('#toggleSubreddits').selectpicker('refresh');
 
-  d3.select(".toggleSubreddits").attr("size", all_subreddits.length / 4)
-
-  //http://stackoverflow.com/questions/2096259/how-to-toggle-selection-of-an-option-in-a-multi-select-with-jquery 
-  $("select[multiple] option").mousedown(function(){
-    var $self = $(this);
-
-    var subreddit = $self[0].__data__
-
-    if ($self.prop("selected")) {
-      //Ignore removal of subreddit if there are only 2 subreddits in the graph
-      if (cur_chosen_subreddits.length < 3) {
-        $self.prop("selected", true);
-      } else {
-        var index = cur_chosen_subreddits.indexOf(subreddit);
-        if (index > -1) {
-          cur_chosen_subreddits.splice(index, 1);
-        }
-        $self.prop("selected", false);
-      }
-    } else {
-      //Ignore removal of subreddit if there are only 2 subreddits in the graph
-      if (cur_chosen_subreddits.length > 24) {
-        $self.prop("selected", false);
-      } else {
-        cur_chosen_subreddits.push(subreddit)
-        $self.prop("selected", true);
-      }
-      
+  //Update the currently picked subreddits (this is pretty inefficient) when toggled
+  $('#toggleSubreddits').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
+    cur_chosen_subreddits = $(e.currentTarget).val();
+    //If they remove all subreddits, just go load top 25 again
+    if (cur_chosen_subreddits.length == 0) {
+      cur_chosen_subreddits = subreddit_subsets['Top 25']
     }
     refresh()
-    return false;
   });
 
   // Update labels at top of page
@@ -578,6 +560,33 @@ var initialize_pickers = function() {
       $('#filter-name').text('Filter: ' + cur_filter_label);
       refresh();
     });
+
+  var filterpicker2 = d3.select("#filter-picker2").selectAll("option")
+    .data(Object.keys(filter_labels));
+
+
+
+  // Add buttons for each filter
+  filterpicker2.enter()
+    .append("option")
+    .attr("value", function(d) {
+      return "" + d
+    })
+    .html(function(d) {
+      return "" + d
+    })
+  
+  $('#filter-picker2').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
+    cur_filter_label = $(e.currentTarget).val();
+    cur_filter = filter_labels[cur_filter_label];
+    if (xVariable != 'subreddit') {
+      xVariable = xVariableBase + cur_filter;
+    }
+    yVariable = yVariableBase + cur_filter
+    $('#filter-name').text('Filter: ' + cur_filter_label);
+    refresh();
+  });
+  $('#filter-picker2').selectpicker('refresh');
 }
 
 // Helper for getting index of subreddit in
@@ -617,6 +626,14 @@ var onclick_compare = function(subreddit) {
 // http://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
 var format_decimal = function(number) {
   return Number(Math.round(number + 'e2') + 'e-2').toFixed(2)
+}
+
+function abbreviate_thousands(num) {
+  if (num >= 1000000)
+    return num / 1000000 + 'm';
+  if (num >= 1000)
+    return num / 1000 + 'k';
+  return num;
 }
 
 // Centralized tooltip function
@@ -910,6 +927,10 @@ var scatterPlot = function(data) {
     .attr("fill", "white")
     .style("text-anchor", "end")
     .text(xVariable);
+  basePlot.selectAll("text")
+    .text(function(d) {
+      return abbreviate_thousands(d);
+    })
 
   basePlot.append("g")
       .attr("class", "y axis")
@@ -1235,6 +1256,11 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .attr("fill", "white")
       .call(yAxis)
 
+  multiplesPlot.selectAll("text")
+  .text(function(d) {
+    return abbreviate_thousands(d);
+  })
+
   multiplesPlot.append("text")
     .attr("x", width_multiples - 30)             
     .attr("y", margin_multiples.top - 10)
@@ -1323,4 +1349,3 @@ var refreshSmallMultiples = function(data, yMultiples) {
 }
 
 refresh()
-

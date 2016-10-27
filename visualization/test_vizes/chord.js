@@ -1,30 +1,3 @@
-<!DOCTYPE html>
-<html>
-<meta charset="utf-8">
-<style>
-#circle circle {
-    fill: none;
-    pointer-events: all;
-}
-
-.group path {
-  fill-opacity: .5;
-}
-
-#circle:hover path.fade {
-  display: none;
-}
-
-body{
-font-family: Verdana;
-    font-size: 10px;
-}
-</style>
-<body>
-<div class="redditChord" align="center"></div>
-</body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js" charset="utf-8"></script>
-<script>
 
 var width = 700,
     height = 700,
@@ -122,5 +95,3 @@ d3.csv("subreddit_lookup.csv", function(cities) {
     }
   });
 });
-
-</script>
