@@ -594,9 +594,15 @@ var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
 var width_batter = 750 - margin_batter.left - margin_batter.right;
 var height_batter = 500 - margin_batter.top - margin_batter.bottom;
 var padding = 140;
-var yAxisPadding = 100;
+var yAxisPadding = 90;
 
-var basePlot = d3.select(".basePlot")
+var barchart = d3.select(".barchart")
+  .append("svg")
+  .style("width", width_batter + padding + "px") // padding with second scatter
+  .style("height", height_batter + margin_batter.bottom + "px")  //svg defalt size: 300*150
+  .append("g")
+
+var scatterplot = d3.select(".scatterplot")
   .append("svg")
   .style("width", width_batter + padding + "px") // padding with second scatter
   .style("height", height_batter + margin_batter.bottom + "px")  //svg defalt size: 300*150
@@ -702,19 +708,74 @@ var unHighlight = function(selector, theClass, subreddit) {
     });
 }
 
+var hasBatterLegend = false;
+var barChartInit = false;
+
+var xScale, xAxis, yScale, yAxis;
 var refreshBarChart = function(data) {
 
+  // Hide the scatterplot
+  d3.select(".scatterplot")
+    .style("display", "none")
+  // Hide the scatterplot
+  d3.select(".barchart")
+    .style("display", "inline")
+  scatterPlotInit = false;
+
+  if (!barChartInit) {
+    barChartInit = true;
+    xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding, width_batter - 15], 0.15);
+    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+    yScale = d3.scale.linear().range([height_batter, margin_batter.top])
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+    // Set up the axes and labels
+    barchart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height_batter + ")")
+        .attr("fill", "white")
+        .call(xAxis)
+
+    // Set up the y axis
+    barchart.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + yAxisPadding + "," + 0 + ")")
+        .attr("fill", "white")
+        .call(yAxis)
+        .append("text")
+        .attr("class", "yVariable")
+        .attr("y", height_batter - 268)
+        .attr("x", 0)
+        .attr("dy", ".71em")
+        .attr("transform", "translate(" + -91 + "," + 25 + ")" + "rotate(-90)")
+        .attr("fill", "white")
+        .style("text-anchor", "end")
+        .text(yVariable);
+
+    barchart.append("text")
+      .attr("class", "label subreddit_text")
+      .attr("x", width_batter + 35)
+      .attr("y", height_batter - 5)
+      .attr("fill", "white")
+      .attr("transform", "translate(" + (-10) + "," + 20 + ")")
+      .style("text-anchor", "end")
+      .text("Subreddit");
+
+    barchart.append("text")
+      .attr("x", width_batter / 2 + 100)             
+      .attr("y", margin_batter.top - 10)
+      .style("font-size", "14px") 
+      .style("text-anchor", "middle")
+      .attr("fill", "white")
+      .attr("class", "barTitle")
+      .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
+  }
   // This should probably be made enter-update-exit
-  basePlot.selectAll(".axis").remove()
-  basePlot.selectAll('.rect').remove()
-  basePlot.selectAll('.dot').remove()
-  basePlot.selectAll('.barTitle').remove()
-
-  var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding, width_batter - 10], 0.15);
-  var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
-
-  var yScale = d3.scale.linear().range([height_batter, margin_batter.top])
-  var yAxis = d3.svg.axis().scale(yScale).orient("left");
+  //barchart.selectAll(".axis").remove()
+  //basePlot.selectAll('.rect').remove()
+  //basePlot.selectAll('.dot').remove()
+  //basePlot.selectAll('.barTitle').remove()
 
   // Scale the data
   xScale.domain(data.map(function(d) {
@@ -730,83 +791,34 @@ var refreshBarChart = function(data) {
   minY *= 0.75
   yScale.domain([minY, maxY]).nice();
 
-  // Set up the axes and labels
-  basePlot.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height_batter + ")")
-      .attr("fill", "white")
-      .call(xAxis)
+  xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+  yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-  // Rotate labels so they are easier to read
-  basePlot.selectAll("text")
-    .attr("transform", "translate(" + 10 + "," + 5 + ") rotate(50)")
-    .style("text-anchor", "start")
-    .on("mouseover", function(subreddit) {
-      d = data[indexOfSubreddit(data, subreddit)]
-      tooltip.style("opacity", 1);
-      tooltip.html(getToolTip(d))
-        .style("left", d3.event.pageX + 5 + "px")
-        .style("top", d3.event.pageY + 5 + "px")
-      highlight(basePlot, '.rect', subreddit)
-      
-    })
-    .on("mouseout", function(subreddit) {
-      unHighlight(basePlot, '.rect', subreddit)
-      return tooltip.style("opacity", 0);
-    })
-    .on("click", function(d) {
-      onclick_compare(d);
-    });
+  console.log(xAxis)
 
-  basePlot.append("text")
-    .attr("x", width_batter / 2 + 100)             
-    .attr("y", margin_batter.top - 10)
-    .style("font-size", "14px") 
-    .style("text-anchor", "middle")
-    .attr("fill", "white")
-    .attr("class", "barTitle")
+  barchart.select(".barTitle")
     .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
 
-  basePlot.append("text")
-      .attr("class", "label subreddit_text")
-      .attr("x", width_batter + 35)
-      .attr("y", height_batter - 5)
-      .attr("fill", "white")
-      .attr("transform", "translate(" + (-10) + "," + 20 + ")")
-      .style("text-anchor", "end")
-      .text("Subreddit");
-
-  // Set up the y axis
-  basePlot.append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate(" + yAxisPadding + "," + 0 + ")")
-      .attr("fill", "white")
-      .call(yAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("y", height_batter - 268)
-      .attr("x", 0)
-      .attr("dy", ".71em")
-      .attr("transform", "translate(" + -91 + "," + 25 + ")" + "rotate(-90)")
-      .attr("fill", "white")
-      .style("text-anchor", "end")
-      .text(yVariable);
-
   //Create the bars
-  basePlot.selectAll(".rect")
+  var barDataSelection = barchart.selectAll(".rect")
     .data(data)
-    .enter().append("rect")
-    .attr("class", "rect")
+
+  //basePlot.selectAll('.legend').remove()
+  barDataSelection.exit().remove();
+
+  barDataSelection.enter().append("rect")
     .attr("y", function(d) {
       return height_batter;
     })
+    .attr("height", function(d) {
+        return 0;
+    })
+  
+  barDataSelection.attr("class", "rect subreddit")
     .attr("x", function(d) {
       return xScale(d['subreddit']);
     })
     .attr("width", xScale.rangeBand())
-    .attr("height", function(d) {
-        return 0;
-    })
     .style("fill", function(d) {
       return color(cValue(d));
     })
@@ -815,10 +827,10 @@ var refreshBarChart = function(data) {
       tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
-      highlight(basePlot, '.rect', d['subreddit'])
+      highlight(barchart, '.rect', d['subreddit'])
     })
     .on("mouseout", function(d) {
-      unHighlight(basePlot, '.rect', d['subreddit'])
+      unHighlight(barchart, '.rect', d['subreddit'])
       tooltip.style("opacity", 0);
     })
     .on("click", function(d) {
@@ -833,17 +845,55 @@ var refreshBarChart = function(data) {
       return yScale(d[yVariable]);
     });
 
-  basePlot.selectAll('.legend').remove()
 
-  var legend = basePlot.selectAll(".legend")
-      .data(data)
-      .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) {
-        return "translate(" + (padding - 0) + "," + i * 12 + ")";
-      });
+  // Set up the axes and labels
+  barchart.selectAll("g.x.axis")
+    .call(xAxis)
 
-  legend.append("rect")
+  // Set up the y axis
+  barchart.selectAll("g.y.axis")
+    .call(yAxis)
+
+  // Rotate labels so they are easier to read
+  barchart.selectAll(".x.axis .tick text")
+    .attr("transform", "translate(" + 10 + "," + 5 + ") rotate(50)")
+    .style("text-anchor", "start")
+    .on("mouseover", function(subreddit) {
+      d = data[indexOfSubreddit(data, subreddit)]
+      tooltip.style("opacity", 1);
+      tooltip.html(getToolTip(d))
+        .style("left", d3.event.pageX + 5 + "px")
+        .style("top", d3.event.pageY + 5 + "px")
+      highlight(barchart, '.rect', subreddit)
+    })
+    .on("mouseout", function(subreddit) {
+      unHighlight(barchart, '.rect', subreddit)
+      return tooltip.style("opacity", 0);
+    })
+    .on("click", function(d) {
+      onclick_compare(d);
+    });
+
+  barchart.selectAll(".yVariable")
+    .text(yVariable)
+
+  makeBatterLegend(data, barchart, '.rect')
+}
+
+var makeBatterLegend = function(data, selector, element) {
+  selector.selectAll(".legend")
+    .remove();
+  
+  var legendSelection = selector.selectAll(".legend")
+    .data(data)
+
+  legendSelection.enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) {
+      return "translate(" + (padding - 0) + "," + i * 12 + ")";
+    })
+
+  legendSelection.append("rect")
       .attr("x", width_batter - 20)
       .attr("width", 18)
       .attr("height", 18)
@@ -851,16 +901,18 @@ var refreshBarChart = function(data) {
       .style("fill", function(d) {
         return color(cValue(d));
       })
+      .style("opacity", 0)
       .on("mouseover", function(d) {
-        highlight(basePlot, ".rect", d['subreddit'])
-        highlight(basePlot, ".dot", d['subreddit'])
+        highlight(selector, element, d['subreddit'])
       })
       .on("mouseout", function(d) {
-        unHighlight(basePlot, ".rect", d['subreddit'])
-        unHighlight(basePlot, ".dot", d['subreddit'])
-      });
+        unHighlight(selector, element, d['subreddit'])
+      })
+      .transition()
+      .duration(2000)
+      .style("opacity", 1);
 
-  legend.append("text")
+  legendSelection.append("text")
       .attr("x", width_batter - 23)
       .attr("y", 9)
       .attr("dy", "0em")
@@ -870,31 +922,84 @@ var refreshBarChart = function(data) {
       .text(function(d) {
         return d['subreddit'];
       })
+      .style("opacity", 0)
       .on("mouseover", function(d) {
-        highlight(basePlot, ".rect", d['subreddit'])
-        highlight(basePlot, ".dot", d['subreddit'])
+        highlight(selector, element, d['subreddit'])
       })
       .on("mouseout", function(d) {
-        unHighlight(basePlot, ".rect", d['subreddit'])
-        unHighlight(basePlot, ".dot", d['subreddit'])
-      });
+        unHighlight(selector, element, d['subreddit'])
+      })
+      .transition()
+      .duration(2000)
+      .style("opacity", 1);
+
+  
 }
+
+var scatterPlotInit = false;
 
 var scatterPlot = function(data) {
 
+  if (!scatterPlotInit) {
+    scatterPlotInit = true;
+    xScale = d3.scale.linear().range([yAxisPadding, width_batter - 20])
+    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+    yScale = d3.scale.linear().range([height_batter, margin_batter.top])
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+    // Do the axes like we did with the bar chart
+    scatterplot.append("g")
+      .attr("class", "x axis scatterX")
+      .attr("transform", "translate(0," + height_batter + ")")
+      .attr("fill", "white")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width_batter - 10)
+      .attr("y", -6)
+      .attr("fill", "white")
+      .style("text-anchor", "end")
+      .text(xVariable);
+
+    scatterplot.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + yAxisPadding + ",0)")
+      .attr("fill", "white")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label yVariable")
+      .attr("transform", "translate(" + -5 + "," + 25 + ")" + "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .attr("fill", "white")
+      .style("text-anchor", "end")
+      .text(yVariable);
+
+    scatterplot.append("text")
+      .attr("x", width_batter / 2 + 100)             
+      .attr("y", margin_batter.top - 10)
+      .style("font-size", "14px") 
+      .style("text-anchor", "middle")
+      .attr("fill", "white")
+      .attr("class", "scatterTitle")
+      .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
+  }
+
   // This should probably be made enter-update-exit
-  basePlot.selectAll('.rect').remove()
-  basePlot.selectAll(".axis").remove()
-  basePlot.selectAll('.dot').remove()
-  basePlot.selectAll('.subreddit_text').remove()
+  //basePlot.selectAll('.rect').remove()
+  //basePlot.selectAll(".axis").remove()
+  //basePlot.selectAll('.dot').remove()
+  //basePlot.selectAll('.subreddit_text').remove()
+
+  // Hide the scatterplot
+  d3.select(".barchart")
+    .style("display", "none")
+  d3.select(".scatterplot")
+    .style("display", "inline")
+  barChartInit = false;
 
   // Now create the scales for the scatterplot
-  var xScale = d3.scale.linear().range([yAxisPadding, width_batter - 20])
-  var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
-
-  var yScale = d3.scale.linear().range([height_batter, margin_batter.top])
-  var yAxis = d3.svg.axis().scale(yScale).orient("left");
-
   var minX = d3.min(data, function(d) {
     return +d[xVariable];
   })
@@ -914,50 +1019,41 @@ var scatterPlot = function(data) {
   })
   yScale.domain([minY, maxY]).nice();
 
-  // Do the axes like we did with the bar chart
-  basePlot.append("g")
-    .attr("class", "x axis scatterX")
-    .attr("transform", "translate(0," + height_batter + ")")
-    .attr("fill", "white")
+  xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+  yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+  // Set up the axes and labels
+  scatterplot.selectAll("g.x.axis")
     .call(xAxis)
-  .append("text")
-    .attr("class", "label")
-    .attr("x", width_batter)
-    .attr("y", -6)
-    .attr("fill", "white")
-    .style("text-anchor", "end")
-    .text(xVariable);
-  basePlot.selectAll("text")
+
+  // Set up the y axis
+  scatterplot.selectAll("g.y.axis")
+    .call(yAxis)
+
+  scatterplot.selectAll("text")
     .text(function(d) {
       return abbreviate_thousands(d);
     })
 
-  basePlot.append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate(" + yAxisPadding + ",0)")
-      .attr("fill", "white")
-      .call(yAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("transform", "translate(" + -5 + "," + 25 + ")" + "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .attr("fill", "white")
-      .style("text-anchor", "end")
-      .text(yVariable);
-
-  // Draw out the basePlotplot
-  basePlot.selectAll(".dot")
+  //Create the bars
+  var scatterSelection = scatterplot.selectAll(".dot")
     .data(data)
-  .enter().append("circle")
-    .attr("class", "dot")
-    .attr("r", circleSize)
+
+  scatterSelection.exit().remove();
+
+  scatterSelection.enter().append("circle")
     .attr("cx", function(d) {
       return Math.random() * (width_batter - 100) + 100;
     })
     .attr("cy", function(d) {
       return Math.random() * (height_batter - 15);
     })
+
+  scatterplot.select(".scatterTitle")
+    .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
+
+  scatterSelection.attr("class", "dot")
+    .attr("r", circleSize)
     .style("fill", function(d) {
       return color(cValue(d));
     })
@@ -967,17 +1063,17 @@ var scatterPlot = function(data) {
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
       d3.select(this).attr("r", circleSize(d) * 2)
-      highlight(basePlot, ".dot", d['subreddit'])
+      highlight(barchart, ".dot", d['subreddit'])
     })
     .on("mouseout", function(d) {
       d3.select(this).attr("r", circleSize(d))
-      unHighlight(basePlot, ".dot", d['subreddit'])
+      unHighlight(barchart, ".dot", d['subreddit'])
       return tooltip.style("opacity", 0);
     })
     .on("click", function(d) {
       onclick_compare(d['subreddit']);
     })
-    .transition("grow")
+    .transition("scatter")
     .duration(2000)
     .attr("cx", function(d) {
       return xScale(d[xVariable])
@@ -985,6 +1081,11 @@ var scatterPlot = function(data) {
     .attr("cy", function(d) {
       return yScale(d[yVariable])
     });
+
+    scatterplot.selectAll(".yVariable")
+      .text(yVariable)
+
+  makeBatterLegend(data, scatterplot, '.dot')
 }
 
 var count_accessor = function(d) {
