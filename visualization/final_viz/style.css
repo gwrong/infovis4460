@@ -5,7 +5,7 @@ body {
   background: #202020;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  padding-top: 150px;
+  padding-top: 165px;
 }
 
 html {
@@ -140,4 +140,23 @@ rect {
 
 #filtersCell {
   line-height:8em
+}
+
+.notify {
+  color: black;
+}
+
+.about {
+  height: 35px;
+}
+
+.modal-title, .modal-title, .modal-body {
+  color: black;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  text-align: left;
+}
+
+.modal-title {
+  font-size: 18px;
 }

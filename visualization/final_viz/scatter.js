@@ -192,7 +192,8 @@ var subreddits = [];
 
 // Circle size will vary on the scatterplot
 var circleSize = function(d) {
-  return Math.log(d['num_comments'] / 100) * 0.8;
+  return 7;
+  //return Math.log(d['num_comments'] / 100) * 0.8;
 }
 
 // Assign a color to every subreddit
@@ -872,6 +873,11 @@ var refreshBarChart = function(data) {
     .on("click", function(d) {
       onclick_compare(d);
     });
+
+  barchart.selectAll(".y.axis .tick text")
+      .text(function(d) {
+        return abbreviate_thousands(d);
+      })
 
   barchart.selectAll(".yVariable")
     .text(yVariable)
