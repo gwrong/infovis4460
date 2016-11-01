@@ -5,7 +5,7 @@ body {
   background: #202020;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  padding-top: 110px;
+  padding-top: 150px;
 }
 
 html {
@@ -133,11 +133,11 @@ td {
   background: #202020;
 }
 
-.filter-picker {
-    left: 51.75% !important;
-    margin-left: -70px;
-}
 
 rect {
   stroke: 10px;
+}
+
+#filtersCell {
+  line-height:8em
 }

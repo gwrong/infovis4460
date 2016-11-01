@@ -13,7 +13,7 @@
     <link href='chord.css' rel='stylesheet' type='text/css'>
   </head>
   <body>
-    <div class="navbar-fixed-top">
+    <div class="navbar-fixed-top" style="border-style: solid">
         <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>
         <input id="month-slider" type="text" style="width: 700px; fill: white"
           data-provide="slider"
@@ -24,43 +24,35 @@
           data-slider-step="1"
           data-slider-value="8"
           data-slider-tooltip="hide"></input>
+        <br><br>
+        <table>
+        <tr>
+        <td>
+            <span style="vertical-align: middle;" class="h4">X Variable:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="xPicker"></select>
+        </td>
+        <td>
+            <span style="vertical-align: middle;" class="h4">Y Variable:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="yPicker"></select>
+        </td>
+        <td>
+            <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="filter-picker"></select>
+        </td>
+        </tr>
+        </table>
         <br>
-        <select class="selectpicker" id="filter-picker"></select>
     </div>
+
+    <div class="sorter sameLine"></div>
     <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
     <select class="selectpicker" id="subredditsubset-picker"></select>
     <br><br>
     <div class="wrap">
-        <table>
-            <tr>
-                <td>
-                    <div class="yPicker sameLine">
-                        <center><p class="h4 sameLine">Y Variable:</p></center>
-                      </div>
-                    <br><br><br><br><br><br><br><br>
-                </td>
-                <td>
-                    <div class="barchart sameLine"></div>
-                    <div class="scatterplot sameLine"></div>
-                    
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <center>
-                    <div class="sorter sameLine"></div>
-                    <div class="xPicker sameLine" style="margin-left: 10px">
-                        <p class="h4 sameLine">X Variable:</p>
-                      </div>
-                    </center>
-                </td>
-            </tr>
-        </table>
+        <div class="barchart sameLine"></div>
+        <div class="scatterplot sameLine"></div>
     </div>
-
     <br>
-      
     <div class="sameLine">
         <div id="heatmap1" class="sameLine"></div>
         <div id="heatmap2" class="sameLine"></div>

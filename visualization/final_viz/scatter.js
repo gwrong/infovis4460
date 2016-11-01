@@ -300,15 +300,13 @@ d3.selectAll(".sorter")
   })
 
 // Add the select list for department filtering
-var xPicker = d3.select(".xPicker")
-    .append("select")
-    .attr("class", "xDropdown form-control sameLine")
-    .attr("style", "margin-left: 15px")
+var xPicker = d3.select("#xPicker")
+    .attr("class", "selectpicker xDropdown sameLine")
+    .attr("style", "margin-left: 15px;");
 
 // Add the select list for department filtering
-var yPicker = d3.select(".yPicker")
-    .append("select")
-    .attr("class", "yDropdown form-control sameLine")
+var yPicker = d3.select("#yPicker")
+    .attr("class", "selectpicker yDropdown sameLine")
     .attr("style", "margin-left: 15px")
 
 // Load select items from the CSV (departments)
@@ -595,7 +593,7 @@ function indexOfSubreddit(data, subreddit) {
 
 // batter = scatter/bar chart
 var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
-var width_batter = 750 - margin_batter.left - margin_batter.right;
+var width_batter = 900 - margin_batter.left - margin_batter.right;
 var height_batter = 500 - margin_batter.top - margin_batter.bottom;
 var padding = 140;
 var yAxisPadding = 90;
