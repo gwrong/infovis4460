@@ -811,15 +811,15 @@ var refreshBarChart = function(data) {
     .attr("height", function(d) {
         return 0;
     })
+    .attr("fill", function() {
+      return "hsl(" + Math.random() * 360 + ",100%,50%)"
+    });
   
   barDataSelection.attr("class", "rect subreddit")
     .attr("x", function(d) {
       return xScale(d['subreddit']);
     })
     .attr("width", xScale.rangeBand())
-    .style("fill", function(d) {
-      return color(cValue(d));
-    })
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
       tooltip.html(getToolTip(d))
@@ -841,6 +841,9 @@ var refreshBarChart = function(data) {
     })
     .attr("y", function(d) {
       return yScale(d[yVariable]);
+    })
+    .style("fill", function(d) {
+      return color(cValue(d));
     });
 
 
