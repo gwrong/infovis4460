@@ -94,16 +94,44 @@ d3.csv("subreddit_lookup.csv", function(cities) {
     });
 
     function mouseover(d, i) {
+      chord.transition()
+        .delay(function(p, j) {
+          return j;
+        })
+        .duration(500)
+        .style("opacity",function(p) {
+          if (p.source.index != i && p.target.index != i) {
+            return 0;
+          } else {
+            return 1;
+          }
+      });
+        /*
       chord.classed("fade", function(p) {
         return p.source.index != i
             && p.target.index != i;
       });
+*/
     }
 
     function remove_fade(d, i) {
+      chord.transition()
+        .delay(function(p, j) {
+          return j;
+        })
+        .duration(500)
+        .style("opacity",function(p) {
+          if (p.source.index != i && p.target.index != i) {
+            return 1;
+          } else {
+            return 0;
+          }
+      });
+        /*
       chord.classed("fade", function(p) {
         return false
       });
+*/
     }
   });
 });
