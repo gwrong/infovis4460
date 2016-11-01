@@ -358,12 +358,14 @@ yDrop.text(function(d) {
 var wordcloud1 = d3.select(".wordcloud1Container")
     .append("img")
     .attr("class", "wordcloud1")
-    .attr("src", "RC_2016-08/" + cur_subreddit2)
+    .attr("src", "RC_2016-08/" + cur_subreddit1)
+    .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
 
 var wordcloud2 = d3.select(".wordcloud2Container")
     .append("img")
     .attr("class", "wordcloud2")
-    .attr("src", "RC_2016-08/" + cur_subreddit1)
+    .attr("src", "RC_2016-08/" + cur_subreddit2)
+    .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
 
 // Refreshes all the data on the screen
 var refresh = function() {
@@ -436,12 +438,15 @@ var createCharts = function() {
     // Put the actual image path. We set our default comparison subreddits
     d3.select(".wordcloud1")
       .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
+      .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
+
 
     d3.select(".wordcloud1Title")
       .html("Word cloud for " + cur_subreddit1)
 
     d3.select(".wordcloud2")
       .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
+      .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
 
     d3.select(".wordcloud2Title")
       .html("Word cloud for " + cur_subreddit2)
@@ -716,7 +721,6 @@ var refreshBarChart = function(data) {
   // Hide the scatterplot
   d3.select(".scatterplot")
     .style("display", "none")
-  // Hide the scatterplot
   d3.select(".barchart")
     .style("display", "inline")
   scatterPlotInit = false;
@@ -772,11 +776,6 @@ var refreshBarChart = function(data) {
       .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
     }
   }
-  // This should probably be made enter-update-exit
-  //barchart.selectAll(".axis").remove()
-  //basePlot.selectAll('.rect').remove()
-  //basePlot.selectAll('.dot').remove()
-  //basePlot.selectAll('.barTitle').remove()
 
   // Scale the data
   xScale.domain(data.map(function(d) {
