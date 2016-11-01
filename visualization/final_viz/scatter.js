@@ -762,7 +762,8 @@ var refreshBarChart = function(data) {
       .style("text-anchor", "end")
       .text("Subreddit");
 
-    barchart.append("text")
+    if (barchart.selectAll(".barTitle").size() < 1) {
+      barchart.append("text")
       .attr("x", width_batter / 2 + 100)             
       .attr("y", margin_batter.top - 10)
       .style("font-size", "14px") 
@@ -770,6 +771,7 @@ var refreshBarChart = function(data) {
       .attr("fill", "white")
       .attr("class", "barTitle")
       .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
+    }
   }
   // This should probably be made enter-update-exit
   //barchart.selectAll(".axis").remove()
@@ -976,6 +978,7 @@ var scatterPlot = function(data) {
       .style("text-anchor", "end")
       .text(yVariable);
 
+
     scatterplot.append("text")
       .attr("x", width_batter / 2 + 100)             
       .attr("y", margin_batter.top - 10)
@@ -1063,11 +1066,11 @@ var scatterPlot = function(data) {
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
       d3.select(this).attr("r", circleSize(d) * 2)
-      highlight(barchart, ".dot", d['subreddit'])
+      highlight(scatterplot, ".dot", d['subreddit'])
     })
     .on("mouseout", function(d) {
       d3.select(this).attr("r", circleSize(d))
-      unHighlight(barchart, ".dot", d['subreddit'])
+      unHighlight(scatterplot, ".dot", d['subreddit'])
       return tooltip.style("opacity", 0);
     })
     .on("click", function(d) {
@@ -1284,7 +1287,7 @@ var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
 var width_multiples = 200 - margin_multiples.left - margin_multiples.right;
 var height_multiples = 200 - margin_multiples.top - margin_multiples.bottom;
 var padding_multiples = 200;
-var yAxisPadding_multiples = 100;
+var yAxisPadding_multiples = 90;
 
 var clearSmallMultiples = function() {
   d3.selectAll(".smallMultiplesGraph").remove()
