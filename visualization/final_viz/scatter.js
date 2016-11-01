@@ -465,7 +465,6 @@ var createCharts = function() {
       scatterPlot(data)
     }
 
-    clearSmallMultiples();
     var keys = Object.keys(axisOptions);
     for (var i = 0; i < keys.length; i++) {
       if (axisOptions[keys[i]] !== 'subreddit') {
@@ -795,8 +794,6 @@ var refreshBarChart = function(data) {
 
   xAxis = d3.svg.axis().scale(xScale).orient("bottom");
   yAxis = d3.svg.axis().scale(yScale).orient("left");
-
-  console.log(xAxis)
 
   barchart.select(".barTitle")
     .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
@@ -1289,9 +1286,7 @@ var height_multiples = 200 - margin_multiples.top - margin_multiples.bottom;
 var padding_multiples = 200;
 var yAxisPadding_multiples = 90;
 
-var clearSmallMultiples = function() {
-  d3.selectAll(".smallMultiplesGraph").remove()
-}
+var smallMultiplesInit = 0;
 
 var refreshSmallMultiples = function(data, yMultiples) {
   multiplesData = data.slice();
@@ -1299,18 +1294,46 @@ var refreshSmallMultiples = function(data, yMultiples) {
     return d['subreddit'] === cur_subreddit1 || d['subreddit'] == cur_subreddit2;
   })
 
-  var multiplesPlot = d3.select(".smallMultiples")
-    .append("svg")
-    .attr("class", "smallMultiplesGraph")
-    .style("width", width_multiples + padding_multiples + "px") // padding with second scatter
-    .style("height", height_multiples + margin_multiples.bottom + margin_multiples.top + "px")  //svg defalt size: 300*150
-    .append("g")
-
   var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 40], 0.25);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
   var yScale = d3.scale.linear().range([height_multiples, margin_multiples.top])
   var yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+  if (smallMultiplesInit < 7) {
+    smallMultiplesInit += 1;
+    var multiplesPlot = d3.select(".smallMultiples")
+      .append("svg")
+      .attr("class", "smallMultiplesGraph " + yMultiples)
+      .style("width", width_multiples + padding_multiples + "px") // padding with second scatter
+      .style("height", height_multiples + margin_multiples.bottom + margin_multiples.top + "px")  //svg defalt size: 300*150
+      .append("g")
+
+    // Set up the axes and labels
+    multiplesPlot.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height_multiples + ")")
+      .attr("fill", "white")
+      .call(xAxis)
+
+    // Set up the y axis
+    multiplesPlot.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + yAxisPadding + "," + 0 + ")")
+      .attr("fill", "white")
+      .call(yAxis)
+
+    multiplesPlot.append("text")
+      .attr("x", width_multiples - 30)             
+      .attr("y", margin_multiples.top - 10)
+      .attr("class", "smallMultiplesTitle")
+      .style("font-size", "14px") 
+      .style("text-anchor", "middle")
+      .attr("fill", "white")
+      .text(inverseAxisOptions[yMultiples]);
+  }
+
+  multiplesPlot = d3.select("." + yMultiples)
 
   // Scale the data
   xScale.domain(multiplesData.map(function(d) {
@@ -1326,72 +1349,32 @@ var refreshSmallMultiples = function(data, yMultiples) {
   })
   yScale.domain([minY, maxY]).nice();
 
-  // Set up the axes and labels
-  multiplesPlot.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height_multiples + ")")
-      .attr("fill", "white")
-      .call(xAxis)
+  xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+  yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-
-  multiplesPlot.selectAll("text")
-    .style("text-anchor", "left")
-    .style("font-size", function(d) {
-        size = 12;
-        if (cur_subreddit1.length > 9 || cur_subreddit2.length > 9) {
-          size = 10;
-        }
-        return size + "px"
-    })
-    .on("mouseover", function(subreddit) {
-      d = multiplesData[indexOfSubreddit(multiplesData, subreddit)]
-      tooltip.style("opacity", 1);
-      tooltip.html(getToolTip(d))
-        .style("left", d3.event.pageX + 5 + "px")
-        .style("top", d3.event.pageY + 5 + "px")
-    })
-    .on("mouseout", function() {
-      return tooltip.style("opacity", 0);
-    })
-    .text(function(d) {
-      return abbreviateSubreddit(d);
-    })
-
-  // Set up the y axis
-  multiplesPlot.append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate(" + yAxisPadding + "," + 0 + ")")
-      .attr("fill", "white")
-      .call(yAxis)
-
-  multiplesPlot.selectAll("text")
-  .text(function(d) {
-    return abbreviate_thousands(d);
-  });
-
-  multiplesPlot.append("text")
-    .attr("x", width_multiples - 30)             
-    .attr("y", margin_multiples.top - 10)
-    .style("font-size", "14px") 
-    .style("text-anchor", "middle")
-    .attr("fill", "white")
+  multiplesPlot.select(".smallMultiplesTitle")
     .text(inverseAxisOptions[yMultiples]);
 
-  //Create the bars
-  multiplesPlot.selectAll(".rect")
+  var smallMultiplesSelection = multiplesPlot.selectAll(".rect")
     .data(multiplesData)
-    .enter().append("rect")
-    .attr("class", "rect")
+
+  smallMultiplesSelection.exit().remove();
+
+  smallMultiplesSelection.enter().append("rect")
     .attr("y", function(d) {
       return height_multiples;
     })
+    .attr("height", function(d) {
+        return 0;
+    })
+    .attr("class", "rect")
+  
+  //Create the bars
+  smallMultiplesSelection
     .attr("x", function(d) {
       return xScale(d['subreddit']);
     })
     .attr("width", xScale.rangeBand())
-    .attr("height", function(d) {
-        return 0;
-    })
     .style("fill", function(d) {
       return color(cValue(d));
     })
@@ -1414,6 +1397,83 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .attr("height", function(d) {
       return height_multiples - yScale(d[yMultiples + cur_filter]);
     })
+
+
+/*
+  // Rotate labels so they are easier to read
+  barchart.selectAll(".x.axis .tick text")
+    .attr("transform", "translate(" + 10 + "," + 5 + ") rotate(50)")
+    .style("text-anchor", "start")
+    .on("mouseover", function(subreddit) {
+      d = data[indexOfSubreddit(data, subreddit)]
+      tooltip.style("opacity", 1);
+      tooltip.html(getToolTip(d))
+        .style("left", d3.event.pageX + 5 + "px")
+        .style("top", d3.event.pageY + 5 + "px")
+      highlight(barchart, '.rect', subreddit)
+    })
+    .on("mouseout", function(subreddit) {
+      unHighlight(barchart, '.rect', subreddit)
+      return tooltip.style("opacity", 0);
+    })
+    .on("click", function(d) {
+      onclick_compare(d);
+    });
+
+  barchart.selectAll(".yVariable")
+    .text(yVariable)
+*/
+
+
+  // Scale the data
+  xScale.domain(multiplesData.map(function(d) {
+    return d['subreddit'];
+  }));
+
+  var minY = d3.min(multiplesData, function(d) {
+    return +d[yMultiples + cur_filter];
+  })
+  minY *= 0.4
+  var maxY = d3.max(multiplesData, function(d) {
+    return +d[yMultiples + cur_filter];
+  })
+  yScale.domain([minY, maxY]).nice();
+
+  // Set up the axes and labels
+  multiplesPlot.selectAll("g.x.axis")
+    .call(xAxis)
+
+  // Set up the y axis
+  multiplesPlot.selectAll("g.y.axis")
+    .call(yAxis)
+
+  multiplesPlot.selectAll(".x.axis .tick text")
+    .style("text-anchor", "left")
+    .style("font-size", function(d) {
+        size = 12;
+        if (cur_subreddit1.length > 9 || cur_subreddit2.length > 9) {
+          size = 10;
+        }
+        return size + "px"
+    })
+    .on("mouseover", function(subreddit) {
+      d = multiplesData[indexOfSubreddit(multiplesData, subreddit)]
+      tooltip.style("opacity", 1);
+      tooltip.html(getToolTip(d))
+        .style("left", d3.event.pageX + 5 + "px")
+        .style("top", d3.event.pageY + 5 + "px")
+    })
+    .on("mouseout", function() {
+      return tooltip.style("opacity", 0);
+    })
+    .text(function(d) {
+      return abbreviateSubreddit(d);
+    })
+
+  multiplesPlot.selectAll(".y.axis .tick text")
+  .text(function(d) {
+    return abbreviate_thousands(d);
+  });
 
   multiplesPlot.selectAll('.legend').remove()
 
