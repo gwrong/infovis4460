@@ -868,10 +868,14 @@ var refreshBarChart = function(data) {
 
   // Set up the axes and labels
   barchart.selectAll("g.x.axis")
+    .transition()
+    .duration(1000)
     .call(xAxis)
 
   // Set up the y axis
   barchart.selectAll("g.y.axis")
+    .transition()
+    .duration(1000)
     .call(yAxis)
 
   // Rotate labels so they are easier to read
@@ -1050,10 +1054,14 @@ var scatterPlot = function(data) {
 
   // Set up the axes and labels
   scatterplot.selectAll("g.x.axis")
+    .transition()
+    .duration(1000)
     .call(xAxis)
 
   // Set up the y axis
   scatterplot.selectAll("g.y.axis")
+    .transition()
+    .duration(1000)
     .call(yAxis)
 
   scatterplot.selectAll("text")
@@ -1467,10 +1475,14 @@ var refreshSmallMultiples = function(data, yMultiples) {
 
   // Set up the axes and labels
   multiplesPlot.selectAll("g.x.axis")
+    .transition()
+    .duration(1000)
     .call(xAxis)
 
   // Set up the y axis
   multiplesPlot.selectAll("g.y.axis")
+    .transition()
+    .duration(1000)
     .call(yAxis)
 
   multiplesPlot.selectAll(".x.axis .tick text")
