@@ -5,6 +5,8 @@ var cur_time_dataset = null;
 var cur_subreddit = null;
 var cur_subreddit1 = null;
 var cur_subreddit2 = null;
+var old_cur_subreddit1 = null;
+var old_cur_subreddit2 = null;
 var cur_filter = null;
 var cur_filter_label = null;
 var initialized_heatmap = false;
@@ -436,22 +438,34 @@ var createCharts = function() {
       cur_subreddit2 = subreddits[1];
     }
 
-    // Put the actual image path. We set our default comparison subreddits
-    d3.select(".wordcloud1")
-      .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
-      .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
+    if (old_cur_subreddit1 != cur_subreddit1) {
+      // Put the actual image path. We set our default comparison subreddits
+      d3.select(".wordcloud1")
+        .style("opacity", 0)
+        .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
+        .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
+        .transition()
+        .duration(2000)
+        .style("opacity", 1)
 
-
-    d3.select(".wordcloud1Title")
-      .html("Word cloud for " + cur_subreddit1)
-
-    d3.select(".wordcloud2")
+      d3.select(".wordcloud1Title")
+        .html("Word cloud for " + cur_subreddit1)
+      old_cur_subreddit1 = cur_subreddit1
+    }
+    if (old_cur_subreddit2 != cur_subreddit2) {
+      d3.select(".wordcloud2")
+      .style("opacity", 0)
       .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
       .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
+      .transition()
+      .duration(2000)
+      .style("opacity", 1)
 
-    d3.select(".wordcloud2Title")
-      .html("Word cloud for " + cur_subreddit2)
-
+      d3.select(".wordcloud2Title")
+        .html("Word cloud for " + cur_subreddit2)
+      old_cur_subreddit2 = cur_subreddit2;
+    }
+    
     if (cur_filter == null) {
       cur_filter_label = 'All Comments';
       cur_filter = filter_labels[cur_filter_label];
@@ -530,6 +544,8 @@ var initialize_pickers = function() {
   $('#subredditsubset-picker').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
     var subreddit_subset = $(e.currentTarget).val();
     cur_chosen_subreddits = subreddit_subsets[subreddit_subset];
+    old_cur_subreddit1 = cur_subreddit1
+    old_cur_subreddit2 = cur_subreddit2
     cur_subreddit1 = cur_chosen_subreddits[0]
     cur_subreddit2 = cur_chosen_subreddits[1]
     refresh();
@@ -616,8 +632,10 @@ var scatterplot = d3.select(".scatterplot")
 // Assign the current subreddit based on the type of click
 var onclick_compare = function(subreddit) {
   if (!cntrlIsPressed) {
+    old_cur_subreddit1 = cur_subreddit1
     cur_subreddit1 = subreddit;
   } else {
+    old_cur_subreddit2 = cur_subreddit2
     cur_subreddit2 = subreddit;
   }
   refresh()
