@@ -32,7 +32,6 @@ svg.append("circle")
 d3.csv("subreddit_lookup.csv", function(cities) {
   d3.json("subreddit_mentions.json", function(matrix) {
 
-    console.log(matrix)
     var overall_mentions = 0;
     var dest_mention_totals = []
     for (var i = 0; i < matrix.length; i++) {
@@ -100,11 +99,6 @@ d3.csv("subreddit_lookup.csv", function(cities) {
 
     // Mouseover
     chord.append("title").text(function(d) {
-      if (cities[d.source.index].name === "AskReddit") {
-        console.log(d)
-        console.log(cities[d.source.index])
-        console.log(cities[d.target.index])
-      }
       return cities[d.source.index].name
           + " → " + cities[d.target.index].name
           + ": " + d.source.value + " mentions (" + formatPercent(d.source.value / dest_mention_totals[d.target.index]) +  " of destination mentions)"

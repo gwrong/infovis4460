@@ -148,6 +148,7 @@ var dataset_labels = {
   'June 2016': "core_files/reddit_RC_2016-06.csv",
   'July 2016': "core_files/reddit_RC_2016-07.csv",
   'August 2016': "core_files/reddit_RC_2016-08.csv",
+  'September 2016': "core_files/reddit_RC_2016-09.csv",
 }
 
 var time_dataset_labels = {
@@ -159,6 +160,7 @@ var time_dataset_labels = {
   'June 2016': "time_files/reddit_RC_2016-06_time_series.csv",
   'July 2016': "time_files/reddit_RC_2016-07_time_series.csv",
   'August 2016': "time_files/reddit_RC_2016-08_time_series.csv",
+  'September 2016': "time_files/reddit_RC_2016-09_time_series.csv",
 }
 
 // For the month slider, it is indexed by integers, so here's a lookup

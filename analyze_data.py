@@ -14,7 +14,7 @@ from time import time
 from wordcloud import WordCloud
 
 #Possible data files
-MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08']
+MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08', 'RC_2016-09']
 # Set this manually
 MONTH_FILE = 'RC_2016-01'
 LOOKUP_PATH = 'lookup_data'
@@ -23,6 +23,7 @@ RESULTS_PATH = 'results'
 TOP_POS_CUTOFF = 25
 TOP_NEG_CUTOFF = 15
 TOP_GODWIN_CUTOFF = 0
+TOP_SWEAR_CUTOFF = 35
 
 # Sentiment analysis words
 positive_emotion_words = set()
@@ -270,6 +271,11 @@ def compute_comments(comments, month_file):
     godwins_law_total_topgod = godwins_law_total.copy()
     swear_total_topgod = swear_total.copy()
 
+    positive_emotions_total_topswear = positive_emotions_total.copy()
+    negative_emotions_total_topswear = negative_emotions_total.copy()
+    godwins_law_total_topswear = godwins_law_total.copy()
+    swear_total_topswear = swear_total.copy()
+
     time_buckets = dict()
     for weekday in range(7):
         for hour in range(24):
@@ -281,6 +287,7 @@ def compute_comments(comments, month_file):
     time_buckets_toppos = time_buckets.copy()
     time_buckets_topneg = time_buckets.copy()
     time_buckets_topgod = time_buckets.copy()
+    time_buckets_topswear = time_buckets.copy()
 
     counter = 0
 
@@ -305,12 +312,16 @@ def compute_comments(comments, month_file):
     word_count_topgod = 0
     text_length_topgod = 0
 
+    word_count_topswear = 0
+    text_length_topswear  = 0
+
     comments_topcom = 0
     comments_botcom = 0
     comments_topauth = 0
     comments_toppos = 0
     comments_topneg = 0
     comments_topgod = 0
+    comments_topwswear = 0
     for comment in comments:
         if counter % 25000 == 0:
             print("At comment {} for some multiprocess".format(counter))
@@ -402,6 +413,17 @@ def compute_comments(comments, month_file):
                 compute_time_buckets(timestamp, time_buckets_topgod)
                 comments_topgod += 1
 
+            if comment_swear_score > TOP_SWEAR_CUTOFF:
+                word_count_topswear += len(words)
+                text_length_topswear += len(text)
+                compute_positive_emotions(text, positive_emotions_total_topswear)
+                compute_negative_emotions(text, negative_emotions_total_topswear)
+                compute_godwin(text, godwins_law_total_topswear)
+                compute_swear(text, swear_total_topswear)
+
+                compute_time_buckets(timestamp, time_buckets_topswear)
+                comments_topswear += 1
+
     return [
         word_count, text_length, len(comments), positive_emotions_total, negative_emotions_total, godwins_law_total, swear_total, time_buckets, subreddit_mentions,
         word_count_topcom, text_length_topcom, comments_topcom, positive_emotions_total_topcom, negative_emotions_total_topcom, godwins_law_total_topcom, swear_total_topcom, time_buckets_topcom,
@@ -409,7 +431,8 @@ def compute_comments(comments, month_file):
         word_count_topauth, text_length_topauth, comments_topauth, positive_emotions_total_topauth, negative_emotions_total_topauth, godwins_law_total_topauth, swear_total_topauth, time_buckets_topauth,
         word_count_toppos, text_length_toppos, comments_toppos, positive_emotions_total_toppos, negative_emotions_total_toppos, godwins_law_total_toppos, swear_total_toppos, time_buckets_toppos,
         word_count_topneg, text_length_topneg, comments_topneg, positive_emotions_total_topneg, negative_emotions_total_topneg, godwins_law_total_topneg, swear_total_topneg, time_buckets_topneg,
-        word_count_topgod, text_length_topgod, comments_topgod, positive_emotions_total_topgod, negative_emotions_total_topgod, godwins_law_total_topgod, swear_total_topgod, time_buckets_topgod
+        word_count_topgod, text_length_topgod, comments_topgod, positive_emotions_total_topgod, negative_emotions_total_topgod, godwins_law_total_topgod, swear_total_topgod, time_buckets_topgod,
+        word_count_topswear, text_length_topswear, comments_topswear, positive_emotions_total_topswear, negative_emotions_total_topswear, godwins_law_total_topswear, swear_total_topswear, time_buckets_topswear
     ]
 
 
@@ -433,10 +456,11 @@ def process_comments(month_file):
                          "num_comments_topauth,num_words_topauth,num_chars_topauth,avg_word_length_topauth,avg_words_per_comment_topauth,positive_score_topauth,negative_score_topauth,godwins_score_topauth,swear_score_topauth,"
                          "num_comments_toppos,num_words_toppos,num_chars_toppos,avg_word_length_toppos,avg_words_per_comment_toppos,positive_score_toppos,negative_score_toppos,godwins_score_toppos,swear_score_toppos,"
                          "num_comments_topneg,num_words_topneg,num_chars_topneg,avg_word_length_topneg,avg_words_per_comment_topneg,positive_score_topneg,negative_score_topneg,godwins_score_topneg,swear_score_topneg,"
-                         "num_comments_topgod,num_words_topgod,num_chars_topgod,avg_word_length_topgod,avg_words_per_comment_topgod,positive_score_topgod,negative_score_topgod,godwins_score_topgod,swear_score_topgod\n")
+                         "num_comments_topgod,num_words_topgod,num_chars_topgod,avg_word_length_topgod,avg_words_per_comment_topgod,positive_score_topgod,negative_score_topgod,godwins_score_topgod,swear_score_topgod,"
+                         "num_comments_topswear,num_words_topswear,num_chars_topswear,avg_word_length_topswear,avg_words_per_comment_topswear,positive_score_topswear,negative_score_topswear,godwins_score_topswear,swear_score_topswear\n")
     
     time_csv_file = open('reddit_{}_time_series.csv'.format(month_file), 'w')
-    time_csv_file.write('subreddit,weekday,hour,count,count_topcom,count_botcom,count_topauth,count_toppos,count_topneg,count_topgod\n')
+    time_csv_file.write('subreddit,weekday,hour,count,count_topcom,count_botcom,count_topauth,count_toppos,count_topneg,count_topgod,count_topswear\n')
 
     mention_adjacency_matrix = dict()
 
@@ -446,7 +470,7 @@ def process_comments(month_file):
         comment_counter = 0  # Count total comments
 
         # Must match the features array in type and length
-        overall_stats = [0] * 3 + [{}] * 6 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5
+        overall_stats = [0] * 3 + [{}] * 6 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5 + [0] * 3 + [{}] * 5
         comment_list = []
 
         data_file_name = os.path.join(path, subreddit[0].lower() + '.sorted')
@@ -667,6 +691,31 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
     time_buckets_topgod = overall_stats[56]
 
 
+    positive_counts_topswear = sorted(overall_stats[60].items(), reverse=True, key=operator.itemgetter(1))
+    negative_counts_topswear = sorted(overall_stats[61].items(), reverse=True, key=operator.itemgetter(1))
+    godwins_law_counts_topswear = sorted(overall_stats[62].items(), reverse=True, key=operator.itemgetter(1))
+    swear_counts_topswear = sorted(overall_stats[63].items(), reverse=True, key=operator.itemgetter(1))
+
+
+    num_words_topswear = overall_stats[57]
+    text_lengths_topswear = overall_stats[58]
+    num_comments_topswear = overall_stats[59]
+
+    if num_comments_topswear == 0:
+        num_comments_topswear = 1
+        num_words_topswear = 1
+
+    avg_word_length_topswear = text_lengths_topswear / float(num_words_topswear)
+    avg_words_per_comment_topswear = num_words_topswear / float(num_comments_topswear)
+
+    positive_score_topswear = compute_score(positive_counts_topswear, num_words_topswear, POSITIVE_MULTIPLIER)
+    negative_score_topswear = compute_score(negative_counts_topswear, num_words_topswear, NEGATIVE_MULTIPLIER)
+    godwins_score_topswear = compute_score(godwins_law_counts_topswear, num_words_topswear, GODWIN_MULTIPLIER)
+    swear_score_topswear = compute_score(swear_counts_topswear, num_words_topswear, SWEAR_MULTIPLIER)
+
+    time_buckets_topswear = overall_stats[64]
+
+
 
     template = ("{subreddit},{num_comments},{num_words},{num_chars},"
                 "{avg_word_length},{avg_words_per_comment},{positive_score},"
@@ -688,7 +737,10 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
                 "{negative_score_topneg},{godwins_score_topneg},{swear_score_topneg},"
                 "{num_comments_topgod},{num_words_topgod},{num_chars_topgod},"
                 "{avg_word_length_topgod},{avg_words_per_comment_topgod},{positive_score_topgod},"
-                "{negative_score_topgod},{godwins_score_topgod},{swear_score_topgod},\n")
+                "{negative_score_topgod},{godwins_score_topgod},{swear_score_topgod},"
+                "{num_comments_topswear},{num_words_topswear},{num_chars_topswear},"
+                "{avg_word_length_topswear},{avg_words_per_comment_topswear},{positive_score_topswear},"
+                "{negative_score_topswear},{godwins_score_topswear},{swear_score_topswear},\n")
 
     final_handle.write(template.format(
         subreddit=subreddit, num_comments=num_comments, num_words=num_words,
@@ -726,10 +778,15 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
         avg_words_per_comment_topgod=avg_words_per_comment_topgod,
         positive_score_topgod=positive_score_topgod, negative_score_topgod=negative_score_topgod,
         godwins_score_topgod=godwins_score_topgod,swear_score_topgod=swear_score_topgod,
+        num_comments_topswear=num_comments_topswear, num_words_topswear=num_words_topswear,
+        num_chars_topswear=text_lengths_topswear, avg_word_length_topswear=avg_word_length_topswear,
+        avg_words_per_comment_topswear=avg_words_per_comment_topswear,
+        positive_score_topswear=positive_score_topswear, negative_score_topswear=negative_score_topswear,
+        godwins_score_topswear=godwins_score_topswear,swear_score_topswear=swear_score_topswear,
     ))
     final_handle.flush()
 
-    template = '{subreddit},{weekday},{hour},{count},{count_topcom},{count_botcom},{count_topauth},{count_toppos},{count_topneg},{count_topgod}\n'
+    template = '{subreddit},{weekday},{hour},{count},{count_topcom},{count_botcom},{count_topauth},{count_toppos},{count_topneg},{count_topgod},{count_topswear}\n'
     for weekday in range(7):
         for hour in range(24):
             time_handle.write(template.format(
@@ -740,7 +797,8 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
                 count_topauth=time_buckets_topauth[(weekday, hour)],
                 count_toppos=time_buckets_toppos[(weekday, hour)],
                 count_topneg=time_buckets_topneg[(weekday, hour)],
-                count_topgod=time_buckets_topgod[(weekday, hour)]
+                count_topgod=time_buckets_topgod[(weekday, hour)],
+                count_topswear=time_buckets_topswear[(weekday, hour)]
             ))
     time_handle.flush()
 
@@ -1017,11 +1075,53 @@ def sort_sentiment_dicts():
         file = open(file_name, 'w')
         file.write(repr(words))
 
+def combine_files():
+    path = './visualization/final_viz/core_files'
+    core_files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and 'RC' in f]
+    file_number = 0;
+    with open(os.path.join(path, 'combined_core.csv'), 'w') as combined_core:
+        for file_name in core_files:
+            file_number += 1
+            with open(os.path.join(path, file_name), 'r') as core_file:
+                for line in core_file:
+                    line = line.rstrip()
+                    month = file_name.split('-')[-1].split('.')[0]
+                    print(month)
+                    elements = line.split(',')
+                    if 'num_comments' in line and file_number == 1:
+                        new_line = ','.join([elements[0]] + ['month'] + elements[1:])
+                    elif 'num_comments' in line and file_number > 1:
+                        continue
+                    else:
+                        new_line = ','.join([elements[0]] + [month] + elements[1:])
+                    combined_core.write(new_line + '\n')
+
+    path = './visualization/final_viz/time_files'
+    time_files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and 'RC' in f]
+    file_number = 0;
+    with open(os.path.join(path, 'combined_time.csv'), 'w') as combined_time:
+        for file_name in time_files:
+            file_number += 1
+            with open(os.path.join(path, file_name), 'r') as core_file:
+                for line in core_file:
+                    line = line.rstrip()
+                    month = file_name.split('-')[-1].split('.')[0].split('_')[0]
+                    print(month)
+                    elements = line.split(',')
+                    if 'weekday' in line and file_number == 1:
+                        new_line = ','.join([elements[0]] + ['month'] + elements[1:])
+                    elif 'weekday' in line and file_number > 1:
+                        continue
+                    else:
+                        new_line = ','.join([elements[0]] + [month] + elements[1:])
+                    combined_time.write(new_line + '\n')
+
+
 
 if __name__ == "__main__":
     t0 = time()
 
-    for month_file in MONTH_FILES[5:]:
+    for month_file in MONTH_FILES:
         print("Running month {}".format(month_file))
         word_clouds(month_file)
 
@@ -1037,4 +1137,5 @@ if __name__ == "__main__":
         print("Running month {}".format(month_file))
         process_comments(month_file)
     print("Took {} seconds to run process".format(time() - t0))
+    #combine_files()
     '''
