@@ -14,7 +14,7 @@ from time import time
 from wordcloud import WordCloud
 
 #Possible data files
-MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08']
+MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08', 'RC_2016-09']
 # Set this manually
 MONTH_FILE = 'RC_2016-01'
 LOOKUP_PATH = 'lookup_data'
@@ -1021,16 +1021,17 @@ def sort_sentiment_dicts():
 if __name__ == "__main__":
     t0 = time()
 
-    for month_file in MONTH_FILES[5:]:
+    '''
+    for month_file in MONTH_FILES[-1:]:
         print("Running month {}".format(month_file))
         word_clouds(month_file)
-
     '''
-    
-    for month_file in MONTH_FILES:
+
+    for month_file in MONTH_FILES[-1:]:
         print("Running month {}".format(month_file))
         comment_author_percentiles(month_file)
     
+    '''
     #top_occurring()
     #word_clouds()
     for month_file in MONTH_FILES:

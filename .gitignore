@@ -21,5 +21,8 @@ data/RC_2016-06/by_subreddit
 
 data/RC_2016-07/RC_2016-07.bz2
 data/RC_2016-07/by_subreddit
+
+data/RC_2016-09/RC_2016-09.bz2
+data/RC_2016-09/by_subreddit
 wordclouds/*
 *.pyc
