@@ -13,9 +13,8 @@ var initialized_heatmap = false;
 var sort_by = null;
 var cur_chosen_subreddits = null;
 var initialized_pickers = false;
-
 var subreddit_subsets = {
-  'Top 25': [
+  "Top 25 by Comments": [
     'relationships',
     'gifs',
     'nba',
@@ -42,7 +41,36 @@ var subreddit_subsets = {
     'politics',
     'AskReddit',
   ],
-  'Political': [
+
+  "Top 25 by Subscribers": [
+    'AskReddit',
+    'funny',
+    'todayilearned',
+    'pics',
+    'science',
+    'worldnews',
+    'IAmA',
+    'announcements',
+    'videos',
+    'gaming',
+    'movies',
+    'blog',
+    'Music',
+    'aww',
+    'news',
+    'gifs',
+    'explainlikeimfive',
+    'askscience',
+    'EarthPorn',
+    'books',
+    'television',
+    'LifeProTips',
+    'mildlyinteresting',
+    'DIY',
+    'Showerthoughts',
+  ],
+
+  "Political": [
     'politics',
     'The_Donald',
     'Libertarian',
@@ -53,22 +81,11 @@ var subreddit_subsets = {
     'democrats',
     'Republican',
     'hillaryclinton',
+    'PoliticalHumor',
+    'HillaryForPrison',
   ],
-  'Science, History, Technology': [
-    'science',
-    'askscience',
-    'space',
-    'Astronomy',
-    'gadgets',
-    'Futurology',
-    'technology',
-    'Android',
-    'iphone',
-    'history',
-    'AskHistorians',
-    'engineering',
-  ],
-  'University': [
+
+  "University": [
     'rit',
     'ucla',
     'berkeley',
@@ -85,19 +102,8 @@ var subreddit_subsets = {
     'UVA',
     'uofmn',
   ],
-  'Miscellaneous': [
-    'meirl',
-    'nosleep',
-    'woahdude',
-    'DeepIntoYouTube',
-    'SubredditSimulator',
-    'depression',
-    'cringe',
-    'Showerthoughts',
-    'travel',
-    'wikipedia',
-  ],
-  'Sports': [
+
+  "Sports": [
     'nba',
     'soccer',
     'hockey',
@@ -118,6 +124,79 @@ var subreddit_subsets = {
     'tabletennis',
     'Bowling',
     'volleyball',
+    'theocho',
+  ],
+
+  "Science, History, Technology": [
+    'science',
+    'askscience',
+    'space',
+    'Astronomy',
+    'gadgets',
+    'Futurology',
+    'technology',
+    'Android',
+    'iphone',
+    'history',
+    'AskHistorians',
+    'engineering',
+    'wikipedia',
+    'EverythingScience',
+    'geek',
+    'tech',
+    'HistoryPorn',
+    'badhistory',
+  ],
+
+  "NSFW": [
+    'gonewild',
+    'nsfw',
+    'ImGoingToHellForThis',
+    'RealGirls',
+    'NSFW_GIF',
+    'FiftyFifty',
+    'holdthemoan',
+    'nsfw_gifs',
+    'BustyPetite',
+    'Amateur',
+    'cumsluts',
+    'ass',
+    'Boobies',
+    'milf',
+    'GirlsFinishingTheJob',
+    'MorbidReality',
+    'OnOff',
+    'LegalTeens',
+    'rule34',
+    '60fpsporn',
+    'girlsinyogapants',
+    'PetiteGoneWild',
+    'gonewildcurvy',
+    'WatchItForThePlot',
+    'dirtysmall',
+  ],
+
+  "Miscellaneous": [
+    'meirl',
+    'nosleep',
+    'woahdude',
+    'DeepIntoYouTube',
+    'SubredditSimulator',
+    'depression',
+    'cringe',
+    'Showerthoughts',
+    'travel',
+    '4chan',
+    'UpliftingNews',
+    'creepy',
+    'Jokes',
+    'cringepics',
+    'tifu',
+    'WTF',
+    'creepyPMs',
+    'rage',
+    'guns',
+    'conspiracy',
   ]
 }
 
@@ -181,6 +260,7 @@ var filter_labels = {
   'Top Positive Comments': '_toppos',
   'Top Negative Comments': '_topneg',
   'Top Godwin Comments': '_topgod',
+  'Top Swearing Comments': '_topswear',
 
 }
 var filters = [
@@ -190,7 +270,8 @@ var filters = [
   'count_topauth',
   'count_toppos',
   'count_topneg',
-  'count_topgod'
+  'count_topgod',
+  'count_topswear'
 ]
 var subreddits = [];
 
@@ -378,7 +459,7 @@ var refresh = function() {
 // Constructs the charts to be shown
 var createCharts = function() {
   if (cur_dataset == null) {
-    cur_dataset = dataset_labels['August 2016'];
+    cur_dataset = dataset_labels['September 2016'];
   }
 
   // Actually load our data
@@ -394,7 +475,7 @@ var createCharts = function() {
 
     // Initialize chosen subreddits to a default
     if (cur_chosen_subreddits == null) {
-      cur_chosen_subreddits = subreddit_subsets["Top 25"];
+      cur_chosen_subreddits = subreddit_subsets["Top 25 by Comments"];
     }
 
     // Save the unfiltered data for use in small multiples
@@ -426,7 +507,7 @@ var createCharts = function() {
     });
     
     if (cur_time_dataset == null) {
-      cur_time_dataset = time_dataset_labels['August 2016'];
+      cur_time_dataset = time_dataset_labels['September 2016'];
     }
     if (cur_subreddit == null) {
       cur_subreddit = subreddits[0];
@@ -612,10 +693,10 @@ function indexOfSubreddit(data, subreddit) {
 
 // batter = scatter/bar chart
 var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
-var width_batter = 900 - margin_batter.left - margin_batter.right;
+var width_batter = 1000 - margin_batter.left - margin_batter.right;
 var height_batter = 500 - margin_batter.top - margin_batter.bottom;
 var padding = 140;
-var yAxisPadding = 90;
+var yAxisPadding = 150;
 
 var barchart = d3.select(".barchart")
   .append("svg")
@@ -731,6 +812,32 @@ var unHighlight = function(selector, theClass, subreddit) {
     });
 }
 
+// Wraps text to multiple lines
+//Taken from https://bl.ocks.org/mbostock/7555321
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
+
 var hasBatterLegend = false;
 var barChartInit = false;
 
@@ -770,10 +877,10 @@ var refreshBarChart = function(data) {
         .attr("y", height_batter - 268)
         .attr("x", 0)
         .attr("dy", ".71em")
-        .attr("transform", "translate(" + -91 + "," + 25 + ")" + "rotate(-90)")
+        .attr("transform", "translate(" + -45 + "," + 75 + ")")
         .attr("fill", "white")
         .style("text-anchor", "end")
-        .text(yVariable);
+        .text(inverseAxisOptions[yVariableBase]);
 
     barchart.append("text")
       .attr("class", "label subreddit_text")
@@ -904,7 +1011,8 @@ var refreshBarChart = function(data) {
       })
 
   barchart.selectAll(".yVariable")
-    .text(yVariable)
+    .text(inverseAxisOptions[yVariableBase])
+    .call(wrap, 100)
 
   makeBatterLegend(data, barchart, '.rect')
 }
@@ -985,11 +1093,12 @@ var scatterPlot = function(data) {
       .call(xAxis)
     .append("text")
       .attr("class", "label")
-      .attr("x", width_batter - 10)
-      .attr("y", -6)
+      .attr("x", width_batter / 2 + 125)
+      .attr("y", 40)
       .attr("fill", "white")
       .style("text-anchor", "end")
-      .text(xVariable);
+      .attr("class", "xVariable")
+      .text(inverseAxisOptions[xVariableBase]);
 
     scatterplot.append("g")
       .attr("class", "y axis")
@@ -998,12 +1107,13 @@ var scatterPlot = function(data) {
       .call(yAxis)
     .append("text")
       .attr("class", "label yVariable")
-      .attr("transform", "translate(" + -5 + "," + 25 + ")" + "rotate(-90)")
+      .attr("transform", "translate(" + -45 + "," + 160 + ")")
       .attr("y", 6)
       .attr("dy", ".71em")
       .attr("fill", "white")
       .style("text-anchor", "end")
-      .text(yVariable);
+      .attr("class", "yVariable")
+      .text(inverseAxisOptions[yVariableBase]);
 
 
     scatterplot.append("text")
@@ -1117,7 +1227,10 @@ var scatterPlot = function(data) {
     });
 
     scatterplot.selectAll(".yVariable")
-      .text(yVariable)
+      .text(inverseAxisOptions[yVariableBase])
+      .call(wrap, 100)
+    scatterplot.selectAll(".xVariable")
+      .text(inverseAxisOptions[xVariableBase])
 
   makeBatterLegend(data, scatterplot, '.dot')
 }
@@ -1353,7 +1466,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
     // Set up the y axis
     multiplesPlot.append("g")
       .attr("class", "y axis")
-      .attr("transform", "translate(" + yAxisPadding + "," + 0 + ")")
+      .attr("transform", "translate(" + yAxisPadding_multiples + "," + 0 + ")")
       .attr("fill", "white")
       .call(yAxis)
 
