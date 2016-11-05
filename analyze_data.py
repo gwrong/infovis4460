@@ -203,14 +203,15 @@ def format_adj_matrix(mention_dict, LOOKUP_PATH, month_file):
     alpha_keys = sorted(mention_dict.keys(), key=lambda x: x.lower())
     for subreddit1 in sorted(mention_dict.keys(), key=lambda x: x.lower()):
         value_dict = mention_dict[subreddit1]
-        column = 0
-        for subreddit2 in sorted(value_dict.keys(), key=lambda x: x.lower()):
-            if subreddit1.lower() == subreddit2.lower():
-                adj_matrix[row][column] = 0
-            else:
-                adj_matrix[row][column] = mention_dict[subreddit1][subreddit2]
-            column += 1
-        row += 1
+        if value_dict != dict():
+            column = 0
+            for subreddit2 in sorted(value_dict.keys(), key=lambda x: x.lower()):
+                if subreddit1.lower() == subreddit2.lower():
+                    adj_matrix[row][column] = 0
+                else:
+                    adj_matrix[row][column] = mention_dict[subreddit1][subreddit2]
+                column += 1
+            row += 1
     with open(os.path.join(LOOKUP_PATH, 'mention_adj_matrix_d3_{}.json'.format(month_file)), 'w') as out:
         json.dump(adj_matrix, out)
 
@@ -321,7 +322,7 @@ def compute_comments(comments, month_file):
     comments_toppos = 0
     comments_topneg = 0
     comments_topgod = 0
-    comments_topwswear = 0
+    comments_topswear = 0
     for comment in comments:
         if counter % 25000 == 0:
             print("At comment {} for some multiprocess".format(counter))
@@ -496,8 +497,11 @@ def process_comments(month_file):
                 if found_subreddit == True:
                     break
 
-        print("Sending r/{} comments for multiprocessing analysis".format(subreddit))
-        overall_stats = multiprocess(comment_list, NUM_POOLS, overall_stats)
+        if len(comment_list) == 0:
+            print("0 comments found for r/{}".format(subreddit))
+        else:
+            print("Sending r/{} comments for multiprocessing analysis".format(subreddit))
+            overall_stats = multiprocess(comment_list, NUM_POOLS, overall_stats)
 
         end_time = time()
         print('Took {} seconds to process {} comments for r/{}'.format(end_time - start_time, comment_counter, subreddit))
@@ -791,14 +795,14 @@ def final_formatter(subreddit, overall_stats, final_handle, time_handle):
         for hour in range(24):
             time_handle.write(template.format(
                 subreddit=subreddit, weekday=weekday,
-                hour=hour, count=time_buckets[(weekday, hour)],
-                count_topcom=time_buckets_topcom[(weekday, hour)],
-                count_botcom=time_buckets_botcom[(weekday, hour)],
-                count_topauth=time_buckets_topauth[(weekday, hour)],
-                count_toppos=time_buckets_toppos[(weekday, hour)],
-                count_topneg=time_buckets_topneg[(weekday, hour)],
-                count_topgod=time_buckets_topgod[(weekday, hour)],
-                count_topswear=time_buckets_topswear[(weekday, hour)]
+                hour=hour, count=time_buckets[(weekday, hour)] if (weekday, hour) in time_buckets else 0,
+                count_topcom=time_buckets_topcom[(weekday, hour)] if (weekday, hour) in time_buckets_topcom else 0,
+                count_botcom=time_buckets_botcom[(weekday, hour)] if (weekday, hour) in time_buckets_botcom else 0,
+                count_topauth=time_buckets_topauth[(weekday, hour)] if (weekday, hour) in time_buckets_topauth else 0,
+                count_toppos=time_buckets_toppos[(weekday, hour)] if (weekday, hour) in time_buckets_toppos else 0,
+                count_topneg=time_buckets_topneg[(weekday, hour)] if (weekday, hour) in time_buckets_topneg else 0,
+                count_topgod=time_buckets_topgod[(weekday, hour)] if (weekday, hour) in time_buckets_topgod else 0,
+                count_topswear=time_buckets_topswear[(weekday, hour)] if (weekday, hour) in time_buckets_topswear else 0
             ))
     time_handle.flush()
 
@@ -1121,21 +1125,24 @@ def combine_files():
 if __name__ == "__main__":
     t0 = time()
 
+    '''
     for month_file in MONTH_FILES:
         print("Running month {}".format(month_file))
         word_clouds(month_file)
 
     '''
-    
-    for month_file in MONTH_FILES:
+    '''
+    for month_file in MONTH_FILES[0:-1]:
         print("Running month {}".format(month_file))
         comment_author_percentiles(month_file)
+    '''
+    
     
     #top_occurring()
     #word_clouds()
-    for month_file in MONTH_FILES:
+    for month_file in MONTH_FILES[0:-1]:
         print("Running month {}".format(month_file))
         process_comments(month_file)
     print("Took {} seconds to run process".format(time() - t0))
     #combine_files()
-    '''
+    

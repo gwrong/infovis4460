@@ -184,14 +184,16 @@ misc_subreddits = [
 ]
 
 def get_all_subreddits():
-    subreddits = list(
+    subreddits = ['HillaryForPrison']
+    subreddits = subreddits +  list(
         set(
             top_25_subscriber_subreddits + top_25_comment_subreddits +
             political_subreddits +
             university_subreddits + sports_subreddits +
             science_technology_history_subreddits +
-            misc_subreddits
+            misc_subreddits + top_25_nsfw_subscriber_subreddits
         )
     )
+    
     print("Gathering stats for {} unique subreddits".format(len(subreddits)))
     return subreddits
