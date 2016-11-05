@@ -901,6 +901,10 @@ def word_clouds(month_file):
 
     for subreddit in SUBREDDITS:
 
+        if os.path.isfile(os.path.join(cloud_path, '{}_wordcloud.png'.format(subreddit))):
+            print("Word cloud already exists for r/{}".format(subreddit))
+            continue
+
         start_time = time()
         comment_counter = 0  # Count total comments
 
@@ -945,6 +949,8 @@ def word_clouds(month_file):
         end_time = time()
         print('Took {} seconds to gather word counts for {} unique words in {} comments for r/{}'.format(end_time - start_time, len(word_counts), comment_counter, subreddit))
 
+        if comment_counter == 0:
+            continue
         print('Generating word cloud')
         stopwords = {'will', 'one'}
         words_string = ' '.join(word_counts.keys())
@@ -1125,19 +1131,19 @@ def combine_files():
 if __name__ == "__main__":
     t0 = time()
 
-    '''
+    
     for month_file in MONTH_FILES:
         print("Running month {}".format(month_file))
         word_clouds(month_file)
 
-    '''
+    
     '''
     for month_file in MONTH_FILES[0:-1]:
         print("Running month {}".format(month_file))
         comment_author_percentiles(month_file)
     '''
     
-    
+    '''
     #top_occurring()
     #word_clouds()
     for month_file in MONTH_FILES[0:-1]:
@@ -1145,4 +1151,4 @@ if __name__ == "__main__":
         process_comments(month_file)
     print("Took {} seconds to run process".format(time() - t0))
     #combine_files()
-    
+    '''
