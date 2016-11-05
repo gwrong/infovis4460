@@ -13,9 +13,8 @@ var initialized_heatmap = false;
 var sort_by = null;
 var cur_chosen_subreddits = null;
 var initialized_pickers = false;
-
 var subreddit_subsets = {
-  'Top 25': [
+  "Top 25 by Comments": [
     'relationships',
     'gifs',
     'nba',
@@ -42,7 +41,36 @@ var subreddit_subsets = {
     'politics',
     'AskReddit',
   ],
-  'Political': [
+
+  "Top 25 by Subscribers": [
+    'AskReddit',
+    'funny',
+    'todayilearned',
+    'pics',
+    'science',
+    'worldnews',
+    'IAmA',
+    'announcements',
+    'videos',
+    'gaming',
+    'movies',
+    'blog',
+    'Music',
+    'aww',
+    'news',
+    'gifs',
+    'explainlikeimfive',
+    'askscience',
+    'EarthPorn',
+    'books',
+    'television',
+    'LifeProTips',
+    'mildlyinteresting',
+    'DIY',
+    'Showerthoughts',
+  ],
+
+  "Political": [
     'politics',
     'The_Donald',
     'Libertarian',
@@ -53,22 +81,11 @@ var subreddit_subsets = {
     'democrats',
     'Republican',
     'hillaryclinton',
+    'PoliticalHumor',
+    'HillaryForPrison',
   ],
-  'Science, History, Technology': [
-    'science',
-    'askscience',
-    'space',
-    'Astronomy',
-    'gadgets',
-    'Futurology',
-    'technology',
-    'Android',
-    'iphone',
-    'history',
-    'AskHistorians',
-    'engineering',
-  ],
-  'University': [
+
+  "University": [
     'rit',
     'ucla',
     'berkeley',
@@ -85,19 +102,8 @@ var subreddit_subsets = {
     'UVA',
     'uofmn',
   ],
-  'Miscellaneous': [
-    'meirl',
-    'nosleep',
-    'woahdude',
-    'DeepIntoYouTube',
-    'SubredditSimulator',
-    'depression',
-    'cringe',
-    'Showerthoughts',
-    'travel',
-    'wikipedia',
-  ],
-  'Sports': [
+
+  "Sports": [
     'nba',
     'soccer',
     'hockey',
@@ -118,6 +124,79 @@ var subreddit_subsets = {
     'tabletennis',
     'Bowling',
     'volleyball',
+    'theocho',
+  ],
+
+  "Science, History, Technology": [
+    'science',
+    'askscience',
+    'space',
+    'Astronomy',
+    'gadgets',
+    'Futurology',
+    'technology',
+    'Android',
+    'iphone',
+    'history',
+    'AskHistorians',
+    'engineering',
+    'wikipedia',
+    'EverythingScience',
+    'geek',
+    'tech',
+    'HistoryPorn',
+    'badhistory',
+  ],
+
+  "NSFW": [
+    'gonewild',
+    'nsfw',
+    'ImGoingToHellForThis',
+    'RealGirls',
+    'NSFW_GIF',
+    'FiftyFifty',
+    'holdthemoan',
+    'nsfw_gifs',
+    'BustyPetite',
+    'Amateur',
+    'cumsluts',
+    'ass',
+    'Boobies',
+    'milf',
+    'GirlsFinishingTheJob',
+    'MorbidReality',
+    'OnOff',
+    'LegalTeens',
+    'rule34',
+    '60fpsporn',
+    'girlsinyogapants',
+    'PetiteGoneWild',
+    'gonewildcurvy',
+    'WatchItForThePlot',
+    'dirtysmall',
+  ],
+
+  "Miscellaneous": [
+    'meirl',
+    'nosleep',
+    'woahdude',
+    'DeepIntoYouTube',
+    'SubredditSimulator',
+    'depression',
+    'cringe',
+    'Showerthoughts',
+    'travel',
+    '4chan',
+    'UpliftingNews',
+    'creepy',
+    'Jokes',
+    'cringepics',
+    'tifu',
+    'WTF',
+    'creepyPMs',
+    'rage',
+    'guns',
+    'conspiracy',
   ]
 }
 
@@ -396,7 +475,7 @@ var createCharts = function() {
 
     // Initialize chosen subreddits to a default
     if (cur_chosen_subreddits == null) {
-      cur_chosen_subreddits = subreddit_subsets["Top 25"];
+      cur_chosen_subreddits = subreddit_subsets["Top 25 by Comments"];
     }
 
     // Save the unfiltered data for use in small multiples
