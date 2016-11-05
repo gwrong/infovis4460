@@ -181,6 +181,7 @@ var filter_labels = {
   'Top Positive Comments': '_toppos',
   'Top Negative Comments': '_topneg',
   'Top Godwin Comments': '_topgod',
+  'Top Swearing Comments': '_topswear',
 
 }
 var filters = [
@@ -190,7 +191,8 @@ var filters = [
   'count_topauth',
   'count_toppos',
   'count_topneg',
-  'count_topgod'
+  'count_topgod',
+  'count_topswear'
 ]
 var subreddits = [];
 
@@ -378,7 +380,7 @@ var refresh = function() {
 // Constructs the charts to be shown
 var createCharts = function() {
   if (cur_dataset == null) {
-    cur_dataset = dataset_labels['August 2016'];
+    cur_dataset = dataset_labels['September 2016'];
   }
 
   // Actually load our data
@@ -426,7 +428,7 @@ var createCharts = function() {
     });
     
     if (cur_time_dataset == null) {
-      cur_time_dataset = time_dataset_labels['August 2016'];
+      cur_time_dataset = time_dataset_labels['September 2016'];
     }
     if (cur_subreddit == null) {
       cur_subreddit = subreddits[0];
