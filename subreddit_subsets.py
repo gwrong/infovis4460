@@ -1,4 +1,4 @@
-top_subreddits = [
+top_25_comment_subreddits = [
     'relationships',
     'gifs',
     'nba',
@@ -26,6 +26,34 @@ top_subreddits = [
     'AskReddit',
 ]
 
+top_25_subscriber_subreddits = [
+    'AskReddit',
+    'funny',
+    'todayilearned',
+    'pics',
+    'science',
+    'worldnews',
+    'IAmA',
+    'announcements',
+    'videos',
+    'gaming',
+    'movies',
+    'blog',
+    'Music',
+    'aww',
+    'news',
+    'gifs',
+    'explainlikeimfive',
+    'askscience',
+    'EarthPorn',
+    'books',
+    'television',
+    'LifeProTips',
+    'mildlyinteresting',
+    'DIY',
+    'Showerthoughts',
+]
+
 political_subreddits = [
     'politics',
     'The_Donald',
@@ -37,6 +65,8 @@ political_subreddits = [
     'democrats',
     'Republican',
     'hillaryclinton',
+    'PoliticalHumor',
+    'HillaryForPrison',
 ]
 
 university_subreddits = [
@@ -78,6 +108,7 @@ sports_subreddits = [
     'tabletennis',
     'Bowling',
     'volleyball',
+    'theocho',
 ]
 
 science_technology_history_subreddits = [
@@ -93,6 +124,40 @@ science_technology_history_subreddits = [
     'history',
     'AskHistorians',
     'engineering',
+    'wikipedia',
+    'EverythingScience',
+    'geek',
+    'tech',
+    'HistoryPorn',
+    'badhistory',
+]
+
+top_25_nsfw_subscriber_subreddits = [
+    'gonewild',
+    'nsfw',
+    'ImGoingToHellForThis',
+    'RealGirls',
+    'NSFW_GIF',
+    'FiftyFifty',
+    'holdthemoan',
+    'nsfw_gifs',
+    'BustyPetite',
+    'Amateur',
+    'cumsluts',
+    'ass',
+    'Boobies',
+    'milf',
+    'GirlsFinishingTheJob',
+    'MorbidReality',
+    'OnOff',
+    'LegalTeens',
+    'rule34',
+    '60fpsporn',
+    'girlsinyogapants',
+    'PetiteGoneWild',
+    'gonewildcurvy',
+    'WatchItForThePlot',
+    'dirtysmall',
 ]
 
 misc_subreddits = [
@@ -105,17 +170,30 @@ misc_subreddits = [
     'cringe',
     'Showerthoughts',
     'travel',
-    'wikipedia',
+    '4chan',
+    'UpliftingNews',
+    'creepy',
+    'Jokes',
+    'cringepics',
+    'tifu',
+    'WTF',
+    'creepyPMs',
+    'rage',
+    'guns',
+    'conspiracy',
 ]
 
 def get_all_subreddits():
-    subreddits = list(
+    subreddits = ['HillaryForPrison']
+    subreddits = subreddits +  list(
         set(
-            top_subreddits + political_subreddits +
+            top_25_subscriber_subreddits + top_25_comment_subreddits +
+            political_subreddits +
             university_subreddits + sports_subreddits +
             science_technology_history_subreddits +
-            misc_subreddits
+            misc_subreddits + top_25_nsfw_subscriber_subreddits
         )
     )
+    
     print("Gathering stats for {} unique subreddits".format(len(subreddits)))
     return subreddits

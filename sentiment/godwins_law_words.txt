@@ -1,1 +1,1 @@
-['nazi', 'nazis', 'hitler', 'holocaust', "hitler's", '卐', 'swastika', 'swastikas']
+['hitler', "hitler's", 'holocaust', 'nazi', 'nazis', 'swastika', 'swastikas', '\xe5\x8d\x90']

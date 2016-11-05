@@ -5,6 +5,7 @@ body {
   background: #202020;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
+  padding-top: 165px;
 }
 
 html {
@@ -26,6 +27,15 @@ h2 {
   font-size: 14px;
   margin-bottom: 20px;
 }
+/*
+.toggleSubreddits {
+  border: 2px solid #ccc;
+  width: 175px;
+  height: 1000px;
+  overflow-y: scroll; 
+  color: #000000;
+}
+*/
 
 .axis path,
 .axis line {
@@ -117,4 +127,36 @@ text.axis-worktime {
 
 td {
     vertical-align: middle;
+}
+
+.navbar-fixed-top {
+  background: #202020;
+}
+
+
+rect {
+  stroke: 10px;
+}
+
+#filtersCell {
+  line-height:8em
+}
+
+.notify {
+  color: black;
+}
+
+.about {
+  height: 35px;
+}
+
+.modal-title, .modal-title, .modal-body {
+  color: black;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  text-align: left;
+}
+
+.modal-title {
+  font-size: 18px;
 }
