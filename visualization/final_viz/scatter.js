@@ -612,10 +612,10 @@ function indexOfSubreddit(data, subreddit) {
 
 // batter = scatter/bar chart
 var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
-var width_batter = 900 - margin_batter.left - margin_batter.right;
+var width_batter = 1000 - margin_batter.left - margin_batter.right;
 var height_batter = 500 - margin_batter.top - margin_batter.bottom;
 var padding = 140;
-var yAxisPadding = 90;
+var yAxisPadding = 150;
 
 var barchart = d3.select(".barchart")
   .append("svg")
@@ -731,6 +731,32 @@ var unHighlight = function(selector, theClass, subreddit) {
     });
 }
 
+// Wraps text to multiple lines
+//Taken from https://bl.ocks.org/mbostock/7555321
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
+
 var hasBatterLegend = false;
 var barChartInit = false;
 
@@ -770,10 +796,10 @@ var refreshBarChart = function(data) {
         .attr("y", height_batter - 268)
         .attr("x", 0)
         .attr("dy", ".71em")
-        .attr("transform", "translate(" + -91 + "," + 25 + ")" + "rotate(-90)")
+        .attr("transform", "translate(" + -45 + "," + 75 + ")")
         .attr("fill", "white")
         .style("text-anchor", "end")
-        .text(yVariable);
+        .text(inverseAxisOptions[yVariableBase]);
 
     barchart.append("text")
       .attr("class", "label subreddit_text")
@@ -904,7 +930,8 @@ var refreshBarChart = function(data) {
       })
 
   barchart.selectAll(".yVariable")
-    .text(yVariable)
+    .text(inverseAxisOptions[yVariableBase])
+    .call(wrap, 100)
 
   makeBatterLegend(data, barchart, '.rect')
 }
@@ -985,11 +1012,12 @@ var scatterPlot = function(data) {
       .call(xAxis)
     .append("text")
       .attr("class", "label")
-      .attr("x", width_batter - 10)
-      .attr("y", -6)
+      .attr("x", width_batter / 2 + 125)
+      .attr("y", 40)
       .attr("fill", "white")
       .style("text-anchor", "end")
-      .text(xVariable);
+      .attr("class", "xVariable")
+      .text(inverseAxisOptions[xVariableBase]);
 
     scatterplot.append("g")
       .attr("class", "y axis")
@@ -998,12 +1026,13 @@ var scatterPlot = function(data) {
       .call(yAxis)
     .append("text")
       .attr("class", "label yVariable")
-      .attr("transform", "translate(" + -5 + "," + 25 + ")" + "rotate(-90)")
+      .attr("transform", "translate(" + -45 + "," + 160 + ")")
       .attr("y", 6)
       .attr("dy", ".71em")
       .attr("fill", "white")
       .style("text-anchor", "end")
-      .text(yVariable);
+      .attr("class", "yVariable")
+      .text(inverseAxisOptions[yVariableBase]);
 
 
     scatterplot.append("text")
@@ -1117,7 +1146,10 @@ var scatterPlot = function(data) {
     });
 
     scatterplot.selectAll(".yVariable")
-      .text(yVariable)
+      .text(inverseAxisOptions[yVariableBase])
+      .call(wrap, 100)
+    scatterplot.selectAll(".xVariable")
+      .text(inverseAxisOptions[xVariableBase])
 
   makeBatterLegend(data, scatterplot, '.dot')
 }
@@ -1353,7 +1385,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
     // Set up the y axis
     multiplesPlot.append("g")
       .attr("class", "y axis")
-      .attr("transform", "translate(" + yAxisPadding + "," + 0 + ")")
+      .attr("transform", "translate(" + yAxisPadding_multiples + "," + 0 + ")")
       .attr("fill", "white")
       .call(yAxis)
 
