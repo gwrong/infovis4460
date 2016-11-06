@@ -764,9 +764,10 @@ var highlight = function(selector, theClass, subreddit) {
     .transition()
     .duration(250)
     .delay(function(e, i) {
-      return i * 8
+      console.log('wtf')
+      return i * 8;
     })
-    .attr("opacity", 0.25)
+    .style("opacity", 0.25);
 
   selector.selectAll('.dot')
     .filter(function(e) {
@@ -797,7 +798,7 @@ var unHighlight = function(selector, theClass, subreddit) {
     .delay(function(e, i) {
       return i * 8
     })
-    .attr("opacity", 1)
+    .style("opacity", 1)
 
   selector.selectAll('.dot')
     .filter(function(e) {
@@ -1183,24 +1184,35 @@ var scatterPlot = function(data) {
   var scatterSelection = scatterplot.selectAll(".dot")
     .data(data)
 
-  scatterSelection.exit().remove();
-
-  scatterSelection.enter().append("circle")
+  scatterSelection.exit()
+    .transition("disappear")
+    .duration(1500)
+    .style("opacity", 0)
     .attr("cx", function(d) {
       return Math.random() * (width_batter - 100) + 100;
     })
     .attr("cy", function(d) {
       return Math.random() * (height_batter - 15);
     })
+    .remove();
+
+  scatterSelection.enter().append("circle")
+    .attr("fill", function() {
+      return "hsl(" + Math.random() * 360 + ",100%,50%)"
+    })
+    .attr("cx", function(d) {
+      return Math.random() * (width_batter - 100) + 100;
+    })
+    .attr("cy", function(d) {
+      return Math.random() * (height_batter - 15);
+    })
+    .style("opacity", 0)
 
   scatterplot.select(".scatterTitle")
     .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
 
   scatterSelection.attr("class", "dot")
     .attr("r", circleSize)
-    .style("fill", function(d) {
-      return color(cValue(d));
-    })
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
       tooltip.html(getToolTip(d))
@@ -1219,12 +1231,16 @@ var scatterPlot = function(data) {
     })
     .transition("scatter")
     .duration(2000)
+    .style("fill", function(d) {
+      return color(cValue(d));
+    })
     .attr("cx", function(d) {
       return xScale(d[xVariable])
     })
     .attr("cy", function(d) {
       return yScale(d[yVariable])
-    });
+    })
+    .style("opacity", 1);
 
     scatterplot.selectAll(".yVariable")
       .text(inverseAxisOptions[yVariableBase])
