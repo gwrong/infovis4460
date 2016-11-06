@@ -1,7 +1,6 @@
 // Global variables are changed and graph refreshes
 // pick up the new variables
-var cur_dataset = null;
-var cur_time_dataset = null;
+var cur_month_label = null;
 var cur_subreddit = null;
 var cur_subreddit1 = null;
 var cur_subreddit2 = null;
@@ -13,6 +12,14 @@ var initialized_heatmap = false;
 var sort_by = null;
 var cur_chosen_subreddits = null;
 var initialized_pickers = false;
+
+var core_file_path = 'core_files/combined_core.csv'
+var time_file_path = 'time_files/combined_time.csv'
+var full_core_dataset = null;
+var full_time_dataset = null;
+var compare_core_dataset = null;
+var compare_time_dataset = null;
+
 var subreddit_subsets = {
   "Top 25 by Comments": [
     'relationships',
@@ -220,36 +227,45 @@ for (var i = 0; i < all_subreddits.length; i++) {
   all_subreddits_lookup[i] = all_subreddits[i];
 }
 
-var dataset_labels = {
-  'January 2016': "core_files/reddit_RC_2016-01.csv",
-  'February 2016': "core_files/reddit_RC_2016-02.csv",
-  'March 2016': "core_files/reddit_RC_2016-03.csv",
-  'April 2016': "core_files/reddit_RC_2016-04.csv",
-  'May 2016': "core_files/reddit_RC_2016-05.csv",
-  'June 2016': "core_files/reddit_RC_2016-06.csv",
-  'July 2016': "core_files/reddit_RC_2016-07.csv",
-  'August 2016': "core_files/reddit_RC_2016-08.csv",
-  'September 2016': "core_files/reddit_RC_2016-09.csv",
-}
+var dataset_labels = [
+  "January 2016",
+  "February 2016",
+  "March 2016",
+  "April 2016",
+  "May 2016",
+  "June 2016",
+  "July 2016",
+  "August 2016",
+  "September 2016",
+]
 
-var time_dataset_labels = {
-  'January 2016': "time_files/reddit_RC_2016-01_time_series.csv",
-  'February 2016': "time_files/reddit_RC_2016-02_time_series.csv",
-  'March 2016': "time_files/reddit_RC_2016-03_time_series.csv",
-  'April 2016': "time_files/reddit_RC_2016-04_time_series.csv",
-  'May 2016': "time_files/reddit_RC_2016-05_time_series.csv",
-  'June 2016': "time_files/reddit_RC_2016-06_time_series.csv",
-  'July 2016': "time_files/reddit_RC_2016-07_time_series.csv",
-  'August 2016': "time_files/reddit_RC_2016-08_time_series.csv",
-  'September 2016': "time_files/reddit_RC_2016-09_time_series.csv",
+var month_label_to_number = function(label) {
+  if (label === "January 2016") {
+    return 1;
+  } else if (label === "February 2016") {
+    return 2;
+  } else if (label === "March 2016") {
+    return 3;
+  } else if (label === "April 2016") {
+    return 4;
+  } else if (label === "May 2016") {
+    return 5;
+  } else if (label === "June 2016") {
+    return 6;
+  } else if (label === "July 2016") {
+    return 7;
+  } else if (label === "August 2016") {
+    return 8;
+  } else if (label === "September 2016") {
+    return 9;
+  } 
 }
 
 // For the month slider, it is indexed by integers, so here's a lookup
 // Slider is index + 1
 var month_lookup = {};
-var months = Object.keys(dataset_labels);
-for (var i = 0; i < months.length; i++) {
-  month_lookup[i + 1] = months[i];
+for (var i = 0; i < dataset_labels.length; i++) {
+  month_lookup[i + 1] = dataset_labels[i];
 }
 
 var filter_labels = {
@@ -456,15 +472,20 @@ var refresh = function() {
   createCharts()
 }
 
-// Constructs the charts to be shown
-var createCharts = function() {
-  if (cur_dataset == null) {
-    cur_dataset = dataset_labels['September 2016'];
-  }
-
-  // Actually load our data
-  d3.csv(cur_dataset, function(error, data) {
-    data.forEach(function(d) {
+// Load the full files into memory just once
+d3.csv(core_file_path, function(error, core_dataset) {
+  // Convert data to numeric
+  core_dataset.forEach(function(d) {
+    keys = Object.keys(d)
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i] != 'subreddit') {
+        d[keys[i]] = +d[keys[i]]
+      }
+    }
+  });
+  full_core_dataset = core_dataset;
+  d3.csv(time_file_path, function(error, time_dataset) {
+    time_dataset.forEach(function(d) {
       keys = Object.keys(d)
       for (var i = 0; i < keys.length; i++) {
         if (keys[i] != 'subreddit') {
@@ -472,115 +493,139 @@ var createCharts = function() {
         }
       }
     });
+    full_time_dataset = time_dataset;
+    refresh();
+  })
+});
 
-    // Initialize chosen subreddits to a default
-    if (cur_chosen_subreddits == null) {
-      cur_chosen_subreddits = subreddit_subsets["Top 25 by Comments"];
-    }
 
-    // Save the unfiltered data for use in small multiples
-    var full_data = data.slice();
 
-    // Get data for only the subreddits that are chosen
-    data = data.filter(function(d, i) {
-      return cur_chosen_subreddits.indexOf(d['subreddit']) > -1;
+// Constructs the charts to be shown
+var createCharts = function() {
+  // Initialize the month we are on
+  if (cur_month_label == null) {
+    cur_month_label = 'September 2016';
+  }
+
+  // Get the correct month's data
+  core_dataset = full_core_dataset.filter(function(d) {
+    return +d['month'] == month_label_to_number(cur_month_label);
+  })
+
+  // Initialize chosen subreddits to a default
+  if (cur_chosen_subreddits == null) {
+    cur_chosen_subreddits = subreddit_subsets["Top 25 by Comments"];
+  }
+
+  // Get data for only the subreddits that are chosen
+  core_dataset = core_dataset.filter(function(d, i) {
+    return cur_chosen_subreddits.indexOf(d['subreddit']) > -1;
+  })
+
+  time_dataset = full_time_dataset.filter(function(d) {
+    return +d['month'] == month_label_to_number(cur_month_label);
+  });
+
+  subreddits = [];
+  core_dataset.forEach(function(d) {
+    subreddits.push(d['subreddit']);
+  });
+  
+  if (cur_subreddit == null) {
+    cur_subreddit = subreddits[0];
+  }
+  if (cur_subreddit1 == null) {
+    cur_subreddit1 = subreddits[0];
+  } 
+  if (cur_subreddit2 == null) {
+    cur_subreddit2 = subreddits[1];
+  }
+  
+  // Update the 2 subreddit data set only if it has changed
+  // This could be improved by selectively updating when needed
+  compare_core_dataset = core_dataset.filter(function(d) {
+    return (d['subreddit'] == cur_subreddit1) || (d['subreddit'] == cur_subreddit2);
+  })
+  compare_time_dataset = time_dataset.filter(function(d) {
+    return (d['subreddit'] == cur_subreddit1) || (d['subreddit'] == cur_subreddit2);
+  })
+
+  if (sort_by == null) {
+    sort_by = 'subreddit';
+  }
+
+  // Sort the data, supports string or numbers
+  if (sort_by === 'subreddit') {
+    core_dataset.sort(function(a, b) {
+      return a[sort_by].localeCompare(b[sort_by]);
     })
+  } else {
+    core_dataset.sort(function(a, b) {
+      return b[sort_by] - a[sort_by];
+    })
+  }
 
-    if (sort_by == null) {
-      sort_by = 'subreddit';
-    }
-
-    // Sort the data, supports string or numbers
-    if (sort_by === 'subreddit') {
-      data.sort(function(a, b) {
-        return a[sort_by].localeCompare(b[sort_by]);
-      })
-    } else {
-      data.sort(function(a, b) {
-        return b[sort_by] - a[sort_by];
-      })
-    }
-    
-    subreddits = [];
-    data.forEach(function(d) {
-      subreddits.push(d['subreddit']);
-    });
-    
-    if (cur_time_dataset == null) {
-      cur_time_dataset = time_dataset_labels['September 2016'];
-    }
-    if (cur_subreddit == null) {
-      cur_subreddit = subreddits[0];
-    }
-    if (cur_subreddit1 == null) {
-      cur_subreddit1 = subreddits[0];
-    } 
-    if (cur_subreddit2 == null) {
-      cur_subreddit2 = subreddits[1];
-    }
-
-    if (old_cur_subreddit1 != cur_subreddit1) {
-      // Put the actual image path. We set our default comparison subreddits
-      d3.select(".wordcloud1")
-        .style("opacity", 0)
-        .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
-        .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
-        .transition()
-        .duration(2000)
-        .style("opacity", 1)
-
-      d3.select(".wordcloud1Title")
-        .html("Word cloud for " + cur_subreddit1)
-      old_cur_subreddit1 = cur_subreddit1
-    }
-    if (old_cur_subreddit2 != cur_subreddit2) {
-      d3.select(".wordcloud2")
+  if (old_cur_subreddit1 != cur_subreddit1) {
+    // Put the actual image path. We set our default comparison subreddits
+    d3.select(".wordcloud1")
       .style("opacity", 0)
-      .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
-      .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
+      .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
+      .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
       .transition()
       .duration(2000)
       .style("opacity", 1)
 
-      d3.select(".wordcloud2Title")
-        .html("Word cloud for " + cur_subreddit2)
-      old_cur_subreddit2 = cur_subreddit2;
-    }
-    
-    if (cur_filter == null) {
-      cur_filter_label = 'All Comments';
-      cur_filter = filter_labels[cur_filter_label];
-    }
-    if (!initialized_pickers) {
-      initialized_pickers = true;
-      initialize_pickers();
-    }
+    d3.select(".wordcloud1Title")
+      .html("Word cloud for " + cur_subreddit1)
+    old_cur_subreddit1 = cur_subreddit1
+  }
+  if (old_cur_subreddit2 != cur_subreddit2) {
+    d3.select(".wordcloud2")
+    .style("opacity", 0)
+    .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
+    .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
+    .transition()
+    .duration(2000)
+    .style("opacity", 1)
 
-    // Preselect our currend subreddit list on the subreddit picker list
-    $('#toggleSubreddits').selectpicker('val', cur_chosen_subreddits);
+    d3.select(".wordcloud2Title")
+      .html("Word cloud for " + cur_subreddit2)
+    old_cur_subreddit2 = cur_subreddit2;
+  }
+  
+  if (cur_filter == null) {
+    cur_filter_label = 'All Comments';
+    cur_filter = filter_labels[cur_filter_label];
+  }
+  if (!initialized_pickers) {
+    initialized_pickers = true;
+    initialize_pickers();
+  }
 
-    // Go ahead and actually refresh the graphs as necessary
-    if (xVariable == 'subreddit') {
-      refreshBarChart(data)
-    } else {
-      scatterPlot(data)
-    }
+  // Preselect our currend subreddit list on the subreddit picker list
+  $('#toggleSubreddits').selectpicker('val', cur_chosen_subreddits);
 
-    var keys = Object.keys(axisOptions);
-    for (var i = 0; i < keys.length; i++) {
-      if (axisOptions[keys[i]] !== 'subreddit') {
-        refreshSmallMultiples(full_data, axisOptions[keys[i]])
-      }
+  // Go ahead and actually refresh the graphs as necessary
+  if (xVariable == 'subreddit') {
+    refreshBarChart(core_dataset)
+  } else {
+    scatterPlot(core_dataset)
+  }
+
+  var keys = Object.keys(axisOptions);
+  for (var i = 0; i < keys.length; i++) {
+    if (axisOptions[keys[i]] !== 'subreddit') {
+      refreshSmallMultiples(compare_core_dataset, axisOptions[keys[i]])
     }
-    
-    if (!initialized_heatmap) {
-      initialized_heatmap = true;
-      createHeatMap("#heatmap1");
-      createHeatMap("#heatmap2");
-    }
-    refreshHeatMap("#heatmap1");
-    refreshHeatMap("#heatmap2");
-  });
+  }
+  
+  if (!initialized_heatmap) {
+    initialized_heatmap = true;
+    createHeatMap("#heatmap1");
+    createHeatMap("#heatmap2");
+  }
+  refreshHeatMap("#heatmap1");
+  refreshHeatMap("#heatmap2");
 }
 
 
@@ -634,7 +679,7 @@ var initialize_pickers = function() {
   $('#subredditsubset-picker').selectpicker('refresh');
 
   var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
-    .data(Object.keys(dataset_labels));
+    .data(dataset_labels);
 
   // Add buttons for each month data set
   datasetpicker.enter()
@@ -643,15 +688,13 @@ var initialize_pickers = function() {
     .attr("type", "button")
     .attr("class", "dataset-button btn btn-primary")
     .on("click", function(month) {
-      cur_time_dataset = time_dataset_labels[month]
-      cur_dataset = dataset_labels[month]
+      cur_month_label = month;
       refresh();
     });
 
   $("#month-slider").on("change", function(slideEvt) {
     var month = month_lookup[slideEvt.value.newValue];
-    cur_time_dataset = time_dataset_labels[month];
-    cur_dataset = dataset_labels[month];
+    cur_month_label = month;
     refresh();
   });
   
@@ -1155,12 +1198,6 @@ var scatterPlot = function(data) {
       .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
   }
 
-  // This should probably be made enter-update-exit
-  //basePlot.selectAll('.rect').remove()
-  //basePlot.selectAll(".axis").remove()
-  //basePlot.selectAll('.dot').remove()
-  //basePlot.selectAll('.subreddit_text').remove()
-
   // Hide the scatterplot
   d3.select(".barchart")
     .style("display", "none")
@@ -1351,123 +1388,112 @@ var refreshHeatMap = function(id_selector) {
       var heat_svg = heat_svg2;
       var cur_subreddit = cur_subreddit2;
     }
-    d3.csv(cur_time_dataset, function(d) {
-      if (d['subreddit'] == cur_subreddit) {
-        return {
-          weekday: +d.weekday,
-          hour: +d.hour,
-          count: +count_accessor(d)
-        };
-      }
-    },
-    function(error, data) {
-      heat_svg.selectAll(".scale").remove();
-      heat_svg.selectAll(".cur_subreddit").remove();
-      heat_svg.selectAll(".heatTitle").remove();
-      heat_svg.append("text")
-        .text("Number of comments gradient thresholds")
-        .attr("class", "cur_subreddit")
-        .attr("x", width_heat / 2 - 130)
-        .attr("y", height_heat - 29)
-        .style('fill', 'white')
+    
+    heat_svg.selectAll(".scale").remove();
+    heat_svg.selectAll(".cur_subreddit").remove();
+    heat_svg.selectAll(".heatTitle").remove();
+    heat_svg.append("text")
+      .text("Number of comments gradient thresholds")
+      .attr("class", "cur_subreddit")
+      .attr("x", width_heat / 2 - 130)
+      .attr("y", height_heat - 29)
+      .style('fill', 'white')
 
-      heat_svg.append("text")
-        .attr("x", width_heat / 2 - 5)             
-        .attr("y", margin_heat.top - 75)
-        .attr("class", "heatTitle")
-        .style("font-size", "14px") 
-        .style("text-anchor", "middle")
-        .attr("fill", "white")
-        .text("Time distribution of comments for " + cur_subreddit);
+    heat_svg.append("text")
+      .attr("x", width_heat / 2 - 5)             
+      .attr("y", margin_heat.top - 75)
+      .attr("class", "heatTitle")
+      .style("font-size", "14px") 
+      .style("text-anchor", "middle")
+      .attr("fill", "white")
+      .text("Time distribution of comments for " + cur_subreddit);
 
+    console.log(compare_time_dataset)
+    var colorScale = d3.scale.quantile()
+        .domain([0, d3.max(compare_time_dataset, function (d) {
+          return count_accessor(d);
+        })])
+        .range(colors);
 
-      var colorScale = d3.scale.quantile()
-          .domain([0, d3.max(data, function (d) {
-            return d.count;
-          })])
-          .range(colors);
-
-      var cards = heat_svg.selectAll(".hour")
-          .data(data, function(d) {
-            return d.weekday + ':' + d.hour;
-          });
-
-      cards.append("title");
-
-      cards.enter().append("rect")
-          .attr("x", function(d) {
-            return (d.hour) * gridSize;
-          })
-          .attr("y", function(d) {
-            return (d.weekday) * gridSize;
-          })
-          .attr("rx", 4)
-          .attr("ry", 4)
-          .attr("class", "hour bordered")
-          .attr("width", gridSize)
-          .attr("height", gridSize)
-          .style("fill", colors[0])
-          .on("mouseover", function(d) {
-            count = d['count'];
-            day = dayOfWeekAsString(d['weekday']);
-            hour = times[d['hour']];
-            nextHour = times[(d['hour'] + 1) % 24];
-            tooltip.style("opacity", 1);
-            tooltip.html("<center>Comments from " + hour + " to " + nextHour + "<br> on " + day + "s: " + numberWithCommas(count) + "</center>")
-              .style("left", d3.event.pageX + 5 + "px")
-              .style("top", d3.event.pageY + 5 + "px")
-          })
-          .on("mouseout", function() {
-            return tooltip.style("opacity", 0);
-          });
-
-      cards.transition().duration(1000)
-          .delay(function(d, i) {
-            return 6 * i + 2 * d.hour
-          })
-          .style("fill", function(d) {
-            return colorScale(d.count);
-          });
-
-      cards.exit().remove();
-
-      var legend = heat_svg.selectAll(".heatLegend")
-          .data([0].concat(colorScale.quantiles()), function(d) { return d; });
-
-      legend.enter().append("g")
-          .attr("class", "heatLegend");
-
-      legend.append("rect")
-        .attr("x", function(d, i) {
-          return legendElementWidth * i;
-        })
-        .attr("y", height_heat - 25)
-        .attr("width", legendElementWidth)
-        .attr("height", gridSize / 2)
-        .style("fill", function(d, i) {
-          return colors[i];
+    var cards = heat_svg.selectAll(".hour")
+        .data(compare_time_dataset, function(d) {
+          return d.weekday + ':' + d.hour;
         });
 
-      legend.append("text")
-        .attr("class", "heatLegendLabel scale")
-        .text(function(d) {
-          return "≥ " + Math.round(d);
+    cards.append("title");
+
+    cards.enter().append("rect")
+        .attr("x", function(d) {
+          return (d.hour) * gridSize;
         })
-        .attr("x", function(d, i) {
-          return legendElementWidth * i + (legendElementWidth / 2);
+        .attr("y", function(d) {
+          return (d.weekday) * gridSize;
         })
-        .attr("y", height_heat + gridSize - 25)
-        .style("text-anchor", "middle");
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("class", "hour bordered")
+        .attr("width", gridSize)
+        .attr("height", gridSize)
+        .style("fill", colors[0])
+        .on("mouseover", function(d) {
+          count = count_accessor(d);
+          day = dayOfWeekAsString(d['weekday']);
+          hour = times[d['hour']];
+          nextHour = times[(d['hour'] + 1) % 24];
+          tooltip.style("opacity", 1);
+          tooltip.html("<center>Comments from " + hour + " to " + nextHour + "<br> on " + day + "s: " + numberWithCommas(count) + "</center>")
+            .style("left", d3.event.pageX + 5 + "px")
+            .style("top", d3.event.pageY + 5 + "px")
+        })
+        .on("mouseout", function() {
+          return tooltip.style("opacity", 0);
+        });
 
-      legend.exit().remove();
+    cards.transition().duration(1000)
+        .delay(function(d, i) {
+          return 6 * i + 2 * d.hour
+        })
+        .style("fill", function(d) {
+          return colorScale(count_accessor(d));
+        });
 
-      if (id_selector === '#heatmap1') {
-        heat_svg1 = heat_svg;
-      } else {
-        heat_svg2 = heat_svg;
-      }
+    cards.exit().remove();
 
-    });  
+    var legend = heat_svg.selectAll(".heatLegend")
+        .data([0].concat(colorScale.quantiles()), function(d) { return d; });
+
+    legend.enter().append("g")
+        .attr("class", "heatLegend");
+
+    legend.append("rect")
+      .attr("x", function(d, i) {
+        return legendElementWidth * i;
+      })
+      .attr("y", height_heat - 25)
+      .attr("width", legendElementWidth)
+      .attr("height", gridSize / 2)
+      .style("fill", function(d, i) {
+        return colors[i];
+      });
+
+    legend.append("text")
+      .attr("class", "heatLegendLabel scale")
+      .text(function(d) {
+        return "≥ " + Math.round(d);
+      })
+      .attr("x", function(d, i) {
+        return legendElementWidth * i + (legendElementWidth / 2);
+      })
+      .attr("y", height_heat + gridSize - 25)
+      .style("text-anchor", "middle");
+
+    legend.exit().remove();
+
+    if (id_selector === '#heatmap1') {
+      heat_svg1 = heat_svg;
+    } else {
+      heat_svg2 = heat_svg;
+    } 
   };
 
 // small multiples constants
@@ -1480,10 +1506,7 @@ var yAxisPadding_multiples = 90;
 var smallMultiplesInit = 0;
 
 var refreshSmallMultiples = function(data, yMultiples) {
-  multiplesData = data.slice();
-  multiplesData = multiplesData.filter(function(d) {
-    return d['subreddit'] === cur_subreddit1 || d['subreddit'] == cur_subreddit2;
-  })
+  multiplesData = data;
 
   var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 40], 0.25);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
@@ -1589,33 +1612,6 @@ var refreshSmallMultiples = function(data, yMultiples) {
       return height_multiples - yScale(d[yMultiples + cur_filter]);
     })
 
-
-/*
-  // Rotate labels so they are easier to read
-  barchart.selectAll(".x.axis .tick text")
-    .attr("transform", "translate(" + 10 + "," + 5 + ") rotate(50)")
-    .style("text-anchor", "start")
-    .on("mouseover", function(subreddit) {
-      d = data[indexOfSubreddit(data, subreddit)]
-      tooltip.style("opacity", 1);
-      tooltip.html(getToolTip(d))
-        .style("left", d3.event.pageX + 5 + "px")
-        .style("top", d3.event.pageY + 5 + "px")
-      highlight(barchart, '.rect', subreddit)
-    })
-    .on("mouseout", function(subreddit) {
-      unHighlight(barchart, '.rect', subreddit)
-      return tooltip.style("opacity", 0);
-    })
-    .on("click", function(d) {
-      onclick_compare(d);
-    });
-
-  barchart.selectAll(".yVariable")
-    .text(yVariable)
-*/
-
-
   // Scale the data
   xScale.domain(multiplesData.map(function(d) {
     return d['subreddit'];
@@ -1719,4 +1715,3 @@ var refreshSmallMultiples = function(data, yMultiples) {
       });
 }
 
-refresh()
