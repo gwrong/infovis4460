@@ -1409,6 +1409,10 @@ var refreshHeatMap = function(id_selector) {
       var heat_svg = heat_svg2;
       var cur_subreddit = cur_subreddit2;
     }
+
+    cur_subreddit_data = compare_time_dataset.filter(function(d) {
+      return d['subreddit'] == cur_subreddit;
+    })
     
     heat_svg.selectAll(".scale").remove();
     heat_svg.selectAll(".cur_subreddit").remove();
@@ -1430,13 +1434,13 @@ var refreshHeatMap = function(id_selector) {
       .text("Time distribution of comments for " + cur_subreddit);
 
     var colorScale = d3.scale.quantile()
-        .domain([0, d3.max(compare_time_dataset, function (d) {
+        .domain([0, d3.max(cur_subreddit_data, function (d) {
           return count_accessor(d);
         })])
         .range(colors);
 
     var cards = heat_svg.selectAll(".hour")
-        .data(compare_time_dataset, function(d) {
+        .data(cur_subreddit_data, function(d) {
           return d.weekday + ':' + d.hour;
         });
 
