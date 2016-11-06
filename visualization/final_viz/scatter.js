@@ -662,12 +662,16 @@ var initialize_pickers = function() {
   filterpicker.enter()
     .append("option")
     .attr("value", function(d) {
-      return "" + d
+      return "" + d;
+    })
+    .attr("title", function(d) {
+      return "" + d;
     })
     .html(function(d) {
-      return "" + d
-    })
-  
+      return "" + d;
+    });
+    //.attr("data-icon", "glyphicon-info-sign");
+
   $('#filter-picker').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
     cur_filter_label = $(e.currentTarget).val();
     cur_filter = filter_labels[cur_filter_label];
@@ -678,6 +682,17 @@ var initialize_pickers = function() {
     refresh();
   });
   $('#filter-picker').selectpicker('refresh');
+
+  d3.select(".commentSubsetInfo")
+    .on("mouseover", function(d) {
+      tooltip.style("opacity", 1);
+      tooltip.html(getToolTipCommentsSubset(d))
+        .style("left", d3.event.pageX - 15 + "px")
+        .style("top", d3.event.pageY + 5 + "px")
+    })
+    .on("mouseout", function(d) {
+      tooltip.style("opacity", 0);
+    })
 }
 
 // Helper for getting index of subreddit in
@@ -750,6 +765,20 @@ var getToolTip = function(d) {
   + '<tr><td align="middle">Swear Score: </td><td>' + format_decimal(d["swear_score"]) + "</td></tr></table></center>"
 }
 
+// Centralized tooltip function
+var getToolTipCommentsSubset = function(d) {
+  return "<p>Here we can filter on special subsets of the comments within each subreddit:<br><br>" + 
+  "<b>All Comments</b>: All the comments!<br>" + 
+  "<b>Top Score Comments</b>: Top 5% of comments by score<br>" + 
+  "<b>Bottom Score Comments</b>: Bottom 5% of comments by score<br>" + 
+  "<b>Most Popular Authors</b>: Top 5% of authors by comment volume<br>" + 
+  "<b>Top Positive Comments</b>: Comments with positive score >= 25<br>" + 
+  "<b>Top Negative Comments</b>: Comments with negative score >= 15<br>" + 
+  "<b>Top Godwin Comments</b>: Comments with positive Godwin's scores<br>" + 
+  "<b>Top Swear Comments</b>: Comments with swear score >= 35" + 
+  "</p>"
+}
+
 // Highlight the chosen subreddit
 var highlight = function(selector, theClass, subreddit) {
   var chosen_subreddit = subreddit;
@@ -764,7 +793,6 @@ var highlight = function(selector, theClass, subreddit) {
     .transition()
     .duration(250)
     .delay(function(e, i) {
-      console.log('wtf')
       return i * 8;
     })
     .style("opacity", 0.25);

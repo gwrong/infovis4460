@@ -1116,7 +1116,6 @@ def combine_files():
                 for line in core_file:
                     line = line.rstrip()
                     month = file_name.split('-')[-1].split('.')[0].split('_')[0]
-                    print(month)
                     elements = line.split(',')
                     if 'weekday' in line and file_number == 1:
                         new_line = ','.join([elements[0]] + ['month'] + elements[1:])
@@ -1131,10 +1130,13 @@ def combine_files():
 if __name__ == "__main__":
     t0 = time()
 
-    
+    combine_files();
+
+    '''
     for month_file in MONTH_FILES:
         print("Running month {}".format(month_file))
         word_clouds(month_file)
+    '''
 
     
     '''
