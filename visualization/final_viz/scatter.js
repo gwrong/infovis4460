@@ -1,3 +1,41 @@
+// Spinner to show while loading data
+// From http://spin.js.org/
+var opts = {
+  lines: 13 // The number of lines to draw
+, length: 28 // The length of each line
+, width: 14 // The line thickness
+, radius: 42 // The radius of the inner circle
+, scale: 1 // Scales overall size of the spinner
+, corners: 1 // Corner roundness (0..1)
+, color: '#000' // #rgb or #rrggbb or array of colors
+, opacity: 0.25 // Opacity of the lines
+, rotate: 0 // The rotation offset
+, direction: 1 // 1: clockwise, -1: counterclockwise
+, speed: 1 // Rounds per second
+, trail: 60 // Afterglow percentage
+, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+, zIndex: 2e9 // The z-index (defaults to 2000000000)
+, className: 'spinner' // The CSS class to assign to the spinner
+, top: '50%' // Top position relative to parent
+, left: '50%' // Left position relative to parent
+, shadow: false // Whether to render a shadow
+, hwaccel: false // Whether to use hardware acceleration
+, position: 'fixed' // Element positioning
+}
+/*
+// Scrolls the page to the top before refreshing
+// the page
+$(window).on('beforeunload', function() {
+   $(window).scrollTop(0);
+});
+*/
+
+// Creates loading spinner
+$( document ).ready(function() {
+  var target = document.getElementById('spinner')
+  var spinner = new Spinner(opts).spin(target);
+});
+
 // Global variables are changed and graph refreshes
 // pick up the new variables
 var cur_month_label = null;
@@ -12,6 +50,15 @@ var initialized_heatmap = false;
 var sort_by = null;
 var cur_chosen_subreddits = null;
 var initialized_pickers = false;
+
+// Set up some variable defaults
+var subsetSuffix = ''
+var xVariableLabel = 'Subreddit'
+var xVariableBase = 'subreddit'
+var xVariable = 'subreddit'
+var yVariableLabel = 'Number of Comments'
+var yVariableBase = 'num_comments'
+var yVariable = 'num_comments'
 
 var core_file_path = 'core_files/combined_core.csv'
 var time_file_path = 'time_files/combined_time.csv'
@@ -308,14 +355,7 @@ var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-// Set up some variable defaults
-var subsetSuffix = ''
-var xVariableLabel = 'Subreddit'
-var xVariableBase = 'subreddit'
-var xVariable = 'subreddit'
-var yVariableLabel = 'Number of Comments'
-var yVariableBase = 'num_comments'
-var yVariable = 'num_comments'
+
 
 var axisOptions = {
   'Subreddit': 'subreddit',
@@ -371,14 +411,6 @@ var axisChange = function(picker, options, axis) {
       xVariableLabel = selected;
       xVariableBase = varName;
       xVariable = xVariableBase
-      if (xVariable != 'subreddit') {
-        xVariable = xVariable + cur_filter;
-        d3.selectAll(".sorter-button")
-          .style("display", "none");
-      } else {
-        d3.selectAll(".sorter-button")
-          .style("display", "inline");
-      }
     } else {
       yVariableLabel = selected;
       yVariableBase = varName;
@@ -388,18 +420,6 @@ var axisChange = function(picker, options, axis) {
       refresh()
     }
 }
-
-// Create the sort button which sorts
-// the x axis by the y variable
-d3.selectAll(".sorter")
-  .append("input")
-  .attr("value", "Sort Data")
-  .attr("type", "button")
-  .attr("class", "sorter-button btn btn-primary")
-  .on("click", function() {
-    sort_by = yVariable;
-    refresh()
-  })
 
 // Add the select list for department filtering
 var xPicker = d3.select("#xPicker")
@@ -495,6 +515,9 @@ d3.csv(core_file_path, function(error, core_dataset) {
     });
     full_time_dataset = time_dataset;
     refresh();
+    // Kills the loading spinner
+    var target = document.getElementById('spinner')
+    target.remove();
   })
 });
 
@@ -550,9 +573,7 @@ var createCharts = function() {
     return (d['subreddit'] == cur_subreddit1) || (d['subreddit'] == cur_subreddit2);
   })
 
-  if (sort_by == null) {
-    sort_by = 'subreddit';
-  }
+  sort_by = yVariable;
 
   // Sort the data, supports string or numbers
   if (sort_by === 'subreddit') {
@@ -1408,7 +1429,6 @@ var refreshHeatMap = function(id_selector) {
       .attr("fill", "white")
       .text("Time distribution of comments for " + cur_subreddit);
 
-    console.log(compare_time_dataset)
     var colorScale = d3.scale.quantile()
         .domain([0, d3.max(compare_time_dataset, function (d) {
           return count_accessor(d);

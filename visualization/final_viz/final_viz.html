@@ -13,6 +13,8 @@
     <link href='chord.css' rel='stylesheet' type='text/css'>
   </head>
   <body>
+    <div id="spinner" style="text-align: center;">
+        </div>
     <div class="navbar-fixed-top" style="border-style: solid">
         <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
         <!-- Trigger the modal with a button -->
@@ -94,14 +96,17 @@
       </div>
     </div>
 
+    
 
-    <div class="sorter sameLine" style="margin-right: 10px"></div>
+
+    <!-- <div class="sorter sameLine" style="margin-right: 10px"></div>-->
     <span class="h4" style="margin-right: 10px">Subreddits:</span>
     <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
     <span class="h4" style="margin-right: 10px; margin-left: 10px">Subreddit Presets:</span>
     <select class="selectpicker" id="subredditsubset-picker"></select>
     <br><br>
     <div>
+        
         <div class="barchart sameLine"></div>
         <div class="scatterplot sameLine"></div>
     </div>
@@ -149,7 +154,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.3.0/bootstrap-slider.min.js"></script>
+
     
+    <script src="http://spin.js.org/spin.min.js"></script>
+
     <script src="chord.js"></script>
   </body>
 </html>

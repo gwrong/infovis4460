@@ -160,3 +160,11 @@ rect {
 .modal-title {
   font-size: 18px;
 }
+
+.spinner {
+  position: fixed;
+  top: 75%;
+  left: 50%;
+  margin-top: 75px; //Half of the height of the loading graphic
+  margin-left: -50px; //Half of the width of the loading graphic
+}
