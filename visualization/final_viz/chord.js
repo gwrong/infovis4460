@@ -1,9 +1,12 @@
-
-
 var chord;
+var chord_counter = 0;
 
 var create_chord = function(cities, matrix, cur_subreddits) {
   console.log("Called")
+  chord_counter = chord_counter + 1;
+  if (chord_counter > 3) {
+    return;
+  }
   var width = 700,
     height = 700,
     outerRadius = Math.min(width, height) / 2 - 105,
