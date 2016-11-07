@@ -12,6 +12,7 @@ from subreddit_subsets import get_all_subreddits
 import sys
 from time import time
 from wordcloud import WordCloud
+from colors import colors
 
 #Possible data files
 MONTH_FILES = ['RC_2016-01', 'RC_2016-02', 'RC_2016-03', 'RC_2016-04', 'RC_2016-05', 'RC_2016-06', 'RC_2016-07', 'RC_2016-08', 'RC_2016-09']
@@ -215,6 +216,10 @@ def format_adj_matrix(mention_dict, LOOKUP_PATH, month_file):
     with open(os.path.join(LOOKUP_PATH, 'mention_adj_matrix_d3_{}.json'.format(month_file)), 'w') as out:
         json.dump(adj_matrix, out)
 
+'''
+A helper is needed to pass in extra args to
+the actual multiprocessing function compute_comments
+'''
 def compute_comments_helper(comments_month):
     return compute_comments(*comments_month)
 
@@ -1125,12 +1130,21 @@ def combine_files():
                         new_line = ','.join([elements[0]] + [month] + elements[1:])
                     combined_time.write(new_line + '\n')
 
+def create_subreddit_lookup():
+    path = 'lookup_data'
+    with open(os.path.join(path, 'subreddit_lookup.csv'), 'w') as lookup_file:
+        lookup_file.write('subreddit,color\n')
+        for index, subreddit in enumerate(sorted(SUBREDDITS, key=lambda x: x.lower())):
+            color = colors[index]
+            lookup_file.write(subreddit + ',' + color + '\n')
 
 
 if __name__ == "__main__":
     t0 = time()
+    #create_subreddit_lookup();
+    #combine_files();
 
-    combine_files();
+    print(json.load(open("lookup_data/mention_adj_matrix_RC_2016-09.json")))
 
     '''
     for month_file in MONTH_FILES:

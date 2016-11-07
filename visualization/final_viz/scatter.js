@@ -67,6 +67,9 @@ var full_time_dataset = null;
 var compare_core_dataset = null;
 var compare_time_dataset = null;
 
+var full_chord_lookup_dataset = null;
+var full_chord_matrix_dataset = null;
+
 var subreddit_subsets = {
   "Top 25 by Comments": [
     'relationships',
@@ -514,10 +517,17 @@ d3.csv(core_file_path, function(error, core_dataset) {
       }
     });
     full_time_dataset = time_dataset;
-    refresh();
-    // Kills the loading spinner
-    var target = document.getElementById('spinner')
-    target.remove();
+    d3.csv("subreddit_lookup.csv", function(cities) {
+      d3.json("subreddit_mentions.json", function(matrix) {
+        full_chord_lookup_dataset = cities;
+        full_chord_matrix_dataset = matrix;
+        refresh();
+        // Kills the loading spinner
+        var target = document.getElementById('spinner')
+        target.remove();
+      });
+    });
+    
   })
 });
 
@@ -539,6 +549,8 @@ var createCharts = function() {
   if (cur_chosen_subreddits == null) {
     cur_chosen_subreddits = subreddit_subsets["Top 25 by Comments"];
   }
+
+  create_chord(full_chord_lookup_dataset, full_chord_matrix_dataset, cur_chosen_subreddits);
 
   // Get data for only the subreddits that are chosen
   core_dataset = core_dataset.filter(function(d, i) {
