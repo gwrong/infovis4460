@@ -757,6 +757,19 @@ var initialize_pickers = function() {
     .on("mouseout", function(d) {
       tooltip.style("opacity", 0);
     })
+
+  d3.selectAll(".mainVizQuestion")
+    .on("mouseover", function(d) {
+      tooltip.style("opacity", 1);
+      tooltip.style("width", "225px")
+      tooltip.html(getToolTipMainVizQuestion(d))
+        .style("left", d3.event.pageX - 15 + "px")
+        .style("top", d3.event.pageY + 5 + "px")
+
+    })
+    .on("mouseout", function(d) {
+      tooltip.style("opacity", 0);
+    })
 }
 
 // Helper for getting index of subreddit in
@@ -817,6 +830,7 @@ function abbreviate_thousands(num) {
   return num;
 }
 
+// Align table elements on the decimal
 var align_decimal = function(decimal) {
   decimal = decimal.toString();
   var parts = decimal.split(".")
@@ -854,6 +868,10 @@ var getToolTipCommentsSubset = function(d) {
   "<b>Top Godwin Comments</b>: Comments with positive Godwin's scores<br>" + 
   "<b>Top Swear Comments</b>: Comments with swear score >= 35" + 
   "</p>"
+}
+
+var getToolTipMainVizQuestion = function(d) {
+  return "<p><b>Tip</b>: Choose the x and y variables that interest you. Hover over the data for more details. Left click one subreddit and ctrl/cmd + left click another subreddit to compare them further down the page.</p>"
 }
 
 // Highlight the chosen subreddit
@@ -1175,8 +1193,6 @@ var makeBatterLegend = function(data, selector, element) {
       .transition()
       .duration(2000)
       .style("opacity", 1);
-
-  
 }
 
 var scatterPlotInit = false;
