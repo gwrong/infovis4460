@@ -4,38 +4,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
   // Change this to enter-update-exit
   d3.selectAll(".redditChord").remove()
-  var width = 700
-  var height = 700
-  var outerRadius = Math.min(width, height) / 2 - 105
-  var innerRadius = outerRadius - 20;
-
-  var formatPercent = d3.format(".2%");
-
-  var arc = d3.svg.arc()
-      .innerRadius(innerRadius)
-      .outerRadius(outerRadius);
-
-  var layout = d3.layout.chord()
-      .padding(.044)
-      .sortSubgroups(d3.descending)
-      .sortChords(d3.ascending);
-
-  var path = d3.svg.chord()
-      .radius(innerRadius);
-
-  // Change this to enter-update-exit
-  d3.select("body").append("div")
-    .attr("class", "redditChord")
-
-  var svg = d3.select(".redditChord").append("svg")
-      .attr("width", width)
-      .attr("height", height)
-    .append("g")
-      .attr("id", "circle")
-      .attr("transform", "translate(" + (width  ) / 2 + "," + height / 2 + ")");
-  svg.append("circle")
-    .attr("r", outerRadius);
-
+  
   var indices = []
   var new_subreddit_lookup = []
   var new_matrix = []
@@ -82,6 +51,46 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     }
   }
 
+  if (overall_mentions == 0) {
+    d3.select("body").append("div")
+      .attr("class", "redditChord")
+    d3.select(".redditChord")
+      .append("h5").html("<br><br><br>No mentions between chosen subreddit :(")
+      return;
+  }
+
+  var width = 700
+  var height = 700
+  var outerRadius = Math.min(width, height) / 2 - 105
+  var innerRadius = outerRadius - 20;
+
+  var formatPercent = d3.format(".2%");
+
+  var arc = d3.svg.arc()
+      .innerRadius(innerRadius)
+      .outerRadius(outerRadius);
+
+  var layout = d3.layout.chord()
+      .padding(.044)
+      .sortSubgroups(d3.descending)
+      .sortChords(d3.ascending);
+
+  var path = d3.svg.chord()
+      .radius(innerRadius);
+
+  // Change this to enter-update-exit
+  d3.select("body").append("div")
+    .attr("class", "redditChord")
+
+  var svg = d3.select(".redditChord").append("svg")
+      .attr("width", width)
+      .attr("height", height)
+    .append("g")
+      .attr("id", "circle")
+      .attr("transform", "translate(" + (width  ) / 2 + "," + height / 2 + ")");
+  svg.append("circle")
+    .attr("r", outerRadius);
+
   // Compute the chord layout.
   layout.matrix(matrix);
 
@@ -99,6 +108,10 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
   // Add the group arc.
   var groupPath = group.append("path")
+    .style("fill", function(d) {
+      return "hsl(" + Math.random() * 360 + ",100%,50%)"
+    })
+    .transition().duration(2500)
     .attr("id", function(d, i) {
       return "group" + i;
     })
@@ -108,8 +121,16 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     });
 
   group.append("text")
+    .attr("transform", function(d,i) {
+        return "rotate(0)";
+    })
+    .attr("fill", "white")
+    .transition().duration(2500)
     .each(function(d) {
       d.angle = ((d.startAngle + d.endAngle) / 2);
+      if (!d.angle) {
+        d.angle = 0;
+      }
     })
     .attr("dy", ".35em")
     .attr("class", "chordTitles")
@@ -130,11 +151,20 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
   // Add the chords.
   chord = svg.selectAll(".chord")
       .data(layout.chords)
-    .enter().append("path")
+
+  chord.enter().append("path")
       .attr("class", "chord")
+      .style("fill", function(d) {
+        return "hsl(" + Math.random() * 360 + ",100%,50%)"
+      })
+      .style("opacity", 0)
+      .transition().duration(1200).delay(function(d, i) {
+        return i * 5
+      })
       .style("fill", function(d) {
         return subreddit_lookup[d.source.index].color;
       })
+      .style("opacity", 1)
       .attr("d", path)
 
   // Mouseover
