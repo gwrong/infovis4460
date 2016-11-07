@@ -517,9 +517,9 @@ d3.csv(core_file_path, function(error, core_dataset) {
       }
     });
     full_time_dataset = time_dataset;
-    d3.csv("subreddit_lookup.csv", function(cities) {
+    d3.csv("subreddit_lookup.csv", function(subreddit_lookup) {
       d3.json("subreddit_mentions.json", function(matrix) {
-        full_chord_lookup_dataset = cities;
+        full_chord_lookup_dataset = subreddit_lookup;
         full_chord_matrix_dataset = matrix;
         refresh();
         // Kills the loading spinner
