@@ -2,7 +2,9 @@ var chord;
 var chord_counter = 0;
 
 var create_chord = function(cities, matrix, cur_subreddits) {
-  console.log("Called")
+
+  // Change this to enter-update-exit
+  d3.selectAll(".redditChord").remove()
   chord_counter = chord_counter + 1;
   if (chord_counter > 3) {
     return;
@@ -25,6 +27,10 @@ var create_chord = function(cities, matrix, cur_subreddits) {
 
   var path = d3.svg.chord()
       .radius(innerRadius);
+
+  // Change this to enter-update-exit
+  d3.select("body").append("div")
+    .attr("class", "redditChord")
 
   var svg = d3.select(".redditChord").append("svg")
       .attr("width", width)
@@ -75,8 +81,10 @@ var create_chord = function(cities, matrix, cur_subreddits) {
   }
   for (var i = 0; i < matrix.length; i++) {
     for (var j = 0; j < matrix[i].length; j++) {
-      overall_mentions += matrix[i][j];
-      dest_mention_totals[j] += matrix[i][j];
+      if (matrix[i][j]) {
+        overall_mentions += matrix[i][j];
+        dest_mention_totals[j] += matrix[i][j];
+      }
     }
   }
 
@@ -92,6 +100,7 @@ var create_chord = function(cities, matrix, cur_subreddits) {
 
   // Add a mouseover title.
   group.append("title").text(function(d, i) {
+    console.log(overall_mentions)
     return cities[i].subreddit + ": " + d.value + " mention origins (" + formatPercent(d.value / overall_mentions) + " of all mention origins)";
   });
 
