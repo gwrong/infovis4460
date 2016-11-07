@@ -817,17 +817,30 @@ function abbreviate_thousands(num) {
   return num;
 }
 
+var align_decimal = function(decimal) {
+  decimal = decimal.toString();
+  var parts = decimal.split(".")
+  var result = "";
+  result = result + "<td margin-left='10px'>" + parts[0] + "</td>"
+  if (parts.length > 1) {
+    result = result + "<td>." + parts[1] + "</td>"
+  } else {
+    result = result + "<td></td>"
+  }
+  return result
+}
+
 // Centralized tooltip function
 var getToolTip = function(d) {
-  return "<center><b>" + d["subreddit"] + "</b><table>" 
-  + '<tr><td align="middle" width="155px">Number of Comments: </td><td>' + numberWithCommas(d["num_comments"]) + "</td></tr>"
-  + '<tr><td align="middle">Average Word Length: </td><td>' + format_decimal(d["avg_word_length"]) + "</td></tr>"
-  + '<tr><td align="middle">Words Per Comment: </td><td>' + format_decimal(d["avg_words_per_comment"]) + "</td></tr>"
-  + '<tr><td align="middle">Positive Score: </td><td>' + format_decimal(d["positive_score"]) + "</td></tr>"
-  + '<tr><td align="middle">Negative Score: </td><td>' + format_decimal(d["negative_score"]) + "</td></tr>"
-  + '<tr><td align="middle">Godwin\'s Score: </td><td>' + format_decimal(d["godwins_score"]) + "</td></tr>"
-  + '<tr><td align="middle">Swear Score: </td><td>' + format_decimal(d["swear_score"]) + "</td></tr></table></center>"
+  return "<center><b>" + d["subreddit"] +'</b>: ' + numberWithCommas(d["num_comments" + cur_filter]) + ' comments'  + '<hr style="margin-top: 5px; margin-bottom: 5px"><table class="hoverTooltip">'
+  + '<tr><td align="middle" width="150px">Average Word Length: </td>' + align_decimal(format_decimal(d["avg_word_length" + cur_filter])) + "</tr>"
+  + '<tr><td align="middle">Words Per Comment: </td>' + align_decimal(format_decimal(d["avg_words_per_comment" + cur_filter])) + "</tr>"
+  + '<tr><td align="middle">Positive Score: </td>' + align_decimal(format_decimal(d["positive_score" + cur_filter])) + "</tr>"
+  + '<tr><td align="middle">Negative Score: </td>' + align_decimal(format_decimal(d["negative_score" + cur_filter])) + "</tr>"
+  + '<tr><td align="middle">Godwin\'s Score: </td>' + align_decimal(format_decimal(d["godwins_score" + cur_filter])) + "</tr>"
+  + '<tr><td align="middle">Swear Score: </td>' + align_decimal(format_decimal(d["swear_score" + cur_filter])) + "</tr></table></center>"
 }
+
 
 // Centralized tooltip function
 var getToolTipCommentsSubset = function(d) {

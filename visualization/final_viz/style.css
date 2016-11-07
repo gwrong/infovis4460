@@ -168,3 +168,18 @@ rect {
   margin-top: 75px; //Half of the height of the loading graphic
   margin-left: -50px; //Half of the width of the loading graphic
 }
+
+/* http://stackoverflow.com/questions/1363239/aligning-decimal-points-in-html */
+table.hoverTooltip {
+  border-collapse: collapse;
+}
+td.hoverTooltip {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;}
+td + td {
+  text-align:right;
+}
+td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
+  text-align:left;
+}
