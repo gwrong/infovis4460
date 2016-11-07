@@ -184,8 +184,7 @@ misc_subreddits = [
 ]
 
 def get_all_subreddits():
-    subreddits = ['HillaryForPrison']
-    subreddits = subreddits +  list(
+    subreddits = list(
         set(
             top_25_subscriber_subreddits + top_25_comment_subreddits +
             political_subreddits +

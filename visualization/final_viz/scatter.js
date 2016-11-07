@@ -38,7 +38,7 @@ $( document ).ready(function() {
 
 // Global variables are changed and graph refreshes
 // pick up the new variables
-var cur_month_label = null;
+var cur_month_label = 'September 2016';
 var cur_subreddit = null;
 var cur_subreddit1 = null;
 var cur_subreddit2 = null;
@@ -289,6 +289,18 @@ var dataset_labels = [
   "September 2016",
 ]
 
+var chord_files = {
+  "January 2016": "mention_adj_matrix_d3_RC_2016-01.json",
+  "February 2016": "mention_adj_matrix_d3_RC_2016-02.json",
+  "March 2016": "mention_adj_matrix_d3_RC_2016-03.json",
+  "April 2016": "mention_adj_matrix_d3_RC_2016-04.json",
+  "May 2016": "mention_adj_matrix_d3_RC_2016-05.json",
+  "June 2016": "mention_adj_matrix_d3_RC_2016-06.json",
+  "July 2016": "mention_adj_matrix_d3_RC_2016-07.json",
+  "August 2016": "mention_adj_matrix_d3_RC_2016-08.json",
+  "September 2016": "mention_adj_matrix_d3_RC_2016-09.json",
+}
+
 var month_label_to_number = function(label) {
   if (label === "January 2016") {
     return 1;
@@ -517,13 +529,12 @@ d3.csv(core_file_path, function(error, core_dataset) {
       }
     });
     full_time_dataset = time_dataset;
-    d3.csv("subreddit_lookup.csv", function(subreddit_lookup) {
-      d3.json("subreddit_mentions.json", function(matrix) {
-        full_chord_lookup_dataset = subreddit_lookup;
-        full_chord_matrix_dataset = matrix;
+    d3.csv("chord_files/subreddit_lookup.csv", function(subreddit_lookup) {
+      full_chord_lookup_dataset = subreddit_lookup;
+      load_chord_matrix_data(function() {
         refresh();
         // Kills the loading spinner
-        var target = document.getElementById('spinner')
+        var target = document.getElementById('spinner');
         target.remove();
       });
     });
@@ -531,14 +542,18 @@ d3.csv(core_file_path, function(error, core_dataset) {
   })
 });
 
-
+var load_chord_matrix_data = function(callback) {
+  chord_file = chord_files[cur_month_label];
+  d3.json("chord_files/" + chord_file, function(matrix) {
+    full_chord_matrix_dataset = matrix;
+    if (callback) {
+      callback();
+    }
+  });
+}
 
 // Constructs the charts to be shown
 var createCharts = function() {
-  // Initialize the month we are on
-  if (cur_month_label == null) {
-    cur_month_label = 'September 2016';
-  }
 
   // Get the correct month's data
   core_dataset = full_core_dataset.filter(function(d) {
@@ -550,6 +565,7 @@ var createCharts = function() {
     cur_chosen_subreddits = subreddit_subsets["Top 25 by Comments"];
   }
 
+  load_chord_matrix_data();
   create_chord(full_chord_lookup_dataset, full_chord_matrix_dataset, cur_chosen_subreddits);
 
   // Get data for only the subreddits that are chosen

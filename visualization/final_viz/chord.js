@@ -4,10 +4,10 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
   // Change this to enter-update-exit
   d3.selectAll(".redditChord").remove()
-  var width = 700,
-    height = 700,
-    outerRadius = Math.min(width, height) / 2 - 105,
-    innerRadius = outerRadius - 20;
+  var width = 700
+  var height = 700
+  var outerRadius = Math.min(width, height) / 2 - 105
+  var innerRadius = outerRadius - 20;
 
   var formatPercent = d3.format(".2%");
 
@@ -57,7 +57,6 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     }
     for (var k = 0; k < indices.length; k++) {
       if (i == k) {
-        console.log("here")
         new_matrix[cur_index].push(0)
       } else {
         new_matrix[cur_index].push(matrix[i][indices[k]])
@@ -95,7 +94,6 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
   // Add a mouseover title.
   group.append("title").text(function(d, i) {
-    console.log(overall_mentions)
     return subreddit_lookup[i].subreddit + ": " + d.value + " mention origins (" + formatPercent(d.value / overall_mentions) + " of all mention origins)";
   });
 
