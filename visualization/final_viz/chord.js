@@ -117,7 +117,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     })
     .attr("d", arc)
     .style("fill", function(d, i) {
-      return subreddit_lookup[i].color;
+      return color(cValue(subreddit_lookup[i].subreddit));
     });
 
   group.append("text")
@@ -162,7 +162,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
         return i * 5
       })
       .style("fill", function(d) {
-        return subreddit_lookup[d.source.index].color;
+        return color(cValue(subreddit_lookup[d.source.index].subreddit));
       })
       .style("opacity", 1)
       .attr("d", path)
