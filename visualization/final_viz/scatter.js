@@ -362,7 +362,11 @@ var circleSize = function(d) {
 // Assign a color to every subreddit
 var color = d3.scale.category20();
 var cValue = function(d) {
-  return d['subreddit'];
+  if (typeof(d) === 'object') {
+    return d['subreddit']
+  } else {
+    return d;
+  }
 }
 
 // Prepare tooltip for the scatterplot
@@ -1427,17 +1431,17 @@ var count_accessor = function(d) {
     return d['count' + cur_filter]
 }
 
-var margin_heat = { top: 50, right: 0, bottom: 25, left: 30 },
-    width_heat = 659 - margin_heat.left - margin_heat.right,
-    height_heat = 300 - margin_heat.top - margin_heat.bottom,
-    gridSize = Math.floor(width_heat / 24),
-    legendElementWidth = gridSize*2,
-    buckets = 12,
-    days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-    times = ["12am", "1am", "2am", "3am", "4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm"],
-    colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58", "#081d78", "#081e05", "#000000"],
-    heat_svg1 = null,
-    heat_svg2 = null
+var margin_heat = {top: 50, right: 0, bottom: 25, left: 30};
+var width_heat = 659 - margin_heat.left - margin_heat.right;
+var height_heat = 300 - margin_heat.top - margin_heat.bottom;
+var gridSize = Math.floor(width_heat / 24);
+var legendElementWidth = gridSize *2 ;
+var buckets = 12;
+var days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+var times = ["12am", "1am", "2am", "3am", "4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm"];
+var heat_map_colors_lookup = {}
+var heat_svg1 = null;
+var heat_svg2 = null;
 
 function dayOfWeekAsString(dayIndex) {
   return ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][dayIndex];
@@ -1470,8 +1474,12 @@ var createHeatMap = function(id_selector) {
   var timeLabels = heat_svg.selectAll(".timeLabel")
       .data(times)
       .enter().append("text")
-        .text(function(d) { return d; })
-        .attr("x", function(d, i) { return i * gridSize; })
+        .text(function(d) {
+          return d;
+        })
+        .attr("x", function(d, i) {
+          return i * gridSize;
+        })
         .attr("y", 0)
         .style("text-anchor", "middle")
         .attr("transform", "translate(" + gridSize / 2 + ", -6)")
@@ -1487,7 +1495,31 @@ var createHeatMap = function(id_selector) {
   }
 }
 
+// Create a custom gradient from the subreddit color
+var create_color_scale = function(rgb) {
+  var red = rgb.r;
+  var green = rgb.g;
+  var blue = rgb.b;
+
+  var red_step = red / 11;
+  var green_step = green / 11;
+  var blue_step = blue / 11;
+
+  color_scale = ["rgb(" + red + "," + green + "," + blue + ")"];
+  for (var i = 0; i < 10; i++) {
+    red = red - red_step;
+    green = green - green_step;
+    blue = blue - blue_step;
+    color_scale.push("rgb(" + Math.round(red) + "," + Math.round(green) + "," + Math.round(blue) + ")");
+  }
+  color_scale.push("rgb(0, 0, 0)");
+  //color_scale.reverse();
+  console.log(color_scale.length);
+  return color_scale;
+}
+
 var refreshHeatMap = function(id_selector) {
+
     if (id_selector === '#heatmap1') {
       var heat_svg = heat_svg1;
       var cur_subreddit = cur_subreddit1;
@@ -1499,6 +1531,14 @@ var refreshHeatMap = function(id_selector) {
     cur_subreddit_data = compare_time_dataset.filter(function(d) {
       return d['subreddit'] == cur_subreddit;
     })
+
+    console.log(cValue(cur_subreddit))
+
+    if (!(cur_subreddit in heat_map_colors_lookup)) {
+      heat_map_colors_lookup[cur_subreddit] = create_color_scale(d3.rgb(color(cValue(cur_subreddit))))
+    }
+
+    console.log(heat_map_colors_lookup[cur_subreddit].length)
     
     heat_svg.selectAll(".scale").remove();
     heat_svg.selectAll(".cur_subreddit").remove();
@@ -1523,7 +1563,7 @@ var refreshHeatMap = function(id_selector) {
         .domain([0, d3.max(cur_subreddit_data, function (d) {
           return count_accessor(d);
         })])
-        .range(colors);
+        .range(heat_map_colors_lookup[cur_subreddit]);
 
     var cards = heat_svg.selectAll(".hour")
         .data(cur_subreddit_data, function(d) {
@@ -1544,7 +1584,7 @@ var refreshHeatMap = function(id_selector) {
         .attr("class", "hour bordered")
         .attr("width", gridSize)
         .attr("height", gridSize)
-        .style("fill", colors[0])
+        .style("fill", heat_map_colors_lookup[cur_subreddit][0])
         .on("mouseover", function(d) {
           count = count_accessor(d);
           day = dayOfWeekAsString(d['weekday']);
@@ -1589,7 +1629,7 @@ var refreshHeatMap = function(id_selector) {
       .attr("width", legendElementWidth)
       .attr("height", gridSize / 2)
       .style("fill", function(d, i) {
-        return colors[i];
+        return heat_map_colors_lookup[cur_subreddit][i];
       });
 
     legend.append("text")
