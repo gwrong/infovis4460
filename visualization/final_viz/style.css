@@ -48,7 +48,7 @@ h2 {
   stroke: #2f225d;
 }
 
-.tooltip {
+.tooltip, .tooltip2 {
   background: #fff;
   color: #202020;
   border-radius: 5px;

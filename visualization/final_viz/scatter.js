@@ -370,7 +370,10 @@ var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-
+// Prepare tooltip for the scatterplot
+var tooltip2 = d3.select("body").append("div")
+    .attr("class", "tooltip2")
+    .style("opacity", 0);
 
 var axisOptions = {
   'Subreddit': 'subreddit',
@@ -839,7 +842,8 @@ var onclick_compare = function(subreddit) {
     old_cur_subreddit2 = cur_subreddit2
     cur_subreddit2 = subreddit;
   }
-  refresh()
+  flash_subreddit_change();
+  refresh();
 }
 
 // http://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
@@ -964,6 +968,29 @@ var unHighlight = function(selector, theClass, subreddit) {
     });
 }
 
+// Only fade away the popup if we haven't
+// clicked for another subreddit while it has been up
+var flash_count = 0;
+
+// Flashes a popup saying a new subreddit was chosen
+var flash_subreddit_change = function() {
+  flash_count = flash_count + 1;
+  tooltip2.remove();
+  tooltip2 = d3.select("body").append("div")
+      .attr("class", "tooltip2")
+      .style("opacity", 0);
+  tooltip2.style("opacity", 1);
+  tooltip2.html('<table style="width: 250px"><tr><td rowspan="2"><i style="font-size: 22px" class="glyphicon glyphicon-arrow-down"></i></td><td style="text-align: center;">Updated compare subreddits to:</td></tr><tr><td style="text-align: center;"><b>' + cur_subreddit1 + '</b> vs <b>' + cur_subreddit2 + '</b></td></tr></table>')
+    .style("left", (1300 / 2) + "px")
+    .style("top", (700 / 2) + "px")
+  setTimeout(function() {
+      flash_count = flash_count - 1;
+      if (flash_count == 0) {
+        tooltip2.transition().duration(1000).style("opacity", 0);
+      }
+    }, 1500)
+}
+
 // Wraps text to multiple lines
 //Taken from https://bl.ocks.org/mbostock/7555321
 function wrap(text, width) {
@@ -1078,6 +1105,8 @@ var refreshBarChart = function(data) {
   //Create the bars
   var barDataSelection = barchart.selectAll(".rect")
     .data(data)
+
+  var popupToggled = false;
 
   //basePlot.selectAll('.legend').remove()
   barDataSelection.exit().remove();
@@ -1530,9 +1559,15 @@ var refreshHeatMap = function(id_selector) {
           return tooltip.style("opacity", 0);
         });
 
-    cards.transition().duration(1000)
+    cards.style("fill", function(d) {
+          return "white"
+        })
+        .transition().duration(1000)
         .delay(function(d, i) {
-          return 6 * i + 2 * d.hour
+          //return count_accessor(d)
+          return (Math.random() * 1000) + 100
+          //return ((24 * d.weekday) + d.hour) * 10
+          //return 6 * i + 2 * d.hour
         })
         .style("fill", function(d) {
           return colorScale(count_accessor(d));
@@ -1581,8 +1616,8 @@ var refreshHeatMap = function(id_selector) {
 var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
 var width_multiples = 200 - margin_multiples.left - margin_multiples.right;
 var height_multiples = 200 - margin_multiples.top - margin_multiples.bottom;
-var padding_multiples = 200;
-var yAxisPadding_multiples = 90;
+var padding_multiples = 65;
+var yAxisPadding_multiples = 45;
 
 var smallMultiplesInit = 0;
 
@@ -1619,7 +1654,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .call(yAxis)
 
     multiplesPlot.append("text")
-      .attr("x", width_multiples - 30)             
+      .attr("x", width_multiples - 55)             
       .attr("y", margin_multiples.top - 10)
       .attr("class", "smallMultiplesTitle")
       .style("font-size", "14px") 
@@ -1723,7 +1758,10 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .style("text-anchor", "left")
     .style("font-size", function(d) {
         size = 12;
-        if (cur_subreddit1.length > 9 || cur_subreddit2.length > 9) {
+        if ((cur_subreddit1.length > 13 && cur_subreddit2.length > 13) || (cur_subreddit1.length > 15 || cur_subreddit2.length > 15)) {
+          size = 8;
+        }
+        else if (cur_subreddit1.length > 9 || cur_subreddit2.length > 9) {
           size = 10;
         }
         return size + "px"
@@ -1739,60 +1777,13 @@ var refreshSmallMultiples = function(data, yMultiples) {
       return tooltip.style("opacity", 0);
     })
     .text(function(d) {
-      return abbreviateSubreddit(d);
+      return d;
+      //return abbreviateSubreddit(d);
     })
 
   multiplesPlot.selectAll(".y.axis .tick text")
   .text(function(d) {
     return abbreviate_thousands(d);
   });
-
-  multiplesPlot.selectAll('.legend').remove()
-
-  var legend = multiplesPlot.selectAll(".legend")
-      .data(multiplesData)
-      .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) {
-        return "translate(" + (padding - 0) + "," + i * 18 + ")";
-      });
-
-  legend.append("rect")
-      .attr("x", width_multiples - 20)
-      .attr("width", 18)
-      .attr("height", 18)
-      .attr("transform", "translate(17," + 25 + ")")
-      .style("fill", function(d) {
-        return color(cValue(d));
-      })
-      .on("mouseover", function(d) {
-        highlight(multiplesPlot, ".rect", d['subreddit'])
-      })
-      .on("mouseout", function(d) {
-        unHighlight(multiplesPlot, ".rect", d['subreddit'])
-      });
-
-  legend.append("text")
-      .attr("x", width_multiples - 23)
-      .attr("y", 9)
-      .attr("dy", ".4em")
-      .attr("fill", "white")
-      .style("text-anchor", "end")
-      .attr("transform", "translate(17," + 25 + ")")
-      .text(function(d) {
-        return d['subreddit'];
-      }).style("font-size", function(d) {
-        size = 12;
-        if (cur_subreddit1.length > 10 || cur_subreddit2.length > 10) {
-          size = 10;
-        }
-        return size + "px"
-      })
-      .on("mouseover", function(d) {
-        highlight(multiplesPlot, ".rect", d['subreddit'])
-      })
-      .on("mouseout", function(d) {
-        unHighlight(multiplesPlot, ".rect", d['subreddit'])
-      });
 }
 
