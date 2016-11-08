@@ -1594,6 +1594,10 @@ var refreshHeatMap = function(id_selector) {
 
     legend.append("text")
       .attr("class", "heatLegendLabel scale")
+      .style("opacity", 0.25)
+      .transition()
+      .duration(1000)
+      .style("opacity", 1)
       .text(function(d) {
         return "≥ " + Math.round(d);
       })
