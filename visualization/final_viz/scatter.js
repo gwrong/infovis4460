@@ -1707,6 +1707,9 @@ var smallMultiplesInit = 0;
 
 var refreshSmallMultiples = function(data, yMultiples) {
   multiplesData = data;
+  if (multiplesData[0].subreddit !== cur_subreddit1) {
+    multiplesData.reverse();
+  }
 
   var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 40], 0.25);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
