@@ -1495,26 +1495,49 @@ var createHeatMap = function(id_selector) {
   }
 }
 
+
 // Create a custom gradient from the subreddit color
 var create_color_scale = function(rgb) {
-  var red = rgb.r;
-  var green = rgb.g;
-  var blue = rgb.b;
+  var orig_red = rgb.r >= 255 ? 255 : rgb.r;
+  var orig_green = rgb.g >= 255 ? 255 : rgb.g;
+  var orig_blue = rgb.b >= 255 ? 255 : rgb.b;
 
-  var red_step = red / 11;
-  var green_step = green / 11;
-  var blue_step = blue / 11;
+  var red_step = (255 - orig_red) / 6;
+  var green_step = (255 - orig_green) / 6;
+  var blue_step = (255 - orig_blue) / 6;
 
-  color_scale = ["rgb(" + red + "," + green + "," + blue + ")"];
-  for (var i = 0; i < 10; i++) {
-    red = red - red_step;
-    green = green - green_step;
-    blue = blue - blue_step;
-    color_scale.push("rgb(" + Math.round(red) + "," + Math.round(green) + "," + Math.round(blue) + ")");
+  var cur_red = 255;
+  var cur_green = 255;
+  var cur_blue = 255;
+
+  var color_scale = []
+
+  color_scale.push("rgb(255, 255, 255)");
+  //color_scale.push["rgb(" + red + "," + green + "," + blue + ")"];
+  for (var i = 0; i < 5; i++) {
+    cur_red = cur_red - red_step;
+    cur_green = cur_green - green_step;
+    cur_blue = cur_blue - blue_step;
+    color_scale.push("rgb(" + Math.round(cur_red) + "," + Math.round(cur_green) + "," + Math.round(cur_blue) + ")");
+  }
+  color_scale.push["rgb(" + orig_red + "," + orig_green + "," + orig_blue + ")"];
+
+  cur_red = orig_red;
+  cur_green = orig_green;
+  cur_blue = orig_blue;
+
+  red_step = orig_red / 6;
+  green_step = orig_green / 6;
+  blue_step = orig_blue / 6;
+
+  for (var i = 0; i < 5; i++) {
+    cur_red = cur_red - red_step;
+    cur_green = cur_green - green_step;
+    cur_blue = cur_blue - blue_step;
+    color_scale.push("rgb(" + Math.round(cur_red) + "," + Math.round(cur_green) + "," + Math.round(cur_blue) + ")");
   }
   color_scale.push("rgb(0, 0, 0)");
-  //color_scale.reverse();
-  console.log(color_scale.length);
+  console.log(color_scale);
   return color_scale;
 }
 
@@ -1660,7 +1683,7 @@ var refreshHeatMap = function(id_selector) {
 var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
 var width_multiples = 200 - margin_multiples.left - margin_multiples.right;
 var height_multiples = 200 - margin_multiples.top - margin_multiples.bottom;
-var padding_multiples = 65;
+var padding_multiples = 60;
 var yAxisPadding_multiples = 45;
 
 var smallMultiplesInit = 0;
@@ -1698,7 +1721,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .call(yAxis)
 
     multiplesPlot.append("text")
-      .attr("x", width_multiples - 55)             
+      .attr("x", width_multiples - 65)             
       .attr("y", margin_multiples.top - 10)
       .attr("class", "smallMultiplesTitle")
       .style("font-size", "14px") 

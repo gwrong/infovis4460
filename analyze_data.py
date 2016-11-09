@@ -1130,6 +1130,7 @@ def combine_files():
                         new_line = ','.join([elements[0]] + [month] + elements[1:])
                     combined_time.write(new_line + '\n')
 
+# No longer reading color from here
 def create_subreddit_lookup():
     path = 'lookup_data'
     with open(os.path.join(path, 'subreddit_lookup.csv'), 'w') as lookup_file:
