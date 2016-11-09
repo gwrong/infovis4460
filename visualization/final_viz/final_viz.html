@@ -15,7 +15,7 @@
   <body>
     <div id="spinner" style="text-align: center;">
         </div>
-    <div class="navbar-fixed-top" style="border-style: solid">
+    <div class="navbar-fixed-top" style="border-style: solid; resize: vertical; overflow: auto;">
         <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
         <!-- Trigger the modal with a button -->
         <button type="button" class="btn btn-info about" data-toggle="modal" data-target="#aboutModal">2016 Reddit Comments: About</button>
@@ -33,17 +33,32 @@
         <br><br>
         <table>
         <tr>
-        <td>
+        <td style="width: 500px">
+            <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
+            
+        </td>
+        <td style="text-align: left;">
             <span style="vertical-align: middle;" class="h4">X Variable:&nbsp;&nbsp;&nbsp;</span>
             <select class="selectpicker" id="xPicker"></select>
         </td>
-        <td>
+        <td style="text-align: left;">
             <span style="vertical-align: middle;" class="h4">Y Variable:&nbsp;&nbsp;&nbsp;</span>
             <select class="selectpicker" id="yPicker"></select>
         </td>
+        </tr>
+        </table>
+        <br>
+        <table style="width: 800px">
+        <tr>
         <td>
-            <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
+            <span class="h4" style="vertical-align: middle;">Subreddits:&nbsp;&nbsp;&nbsp;</span>
+            <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
+    
+        </td>
+        <td>
+            <span class="h4" style="vertical-align: middle;">Subreddit Presets:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="subredditsubset-picker"></select>
         </td>
         </tr>
         </table>
@@ -97,10 +112,7 @@
     </div>
 
     <!-- <div class="sorter sameLine" style="margin-right: 10px"></div>-->
-    <span class="h4" style="margin-right: 10px">Subreddits:</span>
-    <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
-    <span class="h4" style="margin-right: 10px; margin-left: 10px">Subreddit Presets:</span>
-    <select class="selectpicker" id="subredditsubset-picker"></select>
+    
     <br><br>
     <div>
         
@@ -144,7 +156,7 @@
     <div class="smallMultiples"></div>
     <br><br>
     
-    <h4 class="chordQuestion">How connected is Reddit?</h4>
+    <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i></h4>
     <br><br>
     <h5 style="margin-bottom: 10px" class="chordTitle">Network of subreddit mentions</h5>
     <div class="redditChord" align="center"></div>

@@ -5,7 +5,7 @@ body {
   background: #202020;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  padding-top: 165px;
+  padding-top: 185px;
 }
 
 html {
@@ -27,15 +27,6 @@ h2 {
   font-size: 14px;
   margin-bottom: 20px;
 }
-/*
-.toggleSubreddits {
-  border: 2px solid #ccc;
-  width: 175px;
-  height: 1000px;
-  overflow-y: scroll; 
-  color: #000000;
-}
-*/
 
 .axis path,
 .axis line {

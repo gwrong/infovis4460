@@ -786,7 +786,19 @@ var initialize_pickers = function() {
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
       tooltip.html(getToolTipCommentsSubset(d))
-        .style("left", d3.event.pageX - 15 + "px")
+        .style("left", d3.event.pageX + 5 + "px")
+        .style("top", d3.event.pageY + 5 + "px")
+    })
+    .on("mouseout", function(d) {
+      tooltip.style("opacity", 0);
+    })
+
+  d3.select(".chordInfo")
+    .on("mouseover", function(d) {
+      tooltip.style("opacity", 1);
+      tooltip.style("width", "200px")
+      tooltip.html(getToolTipChord(d))
+        .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
     })
     .on("mouseout", function(d) {
@@ -798,7 +810,7 @@ var initialize_pickers = function() {
       tooltip.style("opacity", 1);
       tooltip.style("width", "225px")
       tooltip.html(getToolTipMainVizQuestion(d))
-        .style("left", d3.event.pageX - 15 + "px")
+        .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
 
     })
@@ -904,6 +916,11 @@ var getToolTipCommentsSubset = function(d) {
   "<b>Top Godwin Comments</b>: Comments with positive Godwin's scores<br>" + 
   "<b>Top Swear Comments</b>: Comments with swear score >= 35" + 
   "</p>"
+}
+
+// Centralized tooltip function
+var getToolTipChord = function(d) {
+  return "<b>Tip</b>: Hover over a subreddit arc to view its network of subreddit mentions. Press the <b>esc</b> key to unfade all chords."
 }
 
 var getToolTipMainVizQuestion = function(d) {
