@@ -36,6 +36,38 @@ $( document ).ready(function() {
   var spinner = new Spinner(opts).spin(target);
 });
 
+// Initialize scroll snapping
+// https://github.com/guidobouman/jquery-panelsnap
+var options;
+jQuery(function($) {
+  options = {
+    $menu: false,
+    menuSelector: 'a',
+    panelSelector: '> section',
+    namespace: '.panelSnap',
+    onSnapStart: function(){},
+    onSnapFinish: function(){},
+    onActivate: function(){},
+    directionThreshold: 100,
+    slideSpeed: 1000,
+    easing: 'easeOutBounce', // https://matthewlein.com/experiments/easing.html
+    offset: 220,
+    navigation: {
+      keys: {
+        nextKey: false,
+        prevKey: false,
+      },
+      buttons: {
+        $nextButton: false,
+        $prevButton: false,
+      },
+      wrapAround: false
+    }
+  };
+
+  $('body').panelSnap(options);
+});
+
 // Global variables are changed and graph refreshes
 // pick up the new variables
 var cur_month_label = 'September 2016';
@@ -403,13 +435,40 @@ var inverseAxisOptions = {
 
 // Do our CTRL handling for when we want to compare a second subreddit
 var cntrlIsPressed = false;
+var qIsPressed = false;
+var navBarHidden = false;
+var navBarToggled = false;
 $(document).keydown(function(event) {
-    if (event.which == "17")
-        cntrlIsPressed = true;
+    if (event.which == "17") {
+      cntrlIsPressed = true;
+    } else if (event.which == "81") {
+      qIsPressed = true;
+    }
+    console.log(navBarToggled)
+    if (cntrlIsPressed && qIsPressed && !navBarToggled) {
+      navBarToggled = true;
+      if (!navBarHidden) {
+        d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
+        //d3.select("body").style("padding-top", "0px")
+        options.offset = 0;
+        navBarHidden = true;
+      } else {
+        d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
+        //d3.select("body").style("padding-top", "220px")
+        navBarHidden = false;
+      }
+      
+    }
 });
 
-$(document).keyup(function() {
+$(document).keyup(function(event) {
+  if (event.which == "17") {
     cntrlIsPressed = false;
+    navBarToggled = false;
+  } else if (event.which == "81") {
+    qIsPressed = false;
+    navBarToggled = false;
+  }
 });
 
 // Shorten long subreddit names if needed

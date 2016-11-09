@@ -59,8 +59,8 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
       return;
   }
 
-  var width = 700
-  var height = 700
+  var width = 600
+  var height = 600
   var outerRadius = Math.min(width, height) / 2 - 105
   var innerRadius = outerRadius - 20;
 
