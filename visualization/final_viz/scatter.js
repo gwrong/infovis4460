@@ -47,7 +47,25 @@ jQuery(function($) {
     namespace: '.panelSnap',
     onSnapStart: function(){},
     onSnapFinish: function(){},
-    onActivate: function(){},
+    onActivate: function($target){
+      // Contains css class of panel
+      var activatedPanel = $target[0].attributes[0].nodeValue;
+      console.log(activatedPanel)
+      if (activatedPanel == 'wordCloudsPanel') {
+        $(".xPickertd, .yPickertd, .commentSubsettd, .chooseSubredditstd, .subredditSubsettd").hide(500);
+      } else if (activatedPanel == 'mainVizPanel') {
+        $(".xPickertd, .yPickertd, .commentSubsettd, .chooseSubredditstd, .subredditSubsettd").show(500);
+      } else if (activatedPanel == 'heatMapsPanel') {
+        $(".xPickertd, .yPickertd, .chooseSubredditstd, .subredditSubsettd").hide(500);
+        $(".commentSubsettd").show(500);
+      } else if (activatedPanel == 'chordPanel') {
+        $(".xPickertd, .yPickertd").hide(500);
+        $(".commentSubsettd, .chooseSubredditstd, .subredditSubsettd").show(500);
+      } else if (activatedPanel == 'smallMultiplesPanel') {
+        $(".xPickertd, .yPickertd, .chooseSubredditstd, .subredditSubsettd").hide(500);
+        $(".commentSubsettd").show(500);
+      }
+    },
     directionThreshold: 100,
     slideSpeed: 1000,
     easing: 'swing', // https://matthewlein.com/experiments/easing.html
