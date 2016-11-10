@@ -68,17 +68,18 @@ jQuery(function($) {
   $('body').panelSnap(options);
 });
 
+
 // Toggle the static nav bar
 d3.select("#toggle").on("click", function(d) {
   var checked = $('#toggle')[0].checked;
   if (!checked) {
     //d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
     //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
-    $('.navbar-fixed-top').slideUp();
+    $('.navbar-fixed-top').slideUp(500);
     d3.select("body").style("padding-top", "25px")
   } else {
     d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
-    $('.navbar-fixed-top').slideDown();
+    $('.navbar-fixed-top').slideDown(500);
     d3.select("body").style("padding-top", "220px")
   }
 });

@@ -209,7 +209,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 #toggle {
-  position:absolute;
+  position:fixed;
   appearance:none;
   cursor:pointer;
   left:100%;
