@@ -65,14 +65,22 @@
         <br>
     </div>
 
-    <section>
+    <div class="menu">
+        <a href="/first" data-panel="mainVizPanel">Main Viz</a>
+        <a href="/second" data-panel="heatMapsPanel">Heat Maps</a>
+        <a href="/third" data-panel="wordCloudsPanel">Word Clouds</a>
+        <a href="/third" data-panel="smallMultiplesPanel">Small Multiples</a>
+        <a href="/third" data-panel="chordPanel">Chord Diagram</a>
+    </div>
+
+    <section data-panel="mainVizPanel">
         <div>
             <div class="barchart sameLine"><h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
             <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
         </div>
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section>
+    <section data-panel="heatMapsPanel">
         <div class="sameLine">
             <h4>When are subreddits most active?</h4>
             <div id="heatmap1" class="sameLine"></div>
@@ -80,7 +88,7 @@
         <div>
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section>
+    <section data-panel="wordCloudsPanel">
         <div class="sameLine">
             <h4>How do subreddit lexicons differ?</h4>
             <br>
@@ -110,7 +118,7 @@
         </div>
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section>
+    <section data-panel="smallMultiplesPanel">
         <div>
             <h4>How do subreddit comments compare across all dimensions?</h4>
             <br>
@@ -119,7 +127,7 @@
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     
-    <section>
+    <section data-panel="chordPanel">
         <div>
         <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i></h4>
         <h5 style="margin-bottom: 0px" class="chordTitle">Network of subreddit mentions</h5>

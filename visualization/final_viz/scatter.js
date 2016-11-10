@@ -41,7 +41,7 @@ $( document ).ready(function() {
 var options;
 jQuery(function($) {
   options = {
-    $menu: false,
+    $menu: $('body .menu'),
     menuSelector: 'a',
     panelSelector: '> section',
     namespace: '.panelSnap',
