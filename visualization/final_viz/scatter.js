@@ -50,7 +50,7 @@ jQuery(function($) {
     onActivate: function(){},
     directionThreshold: 100,
     slideSpeed: 1000,
-    easing: 'easeOutBounce', // https://matthewlein.com/experiments/easing.html
+    easing: 'swing', // https://matthewlein.com/experiments/easing.html
     offset: 220,
     navigation: {
       keys: {
