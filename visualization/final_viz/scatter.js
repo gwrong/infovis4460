@@ -68,6 +68,9 @@ jQuery(function($) {
   $('body').panelSnap(options);
 });
 
+// When you refresh when the button is open, it keeps open since css
+// doesn't update
+$("#toggle").prop("checked", true).css({"background": "#dd6149;"});
 
 // Toggle the static nav bar
 d3.select("#toggle").on("click", function(d) {
