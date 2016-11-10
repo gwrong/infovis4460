@@ -6,6 +6,9 @@ body {
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
   padding-top: 220px;
+
+  -webkit-transition: padding-top 2s; /* Safari */
+  transition: padding-top 2s;
 }
 
 html {
@@ -173,4 +176,8 @@ td + td {
 }
 td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   text-align:left;
+}
+
+.navbar-fixed-top {
+
 }

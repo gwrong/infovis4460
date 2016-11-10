@@ -448,13 +448,16 @@ $(document).keydown(function(event) {
     if (cntrlIsPressed && qIsPressed && !navBarToggled) {
       navBarToggled = true;
       if (!navBarHidden) {
-        d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
-        //d3.select("body").style("padding-top", "0px")
+        //d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
+        //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
+        $('.navbar-fixed-top').slideUp();
+        d3.select("body").style("padding-top", "25px")
         options.offset = 0;
         navBarHidden = true;
       } else {
         d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
-        //d3.select("body").style("padding-top", "220px")
+        $('.navbar-fixed-top').slideDown();
+        d3.select("body").style("padding-top", "220px")
         navBarHidden = false;
       }
       
