@@ -181,3 +181,9 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 .navbar-fixed-top {
 
 }
+
+.element {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
