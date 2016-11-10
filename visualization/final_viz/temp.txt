@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Pathway+Gothic+One|Roboto" rel="stylesheet">
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.3.0/css/bootstrap-slider.min.css">
+
+    <link href='style.css' rel='stylesheet' type='text/css'>
+    <link href='chord.css' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <div id="spinner" style="text-align: center;">
+    </div>
+    <div class="navbar-fixed-top" style="border-style: solid;">
+        <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
+        <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-info about" data-toggle="modal" data-target="#aboutModal">2016 Reddit Comments: About</button>
+        <br><br>
+        <span class="h4" style="margin-right: 50px">Month:</span>
+        <input id="month-slider" type="text" style="width: 700px; fill: white"
+          data-provide="slider"
+          data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9]"
+          data-slider-ticks-labels='["January 2016", "February 2016", "March 2016", "April 2016", "May 2016", "June 2016", "July 2016", "August 2016", "September 2016"]'
+          data-slider-min="1"
+          data-slider-max="9"
+          data-slider-step="1"
+          data-slider-value="9"
+          data-slider-tooltip="hide"></input>
+        <br><br>
+        <table>
+        <tr>
+        <td style="width: 500px">
+            <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
+
+        </td>
+        <td style="text-align: left;">
+            <span style="vertical-align: middle;" class="h4">X Variable:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="xPicker"></select>
+        </td>
+        <td style="text-align: left;">
+            <span style="vertical-align: middle;" class="h4">Y Variable:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="yPicker"></select>
+        </td>
+        </tr>
+        </table>
+        <br>
+        <table style="width: 800px">
+        <tr>
+        <td>
+            <span class="h4" style="vertical-align: middle;">Subreddits:&nbsp;&nbsp;&nbsp;</span>
+            <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
+
+        </td>
+        <td>
+            <span class="h4" style="vertical-align: middle;">Subreddit Presets:&nbsp;&nbsp;&nbsp;</span>
+            <select class="selectpicker" id="subredditsubset-picker"></select>
+        </td>
+        </tr>
+        </table>
+        <br>
+    </div>
+
+    <section>
+        <div>
+            <div class="barchart sameLine"><h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
+            <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
+        </div>
+    </section>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <section>
+        <div class="sameLine">
+            <h4>When are subreddits most active?</h4>
+            <div id="heatmap1" class="sameLine"></div>
+            <div id="heatmap2" class="sameLine"></div>
+        <div>
+    </section>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <section>
+        <div class="sameLine">
+            <h4>How do subreddit lexicons differ?</h4>
+            <br>
+            <table>
+                <tr>
+                <td>
+                <center>
+                    <p class="wordcloud1Title sameLine h4" style="margin-right: 150px"></p>
+                </center>
+                </td>
+                <td>
+                <center>
+                    <p class="wordcloud2Title sameLine h4" class="sameLine"></p>
+                </center>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <img class="wordcloud1" style="margin-right: 150px"></img>
+                </td>
+                <td>
+                    <img class="wordcloud2"></img>
+                </td>
+                </tr>
+            </table>
+            <br><br>
+        </div>
+    </section>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <section>
+        <div>
+            <h4>How do subreddit comments compare across all dimensions?</h4>
+            <br>
+            <div class="smallMultiples"></div>
+        </div>
+    </section>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+    <section>
+        <div>
+        <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i></h4>
+        <h5 style="margin-bottom: 0px" class="chordTitle">Network of subreddit mentions</h5>
+        <div class="redditChord" align="center"></div>
+        </div>
+    </section>
+
+    <!-- About popup modal -->
+    <div id="aboutModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <center>
+                <p class="modal-title h2" style="text-align: center">2016 Reddit Comments Visualization</p>
+            </center>
+          </div>
+          <div class="modal-body">
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This project aims to visualize how various subreddits differ in comment volume, comment sentiment, and comment time distributions throughout the first 9 months of 2016. You will also find other variables that concern the nature of the comments. We utilized the publicly available Reddit comments datasets found on <a href="http://files.pushshift.io/reddit/comments/">pushshift.io</a>.
+            <br><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There are a few different components to our visualization: an overview of subreddits, smaller visualizations that compare two subreddits in detail, and an extra visualization of how often subreddits mention each other. Relevant filters will be visible for the appropriate visualizations.
+            <br><br>Left clicking or control+left clicking on subreddits in the main visualization will choose the first and second subreddits to compare, respectively.
+            The comment subset filter allows for filtering on special subsets of the comments for a given subreddit:
+
+            <ul>
+                <li><b>All Comments</b>: All the comments!</li>
+                <li><b>Top Score Comments</b>: Only the top 5% of comments by score within each subreddit</li>
+                <li><b>Bottom Score Comments</b>: Only the bottom 5% of comments by scoe within each subreddit</li>
+                <li><b>Most Popular Authors</b>: Only the top 5% of authors by comment volume within each subreddit</li>
+                <li><b>Top Positive Comments</b>: Only comments with a positive score of at least 25</li>
+                <li><b>Top Negative Comments</b>: Only comments with a negative score of at least 15</li>
+                <li><b>Top Godwin Comments</b>: Only comments with a positive Godwin score</li>
+                <li><b>Top Swear Comments</b>: Only comments with a swear score of at least 35</li>
+            </ul>
+
+            <p>This visualization was implemented by four undergraduate students for the class Intro to Information Visualization (CS 4460). You can find our code on <a href="https://github.com/gwrong/infovis4460">GitHub</a>. Members include:
+                <ul>
+                    <li>Graham Wright</li>
+                    <li>Kim Nguyen</li>
+                    <li>Forester Vosburgh</li>
+                    <li>Eric Wan</li>
+                </ul>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+    <script src="lib/jquery.panelSnap.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
+    <!-- Our js files -->
+    <script src="chord.js"></script>
+    <script src="scatter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.3.0/bootstrap-slider.min.js"></script>
+
+    <script src="http://spin.js.org/spin.min.js"></script>
+
+
+  </body>
+</html>

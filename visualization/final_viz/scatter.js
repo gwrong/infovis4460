@@ -893,7 +893,7 @@ function indexOfSubreddit(data, subreddit) {
 var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
 var width_batter = 1000 - margin_batter.left - margin_batter.right;
 var height_batter = 500 - margin_batter.top - margin_batter.bottom;
-var padding = 140;
+var padding = 80;
 var yAxisPadding = 150;
 
 var barchart = d3.select(".barchart")
