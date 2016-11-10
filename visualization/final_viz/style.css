@@ -187,3 +187,52 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   bottom: 0;
   right: 0;
 }
+
+#toggle + label {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  cursor:pointer;
+  padding:10px;
+  background: #26ae90;
+  width: 100px;
+  border-radius: 3px;
+  padding: 8px 10px;
+  color: #FFF;
+  line-height:20px;
+  font-size:12px;
+  text-align:center;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+  margin:20px 50px;
+  transition:all 500ms ease;
+}
+
+#toggle {
+  position:absolute;
+  appearance:none;
+  cursor:pointer;
+  left:100%;
+  top:100%;
+}
+
+#toggle + label:after {
+  content:"Open"
+}
+
+#toggle:checked {
+  top: 0;
+  position: fixed;
+}
+
+#toggle:checked {
+  margin-top: 200px;
+}
+
+#toggle:checked + label {
+  background:#dd6149;
+}
+
+#toggle:checked + label:after {
+  content:"Close"
+}

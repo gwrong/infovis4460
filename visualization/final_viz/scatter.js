@@ -68,6 +68,21 @@ jQuery(function($) {
   $('body').panelSnap(options);
 });
 
+// Toggle the static nav bar
+d3.select("#toggle").on("click", function(d) {
+  var checked = $('#toggle')[0].checked;
+  if (!checked) {
+    //d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
+    //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
+    $('.navbar-fixed-top').slideUp();
+    d3.select("body").style("padding-top", "25px")
+  } else {
+    d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
+    $('.navbar-fixed-top').slideDown();
+    d3.select("body").style("padding-top", "220px")
+  }
+});
+
 // Global variables are changed and graph refreshes
 // pick up the new variables
 var cur_month_label = 'September 2016';
@@ -444,7 +459,6 @@ $(document).keydown(function(event) {
     } else if (event.which == "81") {
       qIsPressed = true;
     }
-    console.log(navBarToggled)
     if (cntrlIsPressed && qIsPressed && !navBarToggled) {
       navBarToggled = true;
       if (!navBarHidden) {
@@ -1616,7 +1630,6 @@ var create_color_scale = function(rgb) {
     color_scale.push("rgb(" + Math.round(cur_red) + "," + Math.round(cur_green) + "," + Math.round(cur_blue) + ")");
   }
   color_scale.push("rgb(0, 0, 0)");
-  console.log(color_scale);
   return color_scale;
 }
 
@@ -1633,8 +1646,6 @@ var refreshHeatMap = function(id_selector) {
     cur_subreddit_data = compare_time_dataset.filter(function(d) {
       return d['subreddit'] == cur_subreddit;
     })
-
-    console.log(cValue(cur_subreddit))
 
     if (!(cur_subreddit in heat_map_colors_lookup)) {
       heat_map_colors_lookup[cur_subreddit] = create_color_scale(d3.rgb(color(cValue(cur_subreddit))))
