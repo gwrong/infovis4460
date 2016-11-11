@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8">
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-    <link href="https://fonts.googleapis.com/css?family=Pathway+Gothic+One|Roboto" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Pathway+Gothic+One|Roboto" rel="stylesheet">
     <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.3.0/css/bootstrap-slider.min.css">
-    
+
     <link href='style.css' rel='stylesheet' type='text/css'>
     <link href='chord.css' rel='stylesheet' type='text/css'>
   </head>
@@ -31,37 +31,17 @@
           data-slider-value="9"
           data-slider-tooltip="hide"></input>
         <br><br>
-        <table>
-        <tr>
-        <td class="commentSubsettd" style="width: 500px">
-            <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
-            
-        </td>
-        <td class="xPickertd" style="text-align: left;">
-            <span style="vertical-align: middle;" class="h4">X Variable:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="xPicker"></select>
-        </td>
-        <td class="yPickertd" style="text-align: left;">
-            <span style="vertical-align: middle;" class="h4">Y Variable:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="yPicker"></select>
-        </td>
-        </tr>
-        </table>
+        <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
+        <span style="vertical-align: middle;" class="h4">X Variable:&nbsp;&nbsp;&nbsp;</span>
+        <span style="vertical-align: middle;" class="h4">Y Variable:&nbsp;&nbsp;&nbsp;</span>
+        <span class="h4" style="vertical-align: middle;">Subreddits:&nbsp;&nbsp;&nbsp;</span>
+        <span class="h4" style="vertical-align: middle;">Subreddit Presets:&nbsp;&nbsp;&nbsp;</span>
         <br>
-        <table style="width: 800px">
-        <tr>
-        <td class="chooseSubredditstd" >
-            <span class="h4" style="vertical-align: middle;">Subreddits:&nbsp;&nbsp;&nbsp;</span>
-            <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
-    
-        </td>
-        <td class="subredditSubsettd" >
-            <span class="h4" style="vertical-align: middle;">Subreddit Presets:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="subredditsubset-picker"></select>
-        </td>
-        </tr>
-        </table>
+        <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
+        <select class="selectpicker" id="xPicker"></select>
+        <select class="selectpicker" id="yPicker"></select>
+        <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
+        <select class="selectpicker" id="subredditsubset-picker"></select>
         <br>
     </div>
 
@@ -129,7 +109,7 @@
         </div>
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    
+
     <section data-panel="chordPanel">
         <div>
         <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i></h4>
@@ -153,7 +133,7 @@
             <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This project aims to visualize how various subreddits differ in comment volume, comment sentiment, and comment time distributions throughout the first 9 months of 2016. You will also find other variables that concern the nature of the comments. We utilized the publicly available Reddit comments datasets found on <a href="http://files.pushshift.io/reddit/comments/">pushshift.io</a>.
             <br><br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There are a few different components to our visualization: an overview of subreddits, smaller visualizations that compare two subreddits in detail, and an extra visualization of how often subreddits mention each other. Relevant filters will be visible for the appropriate visualizations.
-            <br><br>Left clicking or control+left clicking on subreddits in the main visualization will choose the first and second subreddits to compare, respectively. 
+            <br><br>Left clicking or control+left clicking on subreddits in the main visualization will choose the first and second subreddits to compare, respectively.
             The comment subset filter allows for filtering on special subsets of the comments for a given subreddit:
 
             <ul>
@@ -193,7 +173,7 @@
 
     <script src="lib/jquery.panelSnap.js"></script>
 
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
     <!-- Our js files -->
     <script src="chord.js"></script>
@@ -205,6 +185,6 @@
 
     <script src="http://spin.js.org/spin.min.js"></script>
 
-    
+
   </body>
 </html>
