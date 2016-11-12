@@ -1547,7 +1547,7 @@ var count_accessor = function(d) {
 }
 
 var margin_heat = {top: 50, right: 0, bottom: 25, left: 30};
-var width_heat = 659 - margin_heat.left - margin_heat.right;
+var width_heat = 600 - margin_heat.left - margin_heat.right;
 var height_heat = 300 - margin_heat.top - margin_heat.bottom;
 var gridSize = Math.floor(width_heat / 24);
 var legendElementWidth = gridSize *2 ;
@@ -1692,7 +1692,7 @@ var refreshHeatMap = function(id_selector) {
       .style("font-size", "14px") 
       .style("text-anchor", "middle")
       .attr("fill", "white")
-      .text("Time distribution of comments for " + cur_subreddit);
+      .text(cur_subreddit);
 
     var colorScale = d3.scale.quantile()
         .domain([0, d3.max(cur_subreddit_data, function (d) {
@@ -1793,7 +1793,7 @@ var refreshHeatMap = function(id_selector) {
 
 // small multiples constants
 var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
-var width_multiples = 200 - margin_multiples.left - margin_multiples.right;
+var width_multiples = 120 - margin_multiples.left - margin_multiples.right;
 var height_multiples = 200 - margin_multiples.top - margin_multiples.bottom;
 var padding_multiples = 60;
 var yAxisPadding_multiples = 45;

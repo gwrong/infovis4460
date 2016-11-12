@@ -2,13 +2,17 @@ body {
   font: 12px sans-serif;
   font-weight: 400;
   text-align: center;
-  background: #202020;
+  background: black;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  padding-top: 220px;
+
 
   -webkit-transition: padding-top 2s; /* Safari */
   transition: padding-top 2s;
+}
+
+.sect {
+  padding-bottom: 200px;
 }
 
 html {
@@ -124,7 +128,8 @@ td {
 }
 
 .navbar-fixed-top {
-  background: #202020;
+  background: black;
+  opacity: .8;
 }
 
 

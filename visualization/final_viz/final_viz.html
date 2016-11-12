@@ -18,51 +18,33 @@
     <div class="navbar-fixed-top" style="border-style: solid;">
         <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
         <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info about" data-toggle="modal" data-target="#aboutModal">2016 Reddit Comments: About</button>
-        <br><br>
-        <span class="h4" style="margin-right: 50px">Month:</span>
+        <h1>Reddit Comments 2016 <span class="glyphicon glyphicon-info-sign" data-toggle="modal" data-target="#aboutModal"></span></h1>
+        <p/>
+
         <input id="month-slider" type="text" style="width: 700px; fill: white"
           data-provide="slider"
           data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9]"
-          data-slider-ticks-labels='["January 2016", "February 2016", "March 2016", "April 2016", "May 2016", "June 2016", "July 2016", "August 2016", "September 2016"]'
+          data-slider-ticks-labels='["January", "February", "March", "April", "May", "June", "July", "August", "September"]'
           data-slider-min="1"
           data-slider-max="9"
           data-slider-step="1"
           data-slider-value="9"
-          data-slider-tooltip="hide"></input>
-        <br><br>
-        <table>
-        <tr>
-        <td class="commentSubsettd" style="width: 500px">
-            <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
-            
-        </td>
-        <td class="xPickertd" style="text-align: left;">
-            <span style="vertical-align: middle;" class="h4">X Variable:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="xPicker"></select>
-        </td>
-        <td class="yPickertd" style="text-align: left;">
-            <span style="vertical-align: middle;" class="h4">Y Variable:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="yPicker"></select>
-        </td>
-        </tr>
-        </table>
-        <br>
-        <table style="width: 800px">
-        <tr>
-        <td class="chooseSubredditstd" >
-            <span class="h4" style="vertical-align: middle;">Subreddits:&nbsp;&nbsp;&nbsp;</span>
-            <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
-    
-        </td>
-        <td class="subredditSubsettd" >
-            <span class="h4" style="vertical-align: middle;">Subreddit Presets:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="subredditsubset-picker"></select>
-        </td>
-        </tr>
-        </table>
-        <br>
+          data-slider-tooltip="hide"/>
+        <p/>
+
+        <h2 class="background">Choose Variables</h2>
+        <span style="vertical-align: middle;" class="glyphicon glyphicon-arrow-right"></span>
+        <select class="selectpicker" id="xPicker"></select>
+        <span style="vertical-align: middle;" class="glyphicon glyphicon-arrow-up"></span>
+        <select class="selectpicker" id="yPicker"></select>
+        <p/>
+        <h2 class="background">Filters</h2>
+        <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
+        <span class="h4" style="vertical-align: middle;">Subreddits:&nbsp;&nbsp;&nbsp;</span>
+        <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
+        <span class="h4" style="vertical-align: middle;">Subreddit Presets:&nbsp;&nbsp;&nbsp;</span>
+        <select class="selectpicker" id="subredditsubset-picker"></select>
+        <p/>
     </div>
 
     <div class="menu element">
@@ -76,59 +58,37 @@
     <input type="checkbox" name="toggle" id="toggle" checked="checked"/>
     <label for="toggle"></label>
 
-    <section data-panel="mainVizPanel">
+    <section data-panel="mainVizPanel" class="sect">
         <div>
             <div class="barchart sameLine"><h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
             <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
         </div>
     </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="heatMapsPanel">
+
+    <section data-panel="heatMapsPanel" class="sect">
         <div class="sameLine">
             <h4>When are subreddits most active?</h4>
             <div id="heatmap1" class="sameLine"></div>
             <div id="heatmap2" class="sameLine"></div>
         <div>
-    </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="wordCloudsPanel">
-        <div class="sameLine">
-            <h4>How do subreddit lexicons differ?</h4>
-            <br>
-            <table>
-                <tr>
-                <td>
-                <center>
-                    <p class="wordcloud1Title sameLine h4" style="margin-right: 150px"></p>
-                </center>
-                </td>
-                <td>
-                <center>
-                    <p class="wordcloud2Title sameLine h4" class="sameLine"></p>
-                </center>
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <img class="wordcloud1" style="margin-right: 150px"></img>
-                </td>
-                <td>
-                    <img class="wordcloud2"></img>
-                </td>
-                </tr>
-            </table>
-            <br><br>
-        </div>
-    </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="smallMultiplesPanel">
+    <p/>
         <div>
             <h4>How do subreddit comments compare across all dimensions?</h4>
             <br>
             <div class="smallMultiples"></div>
         </div>
     </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <p/>
+
+    <section data-panel="wordCloudsPanel" class="sect">
+        <div class="sameLine">
+            <h4>How do subreddit lexicons differ?</h4>
+            <br>
+            <img class="wordcloud1" style="margin-right: 50px"/>
+            <img class="wordcloud2"/>
+        </div>
+    </section>
+
     
     <section data-panel="chordPanel">
         <div>
