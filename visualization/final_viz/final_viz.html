@@ -18,8 +18,8 @@
     <div class="navbar-fixed-top" style="border-style: solid; vertical-align: center;">
         <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
         <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info about" data-toggle="modal" data-target="#aboutModal">2016 Reddit Comments: About</button>
-        <br><br>
+        <button type="button" class="aboutButton btn btn-info about" data-toggle="modal" data-target="#aboutModal">About</button>
+        <h1 style="margin-bottom: 10px; margin-top: 10px">2016 Reddit Comments</h1>
         <span class="h4" style="margin-right: 50px">Month:</span>
         <input id="month-slider" type="text" style="width: 700px; fill: white"
           data-provide="slider"
@@ -50,13 +50,15 @@
     </div>
 
     <div class="menu element">
-        <a href="/mainVizPanel" data-panel="mainVizPanel">Main Viz</a>
-        <a href="/comparePanel" data-panel="comparePanel">Compare 2 Subreddits</a>
-        <a href="/chordPanel" data-panel="chordPanel">Chord Diagram</a>
+        <a href="/mainVizPanel" data-panel="mainVizPanel" style="margin-right: 25px">Main Viz</a>
+        <a href="/comparePanel" data-panel="comparePanel" style="margin-right: 25px">Compare 2 Subreddits</a>
     </div>
 
     <input type="checkbox" name="toggle" id="toggle" checked="checked"/>
     <label for="toggle"></label>
+
+    <h4 class="filterLabel">Current Filter: All Comments</h4>
+
 
     <section data-panel="mainVizPanel">
         <div class="mainVizContainer">

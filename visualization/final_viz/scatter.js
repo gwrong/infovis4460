@@ -65,7 +65,7 @@ jQuery(function($) {
     directionThreshold: 100,
     slideSpeed: 1000,
     easing: 'swing', // https://matthewlein.com/experiments/easing.html
-    offset: 165,
+    offset: 160,
     navigation: {
       keys: {
         nextKey: false,
@@ -93,11 +93,13 @@ d3.select("#toggle").on("click", function(d) {
     //d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
     //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
     $('.navbar-fixed-top').slideUp(500);
-    d3.select("body").style("padding-top", "25px")
+    $(".aboutButton").hide(500)
+    d3.select("body").style("padding-top", "50px")
   } else {
     d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
     $('.navbar-fixed-top').slideDown(500);
-    d3.select("body").style("padding-top", "165px")
+    $(".aboutButton").show(500)
+    d3.select("body").style("padding-top", "160px")
   }
 });
 
@@ -539,6 +541,8 @@ var axisChange = function(picker, options, axis) {
     }
 }
 
+var filter_label = $(".filterLabel")
+
 // Add the select list for department filtering
 var xPicker = d3.select("#xPicker")
     .attr("class", "selectpicker xDropdown sameLine")
@@ -820,6 +824,7 @@ var initialize_pickers = function() {
     $(".chordContainer").show(500);
     $(".xPickerHolder, .yPickerHolder").hide(500);
     $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+    filter_label.hide();
     refresh();
   })
 
@@ -828,6 +833,7 @@ var initialize_pickers = function() {
     $(".chordContainer").hide(500);
     $(".mainVizContainer").show(500);
     $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+    filter_label.show();
     refresh();
   })
 
@@ -917,6 +923,7 @@ var initialize_pickers = function() {
 
   $('#filter-picker').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
     cur_filter_label = $(e.currentTarget).val();
+    filter_label.text("Current Filter: " + cur_filter_label)
     cur_filter = filter_labels[cur_filter_label];
     if (xVariable != 'subreddit') {
       xVariable = xVariableBase + cur_filter;
@@ -974,24 +981,6 @@ function indexOfSubreddit(data, subreddit) {
   return -1
 }
 
-// batter = scatter/bar chart
-var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
-var width_batter = 1000 - margin_batter.left - margin_batter.right;
-var height_batter = 500 - margin_batter.top - margin_batter.bottom;
-var padding = 140;
-var yAxisPadding = 150;
-
-var barchart = d3.select(".barchart")
-  .append("svg")
-  .style("width", width_batter + padding + "px") // padding with second scatter
-  .style("height", height_batter + margin_batter.bottom + "px")  //svg defalt size: 300*150
-  .append("g")
-
-var scatterplot = d3.select(".scatterplot")
-  .append("svg")
-  .style("width", width_batter + padding + "px") // padding with second scatter
-  .style("height", height_batter + margin_batter.bottom + "px")  //svg defalt size: 300*150
-  .append("g")
 
 // Assign the current subreddit based on the type of click
 var onclick_compare = function(subreddit) {
@@ -1187,6 +1176,27 @@ function wrap(text, width) {
   });
 }
 
+// batter = scatter/bar chart
+var margin_batter = {top: 25, right: 0, bottom: 115, left: 0};
+var width_batter = 1000 - margin_batter.left - margin_batter.right;
+var height_batter = 500 - margin_batter.top - margin_batter.bottom;
+var scatter_padding = 140;
+var bar_padding = 65;
+var yAxisPadding = 150;
+
+var barchart = d3.select(".barchart")
+  .append("svg")
+  .style("width", width_batter + bar_padding + "px")
+  .style("height", height_batter + margin_batter.bottom + "px")
+  .append("g")
+
+var scatterplot = d3.select(".scatterplot")
+  .append("svg")
+  .style("width", width_batter + scatter_padding + "px")
+  .style("height", height_batter + margin_batter.bottom + "px")
+  .append("g")
+
+
 var hasBatterLegend = false;
 var barChartInit = false;
 
@@ -1202,7 +1212,7 @@ var refreshBarChart = function(data) {
 
   if (!barChartInit) {
     barChartInit = true;
-    xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding, width_batter - 15], 0.15);
+    xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding, width_batter], 0.15);
     xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
     yScale = d3.scale.linear().range([height_batter, margin_batter.top])
@@ -1365,7 +1375,7 @@ var refreshBarChart = function(data) {
     .text(inverseAxisOptions[yVariableBase])
     .call(wrap, 100)
 
-  makeBatterLegend(data, barchart, '.rect')
+  //makeBatterLegend(data, barchart, '.rect')
 }
 
 var makeBatterLegend = function(data, selector, element) {
@@ -1378,13 +1388,13 @@ var makeBatterLegend = function(data, selector, element) {
   legendSelection.enter().append("g")
     .attr("class", "legend")
     .attr("transform", function(d, i) {
-      return "translate(" + (padding - 0) + "," + i * 12 + ")";
+      return "translate(" + (scatter_padding - 0) + "," + i * 13 + ")";
     })
 
   legendSelection.append("rect")
       .attr("x", width_batter - 20)
       .attr("width", 18)
-      .attr("height", 18)
+      .attr("height", 14)
       .attr("transform", "translate(0," + 25 + ")")
       .style("fill", function(d) {
         return color(cValue(d));

@@ -5,8 +5,7 @@ body {
   background: #202020;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  padding-top: 165px;
-
+  padding-top: 160px;
   -webkit-transition: padding-top 2s; /* Safari */
   transition: padding-top 2s;
 }
@@ -66,16 +65,6 @@ table {
 
 .sameLine {
   display: inline-block;
-}
-
-.xDropdown {
-  width: 235px;
-  height: 35px;
-}
-
-.yDropdown {
-  width: 235px;
-  height: 35px;
 }
 
 .extent{
@@ -195,7 +184,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   cursor:pointer;
   padding:10px;
   background: #26ae90;
-  width: 100px;
+  width: 110px;
   border-radius: 3px;
   padding: 8px 10px;
   color: #FFF;
@@ -216,8 +205,14 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   top:100%;
 }
 
+.aboutButton {
+  position: fixed;
+  top: 1%;
+  right: 1%;
+}
+
 #toggle + label:after {
-  content:"Open"
+  content:"Show Menu"
 }
 
 #toggle:checked {
@@ -234,11 +229,17 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 #toggle:checked + label:after {
-  content:"Close"
+  content:"Go Fullscreen"
 }
 
 /* Header of dropdowns */
 .popover-title {
   color: black;
   text-align: center;
+}
+
+.filterLabel {
+  position: fixed;
+  bottom: 0%;
+  right: 40%;
 }
