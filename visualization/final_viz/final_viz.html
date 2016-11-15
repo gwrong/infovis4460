@@ -15,7 +15,7 @@
   <body>
     <div id="spinner" style="text-align: center;">
     </div>
-    <div class="navbar-fixed-top" style="border-style: solid;">
+    <div class="navbar-fixed-top" style="border-style: solid; vertical-align: center;">
         <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
         <!-- Trigger the modal with a button -->
         <button type="button" class="btn btn-info about" data-toggle="modal" data-target="#aboutModal">2016 Reddit Comments: About</button>
@@ -31,11 +31,21 @@
           data-slider-value="9"
           data-slider-tooltip="hide"></input>
         <br><br>
-        <select class="selectpicker" id="filter-picker" data-width="fit" data-header="Filter Comments"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 5px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
-        <select class="selectpicker" id="xPicker" data-width="fit" data-header="Set the X Axis"></select>
-        <select class="selectpicker" id="yPicker" data-width="fit" data-header="Set the Y Axis"></select>
-        <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25" data-size="10" data-selected-text-format="static" data-width="fit"></select>
-        <select class="selectpicker" id="subredditsubset-picker" data-width="fit" data-header="Load Subreddits"></select>
+        <span class="filterHolder">
+            <select class="selectpicker" id="filter-picker" data-width="fit" data-header="Filter Comments"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 5px; margin-right: 25px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
+        </span>
+        <span class="xPickerHolder">
+            <select class="selectpicker" id="xPicker" data-width="fit" data-header="Set the X Axis"></select>
+        </span>
+        <span class="yPickerHolder">
+            <select class="selectpicker" id="yPicker" data-width="fit" data-header="Set the Y Axis"></select><span style="margin-right: 25px;"></span>
+        </span>
+        <span class="toggleSubredditsHolder">
+            <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25" data-size="10" data-selected-text-format="static" data-width="fit"></select>
+        </span>
+        <span class="subredditSubsetHolder">
+            <select class="selectpicker" id="subredditsubset-picker" data-width="fit" data-header="Load Subreddits"></select>
+        </span>
         <br><br>
     </div>
 
@@ -50,11 +60,11 @@
 
     <section data-panel="mainVizPanel">
         <div class="mainVizContainer">
-            <div class="barchart sameLine"><h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-menu-right barArrow'></i></h4><br></div>
-            <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-menu-right scatterArrow'></i></h4><br></div>
+            <div class="barchart sameLine"><h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px; cursor: pointer;" class='glyphicon glyphicon-menu-right barArrow'></i></h4><br></div>
+            <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px; cursor: pointer;" class='glyphicon glyphicon-menu-right scatterArrow'></i></h4><br></div>
         </div>
         <div class="chordContainer">
-            <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-menu-left chordArrow'></i></h4>
+            <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px; cursor: pointer;" class='glyphicon glyphicon-menu-left chordArrow'></i></h4>
             <h5 style="margin-bottom: 0px" class="chordTitle">Network of subreddit mentions</h5>
             <div class="redditChord" align="center"></div>
         </div>
@@ -102,10 +112,7 @@
             </tr>
         </table>
     </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="chordPanel">
-        
-    </section>
+    <br><br><br><br><br><br><br><br><br><br><br><br>
 
     <!-- About popup modal -->
     <div id="aboutModal" class="modal fade" role="dialog">

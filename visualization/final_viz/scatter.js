@@ -22,13 +22,12 @@ var opts = {
 , hwaccel: false // Whether to use hardware acceleration
 , position: 'fixed' // Element positioning
 }
-/*
+
 // Scrolls the page to the top before refreshing
 // the page
 $(window).on('beforeunload', function() {
    $(window).scrollTop(0);
 });
-*/
 
 // Creates loading spinner
 $( document ).ready(function() {
@@ -51,19 +50,14 @@ jQuery(function($) {
       // Contains css class of panel
       var activatedPanel = $target[0].attributes[0].nodeValue;
       console.log(activatedPanel)
-      if (activatedPanel == 'wordCloudsPanel') {
-        $(".xPicker, .yPicker, #filter-picker, #toggleSubreddits, #subredditsubset-picker").hide(500);
-      } else if (activatedPanel == 'mainVizPanel') {
-        $(".xPicker, .yPicker, #filter-picker, #toggleSubreddits, #subredditsubset-picker").show(500);
-      } else if (activatedPanel == 'heatMapsPanel') {
-        $(".xPicker, .yPicker, #toggleSubreddits, #subredditsubset-picker").hide(500);
-        $("#filter-picker").show(500);
+      if (activatedPanel == 'mainVizPanel') {
+        $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+      } else if (activatedPanel == 'comparePanel') {
+        $(".xPickerHolder, .yPickerHolder, .toggleSubredditsHolder, .subredditSubsetHolder").hide(500);
+        $(".filterHolder").show(500);
       } else if (activatedPanel == 'chordPanel') {
-        $(".xPicker, .yPicker").hide(500);
-        $("#filter-picker, #toggleSubreddits, #subredditsubset-picker").show(500);
-      } else if (activatedPanel == 'smallMultiplesPanel') {
-        $(".xPicker, .yPicker, #toggleSubreddits, #subredditsubset-picker").hide(500);
-        $("#filter-picker").show(500);
+        $(".xPickerHolder, .yPickerHolder").hide(500);
+        $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
       }
     },
     directionThreshold: 100,
@@ -820,15 +814,15 @@ var initialize_pickers = function() {
 
   d3.selectAll(".scatterArrow, .barArrow").on("click", function() {
     show_chord = true;
-    $(".mainVizContainer").hide();
-    $(".chordContainer").show();
+    $(".mainVizContainer").hide(500);
+    $(".chordContainer").show(500);
     refresh();
   })
 
   d3.select(".chordArrow").on("click", function() {
     show_chord = false;
-    $(".chordContainer").hide();
-    $(".mainVizContainer").show();
+    $(".chordContainer").hide(500);
+    $(".mainVizContainer").show(500);
     refresh();
   })
 
