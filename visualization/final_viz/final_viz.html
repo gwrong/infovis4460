@@ -31,45 +31,17 @@
           data-slider-value="9"
           data-slider-tooltip="hide"></input>
         <br><br>
-        <table>
-        <tr>
-        <td class="commentSubsettd" style="width: 500px">
-            <span style="vertical-align: middle;" class="h4">Comments subset:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="filter-picker"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
-            
-        </td>
-        <td class="xPickertd" style="text-align: left;">
-            <span style="vertical-align: middle;" class="h4">X Variable:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="xPicker"></select>
-        </td>
-        <td class="yPickertd" style="text-align: left;">
-            <span style="vertical-align: middle;" class="h4">Y Variable:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="yPicker"></select>
-        </td>
-        </tr>
-        </table>
-        <br>
-        <table style="width: 800px">
-        <tr>
-        <td class="chooseSubredditstd" >
-            <span class="h4" style="vertical-align: middle;">Subreddits:&nbsp;&nbsp;&nbsp;</span>
-            <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25"></select>
-    
-        </td>
-        <td class="subredditSubsettd" >
-            <span class="h4" style="vertical-align: middle;">Subreddit Presets:&nbsp;&nbsp;&nbsp;</span>
-            <select class="selectpicker" id="subredditsubset-picker"></select>
-        </td>
-        </tr>
-        </table>
-        <br>
+        <select class="selectpicker" id="filter-picker" data-width="fit" data-header="Filter Comments"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 5px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
+        <select class="selectpicker" id="xPicker" data-width="fit" data-header="Set the X Axis"></select>
+        <select class="selectpicker" id="yPicker" data-width="fit" data-header="Set the Y Axis"></select>
+        <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25" data-size="10" data-selected-text-format="static" data-width="fit"></select>
+        <select class="selectpicker" id="subredditsubset-picker" data-width="fit" data-header="Load Subreddits"></select>
+        <br><br>
     </div>
 
     <div class="menu element">
         <a href="/mainVizPanel" data-panel="mainVizPanel">Main Viz</a>
-        <a href="/heatMapsPanel" data-panel="heatMapsPanel">Heat Maps</a>
-        <a href="/wordCloudsPanel" data-panel="wordCloudsPanel">Word Clouds</a>
-        <a href="/smallMultiplesPanel" data-panel="smallMultiplesPanel">Small Multiples</a>
+        <a href="/comparePanel" data-panel="heatMapsPanel">Compare 2 Subreddits</a>
         <a href="/chordPanel" data-panel="chordPanel">Chord Diagram</a>
     </div>
 
@@ -82,54 +54,50 @@
             <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
         </div>
     </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
     <section data-panel="heatMapsPanel">
-        <div class="sameLine">
-            <h4>When are subreddits most active?</h4>
-            <div id="heatmap1" class="sameLine"></div>
-            <div id="heatmap2" class="sameLine"></div>
-        <div>
+        <table>
+            <tr>
+                <td width="65%" style="vertical-align: top">
+                    <div>
+                        <center><h4>How do subreddit comments compare across all dimensions?</h4></center>
+                        <br>
+                        <div class="smallMultiples"></div>
+                    </div>
+                </td>
+                <td>
+                    <br>
+                    <div id="heatmap1"></div>
+                    <div id="heatmap2"></div>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <p class="wordcloud1Title h6" style="text-align: center; margin-bottom: 0px"></p><br>
+                            </td>
+                            <td>
+                                <p class="wordcloud2Title h6" style="text-align: center; margin-bottom: 0px"></p><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="wordCloud1Container" style="text-align: center">
+                                    
+                                    <img class="wordcloud1" style="width: 95%; height: 95%"></img>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="wordCloud2Container" style="text-align: center">
+                                    
+                                    <img class="wordcloud2" style="width: 95%; height: 95%"></img>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="wordCloudsPanel">
-        <div class="sameLine">
-            <h4>How do subreddit lexicons differ?</h4>
-            <br>
-            <table>
-                <tr>
-                <td>
-                <center>
-                    <p class="wordcloud1Title sameLine h4" style="margin-right: 150px"></p>
-                </center>
-                </td>
-                <td>
-                <center>
-                    <p class="wordcloud2Title sameLine h4" class="sameLine"></p>
-                </center>
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <img class="wordcloud1" style="margin-right: 150px"></img>
-                </td>
-                <td>
-                    <img class="wordcloud2"></img>
-                </td>
-                </tr>
-            </table>
-            <br><br>
-        </div>
-    </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="smallMultiplesPanel">
-        <div>
-            <h4>How do subreddit comments compare across all dimensions?</h4>
-            <br>
-            <div class="smallMultiples"></div>
-        </div>
-    </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    
     <section data-panel="chordPanel">
         <div>
         <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i></h4>

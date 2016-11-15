@@ -52,24 +52,24 @@ jQuery(function($) {
       var activatedPanel = $target[0].attributes[0].nodeValue;
       console.log(activatedPanel)
       if (activatedPanel == 'wordCloudsPanel') {
-        $(".xPickertd, .yPickertd, .commentSubsettd, .chooseSubredditstd, .subredditSubsettd").hide(500);
+        $(".xPicker, .yPicker, #filter-picker, #toggleSubreddits, #subredditsubset-picker").hide(500);
       } else if (activatedPanel == 'mainVizPanel') {
-        $(".xPickertd, .yPickertd, .commentSubsettd, .chooseSubredditstd, .subredditSubsettd").show(500);
+        $(".xPicker, .yPicker, #filter-picker, #toggleSubreddits, #subredditsubset-picker").show(500);
       } else if (activatedPanel == 'heatMapsPanel') {
-        $(".xPickertd, .yPickertd, .chooseSubredditstd, .subredditSubsettd").hide(500);
-        $(".commentSubsettd").show(500);
+        $(".xPicker, .yPicker, #toggleSubreddits, #subredditsubset-picker").hide(500);
+        $("#filter-picker").show(500);
       } else if (activatedPanel == 'chordPanel') {
-        $(".xPickertd, .yPickertd").hide(500);
-        $(".commentSubsettd, .chooseSubredditstd, .subredditSubsettd").show(500);
+        $(".xPicker, .yPicker").hide(500);
+        $("#filter-picker, #toggleSubreddits, #subredditsubset-picker").show(500);
       } else if (activatedPanel == 'smallMultiplesPanel') {
-        $(".xPickertd, .yPickertd, .chooseSubredditstd, .subredditSubsettd").hide(500);
-        $(".commentSubsettd").show(500);
+        $(".xPicker, .yPicker, #toggleSubreddits, #subredditsubset-picker").hide(500);
+        $("#filter-picker").show(500);
       }
     },
     directionThreshold: 100,
     slideSpeed: 1000,
     easing: 'swing', // https://matthewlein.com/experiments/easing.html
-    offset: 220,
+    offset: 165,
     navigation: {
       keys: {
         nextKey: false,
@@ -101,7 +101,7 @@ d3.select("#toggle").on("click", function(d) {
   } else {
     d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
     $('.navbar-fixed-top').slideDown(500);
-    d3.select("body").style("padding-top", "220px")
+    d3.select("body").style("padding-top", "165px")
   }
 });
 
@@ -253,7 +253,7 @@ var subreddit_subsets = {
     'theocho',
   ],
 
-  "Science, History, Technology": [
+  "Science/History/Tech": [
     'science',
     'askscience',
     'space',
@@ -450,8 +450,8 @@ var tooltip2 = d3.select("body").append("div")
 
 var axisOptions = {
   'Subreddit': 'subreddit',
-  'Average Word Length': 'avg_word_length',
-  'Average Comment Length': 'avg_words_per_comment',
+  'Avg. Word Length': 'avg_word_length',
+  'Avg. Comment Length': 'avg_words_per_comment',
   'Number of Comments': 'num_comments',
   'Positive Score': 'positive_score',
   'Negative Score': 'negative_score',
@@ -461,8 +461,8 @@ var axisOptions = {
 
 var inverseAxisOptions = {
   'subreddit': 'Subreddit',
-  'avg_word_length': 'Average Word Length',
-  'avg_words_per_comment': 'Average Comment Length',
+  'avg_word_length': 'Avg. Word Length',
+  'avg_words_per_comment': 'Avg. Comment Length',
   'num_comments': 'Number of Comments',
   'positive_score': 'Positive Score',
   'negative_score': 'Negative Score',
@@ -555,7 +555,8 @@ var yPicker = d3.select("#yPicker")
 var xDrop = xPicker.selectAll("option")
     .data(Object.keys(axisOptions))
     .enter()
-    .append("option");
+    .append("option")
+    .attr("title", "X Variable");
 
 // Load select items from the CSV (departments)
 var yDrop = yPicker.selectAll("option")
@@ -563,7 +564,8 @@ var yDrop = yPicker.selectAll("option")
       return d != 'Subreddit';
     }))
     .enter()
-    .append("option");
+    .append("option")
+    .attr("title", "Y Variable");
 
 xPicker.on("change", function() {
     axisChange(xPicker, xDrop, 'x')
@@ -595,17 +597,17 @@ yDrop.text(function(d) {
 })
 
 // Create word clouds
-var wordcloud1 = d3.select(".wordcloud1Container")
-    .append("img")
-    .attr("class", "wordcloud1")
+var wordcloud1 = d3.select(".wordcloud1")
     .attr("src", "RC_2016-08/" + cur_subreddit1)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
+    .attr("width", "10%")
+    .attr("height", "50%")
 
-var wordcloud2 = d3.select(".wordcloud2Container")
-    .append("img")
-    .attr("class", "wordcloud2")
+var wordcloud2 = d3.select(".wordcloud2")
     .attr("src", "RC_2016-08/" + cur_subreddit2)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
+    .attr("width", "10%")
+    .attr("height", "50%")
 
 // Refreshes all the data on the screen
 var refresh = function() {
@@ -721,26 +723,49 @@ var createCharts = function() {
 
   if (old_cur_subreddit1 != cur_subreddit1) {
     // Put the actual image path. We set our default comparison subreddits
-    d3.select(".wordcloud1")
-      .style("opacity", 0)
+    wordcloud1 = d3.select(".wordcloud1")
+
+    wordcloud1.style("opacity", 0)
       .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
       .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
       .transition()
       .duration(2000)
       .style("opacity", 1)
 
+
+    wordcloud1.on("mouseover", function() {
+      tooltip.style("opacity", 1);
+      tooltip.html(getToolTipImage(cur_subreddit1))
+        .style("left", d3.event.pageX - 900 + "px")
+        .style("top", d3.event.pageY - 500 + "px")
+      })
+      .on("mouseout", function() {
+        tooltip.style("opacity", 0);
+      })
+
     d3.select(".wordcloud1Title")
       .html("Word cloud for " + cur_subreddit1)
     old_cur_subreddit1 = cur_subreddit1
   }
   if (old_cur_subreddit2 != cur_subreddit2) {
-    d3.select(".wordcloud2")
-    .style("opacity", 0)
+    wordcloud2 = d3.select(".wordcloud2")
+
+    wordcloud2.style("opacity", 0)
     .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
     .transition()
     .duration(2000)
     .style("opacity", 1)
+
+    wordcloud2.on("mouseover", function() {
+      tooltip.style("opacity", 1);
+      tooltip.html(getToolTipImage(cur_subreddit2))
+        .style("left", d3.event.pageX - 900 + "px")
+        .style("top", d3.event.pageY - 500 + "px")
+    })
+    .on("mouseout", function() {
+      tooltip.style("opacity", 0);
+    })
 
     d3.select(".wordcloud2Title")
       .html("Word cloud for " + cur_subreddit2)
@@ -814,6 +839,7 @@ var initialize_pickers = function() {
   // Add buttons for each filter
   subredditsubsetpicker.enter()
     .append("option")
+    .attr("title", "Subreddit Presets")
     .attr("value", function(d) {
       return "" + d
     })
@@ -861,9 +887,7 @@ var initialize_pickers = function() {
     .attr("value", function(d) {
       return "" + d;
     })
-    .attr("title", function(d) {
-      return "" + d;
-    })
+    .attr("title", "Comment Filters")
     .html(function(d) {
       return "" + d;
     });
@@ -1014,6 +1038,11 @@ var getToolTipCommentsSubset = function(d) {
   "<b>Top Godwin Comments</b>: Comments with positive Godwin's scores<br>" + 
   "<b>Top Swear Comments</b>: Comments with swear score >= 35" + 
   "</p>"
+}
+
+// Centralized tooltip function
+var getToolTipImage = function(subreddit) {
+  return '<center><b>Word cloud for ' + subreddit + '</b></center><br><img src="RC_2016-08/' + subreddit + '_wordcloud.png"/>'
 }
 
 // Centralized tooltip function
@@ -1546,14 +1575,14 @@ var count_accessor = function(d) {
     return d['count' + cur_filter]
 }
 
-var margin_heat = {top: 50, right: 0, bottom: 25, left: 30};
-var width_heat = 659 - margin_heat.left - margin_heat.right;
-var height_heat = 300 - margin_heat.top - margin_heat.bottom;
+var margin_heat = {top: 40, right: 0, bottom: 50, left: 30};
+var width_heat = 450 - margin_heat.left - margin_heat.right;
+var height_heat = 185 - margin_heat.top - margin_heat.bottom;
 var gridSize = Math.floor(width_heat / 24);
 var legendElementWidth = gridSize *2 ;
 var buckets = 12;
 var days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-var times = ["12am", "1am", "2am", "3am", "4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm"];
+var times = ["12a", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p"];
 var heat_map_colors_lookup = {}
 var heat_svg1 = null;
 var heat_svg2 = null;
@@ -1673,21 +1702,21 @@ var refreshHeatMap = function(id_selector) {
       heat_map_colors_lookup[cur_subreddit] = create_color_scale(d3.rgb(color(cValue(cur_subreddit))))
     }
 
-    console.log(heat_map_colors_lookup[cur_subreddit].length)
-    
     heat_svg.selectAll(".scale").remove();
     heat_svg.selectAll(".cur_subreddit").remove();
     heat_svg.selectAll(".heatTitle").remove();
+    /*
     heat_svg.append("text")
       .text("Number of comments gradient thresholds")
       .attr("class", "cur_subreddit")
       .attr("x", width_heat / 2 - 130)
-      .attr("y", height_heat - 29)
+      .attr("y", height_heat - 0)
       .style('fill', 'white')
+    */
 
     heat_svg.append("text")
       .attr("x", width_heat / 2 - 5)             
-      .attr("y", margin_heat.top - 75)
+      .attr("y", margin_heat.top - 64)
       .attr("class", "heatTitle")
       .style("font-size", "14px") 
       .style("text-anchor", "middle")
@@ -1726,7 +1755,7 @@ var refreshHeatMap = function(id_selector) {
           hour = times[d['hour']];
           nextHour = times[(d['hour'] + 1) % 24];
           tooltip.style("opacity", 1);
-          tooltip.html("<center>Comments from " + hour + " to " + nextHour + "<br> on " + day + "s: " + numberWithCommas(count) + "</center>")
+          tooltip.html("<center>Comments from " + hour + " to " + nextHour + "<br> on " + day + "s: <b>" + numberWithCommas(count) + "</b></center>")
             .style("left", d3.event.pageX + 5 + "px")
             .style("top", d3.event.pageY + 5 + "px")
         })
@@ -1760,7 +1789,7 @@ var refreshHeatMap = function(id_selector) {
       .attr("x", function(d, i) {
         return legendElementWidth * i;
       })
-      .attr("y", height_heat - 25)
+      .attr("y", height_heat + 27)
       .attr("width", legendElementWidth)
       .attr("height", gridSize / 2)
       .style("fill", function(d, i) {
@@ -1774,12 +1803,12 @@ var refreshHeatMap = function(id_selector) {
       .duration(1000)
       .style("opacity", 1)
       .text(function(d) {
-        return "≥ " + Math.round(d);
+        return "≥" + Math.round(d);
       })
       .attr("x", function(d, i) {
         return legendElementWidth * i + (legendElementWidth / 2);
       })
-      .attr("y", height_heat + gridSize - 25)
+      .attr("y", height_heat + gridSize + 27)
       .style("text-anchor", "middle");
 
     legend.exit().remove();
@@ -1793,10 +1822,10 @@ var refreshHeatMap = function(id_selector) {
 
 // small multiples constants
 var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
-var width_multiples = 200 - margin_multiples.left - margin_multiples.right;
-var height_multiples = 200 - margin_multiples.top - margin_multiples.bottom;
-var padding_multiples = 60;
-var yAxisPadding_multiples = 45;
+var width_multiples = 170 - margin_multiples.left - margin_multiples.right;
+var height_multiples = 175 - margin_multiples.top - margin_multiples.bottom;
+var padding_multiples = 25;
+var yAxisPadding_multiples = 40;
 
 var smallMultiplesInit = 0;
 
@@ -1806,7 +1835,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
     multiplesData.reverse();
   }
 
-  var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 40], 0.25);
+  var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 25], 0.25);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
   var yScale = d3.scale.linear().range([height_multiples, margin_multiples.top])
@@ -1836,10 +1865,10 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .call(yAxis)
 
     multiplesPlot.append("text")
-      .attr("x", width_multiples - 65)             
+      .attr("x", width_multiples - 50)             
       .attr("y", margin_multiples.top - 10)
       .attr("class", "smallMultiplesTitle")
-      .style("font-size", "14px") 
+      .style("font-size", "13px") 
       .style("text-anchor", "middle")
       .attr("fill", "white")
       .text(inverseAxisOptions[yMultiples]);
@@ -1852,14 +1881,10 @@ var refreshSmallMultiples = function(data, yMultiples) {
     return d['subreddit'];
   }));
 
-  var minY = d3.min(multiplesData, function(d) {
-    return +d[yMultiples + cur_filter];
-  })
-  minY *= 0.4
   var maxY = d3.max(multiplesData, function(d) {
     return +d[yMultiples + cur_filter];
   })
-  yScale.domain([minY, maxY]).nice();
+  yScale.domain([0, maxY]).nice();
 
   xAxis = d3.svg.axis().scale(xScale).orient("bottom");
   yAxis = d3.svg.axis().scale(yScale).orient("left");
@@ -1910,20 +1935,6 @@ var refreshSmallMultiples = function(data, yMultiples) {
       return height_multiples - yScale(d[yMultiples + cur_filter]);
     })
 
-  // Scale the data
-  xScale.domain(multiplesData.map(function(d) {
-    return d['subreddit'];
-  }));
-
-  var minY = d3.min(multiplesData, function(d) {
-    return +d[yMultiples + cur_filter];
-  })
-  minY *= 0.4
-  var maxY = d3.max(multiplesData, function(d) {
-    return +d[yMultiples + cur_filter];
-  })
-  yScale.domain([minY, maxY]).nice();
-
   // Set up the axes and labels
   multiplesPlot.selectAll("g.x.axis")
     .transition()
@@ -1939,12 +1950,12 @@ var refreshSmallMultiples = function(data, yMultiples) {
   multiplesPlot.selectAll(".x.axis .tick text")
     .style("text-anchor", "left")
     .style("font-size", function(d) {
-        size = 12;
+        size = 11;
         if ((cur_subreddit1.length > 13 && cur_subreddit2.length > 13) || (cur_subreddit1.length > 15 || cur_subreddit2.length > 15)) {
-          size = 8;
+          size = 7;
         }
         else if (cur_subreddit1.length > 9 || cur_subreddit2.length > 9) {
-          size = 10;
+          size = 9;
         }
         return size + "px"
     })
@@ -1966,6 +1977,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
   multiplesPlot.selectAll(".y.axis .tick text")
   .text(function(d) {
     return abbreviate_thousands(d);
-  });
+  })
+  .style("font-size", "9px");
 }
 
