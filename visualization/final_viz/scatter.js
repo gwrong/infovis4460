@@ -51,13 +51,15 @@ jQuery(function($) {
       var activatedPanel = $target[0].attributes[0].nodeValue;
       console.log(activatedPanel)
       if (activatedPanel == 'mainVizPanel') {
-        $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+        if (show_chord) {
+          $(".xPickerHolder, .yPickerHolder").hide(500);
+          $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+        } else {
+          $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+        }
       } else if (activatedPanel == 'comparePanel') {
         $(".xPickerHolder, .yPickerHolder, .toggleSubredditsHolder, .subredditSubsetHolder").hide(500);
         $(".filterHolder").show(500);
-      } else if (activatedPanel == 'chordPanel') {
-        $(".xPickerHolder, .yPickerHolder").hide(500);
-        $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
       }
     },
     directionThreshold: 100,
@@ -816,6 +818,8 @@ var initialize_pickers = function() {
     show_chord = true;
     $(".mainVizContainer").hide(500);
     $(".chordContainer").show(500);
+    $(".xPickerHolder, .yPickerHolder").hide(500);
+    $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
     refresh();
   })
 
@@ -823,6 +827,7 @@ var initialize_pickers = function() {
     show_chord = false;
     $(".chordContainer").hide(500);
     $(".mainVizContainer").show(500);
+    $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
     refresh();
   })
 

@@ -52,10 +52,10 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
   }
 
   if (overall_mentions == 0) {
-    d3.select("body").append("div")
+    d3.select(".chordContainer").append("div")
       .attr("class", "redditChord")
     d3.select(".redditChord")
-      .append("h5").html("<br><br><br>No mentions between chosen subreddits :(")
+      .append("h5").html("<br><br><br><br><br><br><br><br><br><br><br><br>No mentions between chosen subreddits :(<br><br><br><br><br><br><br><br><br><br><br><br>")
       return;
   }
 
