@@ -818,7 +818,7 @@ var createCharts = function() {
 // Do some one-time HTML setup for input things
 var initialize_pickers = function() {
 
-  d3.selectAll(".scatterArrow, .barArrow").on("click", function() {
+  d3.selectAll(".scatterButton, .barButton").on("click", function() {
     show_chord = true;
     $(".mainVizContainer").hide(500);
     $(".chordContainer").show(500);
@@ -828,7 +828,7 @@ var initialize_pickers = function() {
     refresh();
   })
 
-  d3.select(".chordArrow").on("click", function() {
+  d3.select(".chordButton").on("click", function() {
     show_chord = false;
     $(".chordContainer").hide(500);
     $(".mainVizContainer").show(500);
@@ -1331,6 +1331,20 @@ var refreshBarChart = function(data) {
     })
     .style("fill", function(d) {
       return color(cValue(d));
+    })
+    .style("stroke", function(d) {
+      if (d.subreddit == cur_subreddit1 || d.subreddit == cur_subreddit2) {
+        return "white"
+      } else {
+        return color(cValue(d));
+      }
+    })
+    .style("stroke-width", function(d) {
+      if (d.subreddit == cur_subreddit1 || d.subreddit == cur_subreddit2) {
+        return 1;
+      } else {
+        return 0;
+      }
     });
 
 
@@ -1364,6 +1378,13 @@ var refreshBarChart = function(data) {
     })
     .on("click", function(d) {
       onclick_compare(d);
+    })
+    .style("fill", function(d) {
+      if (d == cur_subreddit1 || d == cur_subreddit2) {
+        return "gold"
+      } else {
+        return "white";
+      }
     });
 
   barchart.selectAll(".y.axis .tick text")
@@ -1399,12 +1420,29 @@ var makeBatterLegend = function(data, selector, element) {
       .style("fill", function(d) {
         return color(cValue(d));
       })
+      .style("stroke", function(d) {
+        if (d.subreddit == cur_subreddit1 || d.subreddit == cur_subreddit2) {
+          return "white"
+        } else {
+          return color(cValue(d));
+        }
+      })
+      .style("stroke-width", function(d) {
+        if (d.subreddit == cur_subreddit1 || d.subreddit == cur_subreddit2) {
+          return 1;
+        } else {
+          return 0;
+        }
+      })
       .style("opacity", 0)
       .on("mouseover", function(d) {
         highlight(selector, element, d['subreddit'])
       })
       .on("mouseout", function(d) {
         unHighlight(selector, element, d['subreddit'])
+      })
+      .on("click", function(d) {
+        onclick_compare(d['subreddit']);
       })
       .transition()
       .duration(2000)
@@ -1414,7 +1452,13 @@ var makeBatterLegend = function(data, selector, element) {
       .attr("x", width_batter - 23)
       .attr("y", 9)
       .attr("dy", "0em")
-      .attr("fill", "white")
+      .attr("fill", function(d) {
+        if (d.subreddit == cur_subreddit1 || d.subreddit == cur_subreddit2) {
+          return "gold"
+        } else {
+          return "white";
+        }
+      })
       .style("text-anchor", "end")
       .attr("transform", "translate(0," + 25 + ")")
       .text(function(d) {
@@ -1426,6 +1470,9 @@ var makeBatterLegend = function(data, selector, element) {
       })
       .on("mouseout", function(d) {
         unHighlight(selector, element, d['subreddit'])
+      })
+      .on("click", function(d) {
+        onclick_compare(d['subreddit']);
       })
       .transition()
       .duration(2000)
@@ -1584,7 +1631,21 @@ var scatterPlot = function(data) {
     .transition("scatter")
     .duration(2000)
     .style("fill", function(d) {
-      return color(cValue(d));
+        return color(cValue(d));
+    })
+    .style("stroke", function(d) {
+      if (d.subreddit == cur_subreddit1 || d.subreddit == cur_subreddit2) {
+        return "white"
+      } else {
+        return "none";
+      }
+    })
+    .style("stroke-width", function(d) {
+      if (d.subreddit == cur_subreddit1 || d.subreddit == cur_subreddit2) {
+        return 2;
+      } else {
+        return 0;
+      }
     })
     .attr("cx", function(d) {
       return xScale(d[xVariable])
