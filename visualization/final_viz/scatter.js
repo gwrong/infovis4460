@@ -139,6 +139,8 @@ var compare_time_dataset = null;
 var full_chord_lookup_dataset = null;
 var full_chord_matrix_dataset = null;
 
+var show_chord = false;
+
 var subreddit_subsets = {
   "Top 25 by Comments": [
     'relationships',
@@ -673,7 +675,12 @@ var createCharts = function() {
   }
 
   load_chord_matrix_data();
-  create_chord(full_chord_lookup_dataset, full_chord_matrix_dataset, cur_chosen_subreddits);
+  
+  if (!show_chord) {
+    $(".chordContainer").hide();
+  } else {
+    create_chord(full_chord_lookup_dataset, full_chord_matrix_dataset, cur_chosen_subreddits);
+  }
 
   // Get data for only the subreddits that are chosen
   core_dataset = core_dataset.filter(function(d, i) {
@@ -810,6 +817,22 @@ var createCharts = function() {
 
 // Do some one-time HTML setup for input things
 var initialize_pickers = function() {
+
+  d3.selectAll(".scatterArrow, .barArrow").on("click", function() {
+    show_chord = true;
+    $(".mainVizContainer").hide();
+    $(".chordContainer").show();
+    refresh();
+  })
+
+  d3.select(".chordArrow").on("click", function() {
+    show_chord = false;
+    $(".chordContainer").hide();
+    $(".mainVizContainer").show();
+    refresh();
+  })
+
+
   subreddit_toggle = d3.select("#toggleSubreddits").selectAll("option")
     .data(all_subreddits)
     .enter()

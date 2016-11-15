@@ -2,7 +2,7 @@ var chord;
 
 var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
-  // Change this to enter-update-exit
+  // enter-update-exit is nearly impossible for the chord
   d3.selectAll(".redditChord").remove()
   
   var indices = []
@@ -55,12 +55,12 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     d3.select("body").append("div")
       .attr("class", "redditChord")
     d3.select(".redditChord")
-      .append("h5").html("<br><br><br>No mentions between chosen subreddit :(")
+      .append("h5").html("<br><br><br>No mentions between chosen subreddits :(")
       return;
   }
 
-  var width = 600
-  var height = 600
+  var width = 500
+  var height = 500
   var outerRadius = Math.min(width, height) / 2 - 105
   var innerRadius = outerRadius - 20;
 
@@ -79,7 +79,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
       .radius(innerRadius);
 
   // Change this to enter-update-exit
-  d3.select("body").append("div")
+  d3.select(".chordContainer").append("div")
     .attr("class", "redditChord")
 
   var svg = d3.select(".redditChord").append("svg")

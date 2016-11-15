@@ -41,7 +41,7 @@
 
     <div class="menu element">
         <a href="/mainVizPanel" data-panel="mainVizPanel">Main Viz</a>
-        <a href="/comparePanel" data-panel="heatMapsPanel">Compare 2 Subreddits</a>
+        <a href="/comparePanel" data-panel="comparePanel">Compare 2 Subreddits</a>
         <a href="/chordPanel" data-panel="chordPanel">Chord Diagram</a>
     </div>
 
@@ -49,13 +49,18 @@
     <label for="toggle"></label>
 
     <section data-panel="mainVizPanel">
-        <div>
-            <div class="barchart sameLine"><h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
-            <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i></h4><br></div>
+        <div class="mainVizContainer">
+            <div class="barchart sameLine"><h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-menu-right barArrow'></i></h4><br></div>
+            <div class="scatterplot sameLine"><h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-menu-right scatterArrow'></i></h4><br></div>
+        </div>
+        <div class="chordContainer">
+            <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-menu-left chordArrow'></i></h4>
+            <h5 style="margin-bottom: 0px" class="chordTitle">Network of subreddit mentions</h5>
+            <div class="redditChord" align="center"></div>
         </div>
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="heatMapsPanel">
+    <section data-panel="comparePanel">
         <table>
             <tr>
                 <td width="65%" style="vertical-align: top">
@@ -99,11 +104,7 @@
     </section>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <section data-panel="chordPanel">
-        <div>
-        <h4 class="chordQuestion">How connected is Reddit?</select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i></h4>
-        <h5 style="margin-bottom: 0px" class="chordTitle">Network of subreddit mentions</h5>
-        <div class="redditChord" align="center"></div>
-        </div>
+        
     </section>
 
     <!-- About popup modal -->
