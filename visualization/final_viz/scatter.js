@@ -49,7 +49,6 @@ jQuery(function($) {
     onActivate: function($target){
       // Contains css class of panel
       var activatedPanel = $target[0].attributes[0].nodeValue;
-      console.log(activatedPanel)
       if (activatedPanel == 'mainVizPanel') {
         if (show_chord) {
           $(".xPickerHolder, .yPickerHolder").hide(500);
@@ -86,6 +85,9 @@ jQuery(function($) {
 // doesn't update
 $("#toggle").prop("checked", true).css({"background": "#dd6149;"});
 
+var nav_bar = d3.select(".navbar-fixed-top");
+var body = d3.select("body");
+
 // Toggle the static nav bar
 d3.select("#toggle").on("click", function(d) {
   var checked = $('#toggle')[0].checked;
@@ -94,12 +96,12 @@ d3.select("#toggle").on("click", function(d) {
     //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
     $('.navbar-fixed-top').slideUp(500);
     $(".aboutButton").hide(500)
-    d3.select("body").style("padding-top", "50px")
+    body.style("padding-top", "50px")
   } else {
-    d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
+    nav_bar.transition().duration(1000).style("opacity", 1)
     $('.navbar-fixed-top').slideDown(500);
     $(".aboutButton").show(500)
-    d3.select("body").style("padding-top", "160px")
+    body.style("padding-top", "160px")
   }
 });
 
@@ -439,12 +441,12 @@ var cValue = function(d) {
 }
 
 // Prepare tooltip for the scatterplot
-var tooltip = d3.select("body").append("div")
+var tooltip = body.append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
 // Prepare tooltip for the scatterplot
-var tooltip2 = d3.select("body").append("div")
+var tooltip2 = body.append("div")
     .attr("class", "tooltip2")
     .style("opacity", 0);
 
@@ -487,13 +489,13 @@ $(document).keydown(function(event) {
         //d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
         //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
         $('.navbar-fixed-top').slideUp();
-        d3.select("body").style("padding-top", "25px")
+       body.style("padding-top", "25px")
         options.offset = 0;
         navBarHidden = true;
       } else {
-        d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 1)
+        nav_bar.transition().duration(1000).style("opacity", 1)
         $('.navbar-fixed-top').slideDown();
-        d3.select("body").style("padding-top", "220px")
+        body.style("padding-top", "220px")
         navBarHidden = false;
       }
       
@@ -730,15 +732,12 @@ var createCharts = function() {
 
   if (old_cur_subreddit1 != cur_subreddit1) {
     // Put the actual image path. We set our default comparison subreddits
-    wordcloud1 = d3.select(".wordcloud1")
-
     wordcloud1.style("opacity", 0)
       .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
       .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
       .transition()
       .duration(2000)
       .style("opacity", 1)
-
 
     wordcloud1.on("mouseover", function() {
       tooltip.style("opacity", 1);
@@ -755,7 +754,6 @@ var createCharts = function() {
     old_cur_subreddit1 = cur_subreddit1
   }
   if (old_cur_subreddit2 != cur_subreddit2) {
-    wordcloud2 = d3.select(".wordcloud2")
 
     wordcloud2.style("opacity", 0)
     .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
@@ -1135,7 +1133,7 @@ var flash_count = 0;
 var flash_subreddit_change = function() {
   flash_count = flash_count + 1;
   tooltip2.remove();
-  tooltip2 = d3.select("body").append("div")
+  tooltip2 = body.append("div")
       .attr("class", "tooltip2")
       .style("opacity", 0);
   tooltip2.style("opacity", 1);
@@ -1668,9 +1666,9 @@ var count_accessor = function(d) {
     return d['count' + cur_filter]
 }
 
-var margin_heat = {top: 40, right: 0, bottom: 50, left: 30};
-var width_heat = 450 - margin_heat.left - margin_heat.right;
-var height_heat = 185 - margin_heat.top - margin_heat.bottom;
+var margin_heat = {top: 40, right: 0, bottom: 50, left: 22};
+var width_heat = 500 - margin_heat.left - margin_heat.right;
+var height_heat = 198 - margin_heat.top - margin_heat.bottom;
 var gridSize = Math.floor(width_heat / 24);
 var legendElementWidth = gridSize *2 ;
 var buckets = 12;
@@ -1884,7 +1882,7 @@ var refreshHeatMap = function(id_selector) {
       })
       .attr("y", height_heat + 27)
       .attr("width", legendElementWidth)
-      .attr("height", gridSize / 2)
+      .attr("height", gridSize / 2 - 2)
       .style("fill", function(d, i) {
         return heat_map_colors_lookup[cur_subreddit][i];
       });
@@ -1915,8 +1913,8 @@ var refreshHeatMap = function(id_selector) {
 
 // small multiples constants
 var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
-var width_multiples = 170 - margin_multiples.left - margin_multiples.right;
-var height_multiples = 175 - margin_multiples.top - margin_multiples.bottom;
+var width_multiples = 140 - margin_multiples.left - margin_multiples.right;
+var height_multiples = 170 - margin_multiples.top - margin_multiples.bottom;
 var padding_multiples = 25;
 var yAxisPadding_multiples = 40;
 
@@ -1928,7 +1926,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
     multiplesData.reverse();
   }
 
-  var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 25], 0.25);
+  var xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding_multiples, width_multiples + 25], 0.2);
   var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
   var yScale = d3.scale.linear().range([height_multiples, margin_multiples.top])
@@ -1965,6 +1963,70 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .style("text-anchor", "middle")
       .attr("fill", "white")
       .text(inverseAxisOptions[yMultiples]);
+
+    if (smallMultiplesInit == 7) {
+      multiplesPlot = d3.selectAll(".smallMultiples")
+      multiplesPlot.select(".smallMultiplesLegend")
+        .remove();
+
+      multiplesPlot.append("svg")
+        .attr("class", "smallMultiplesLegend")
+        .style("width", width_multiples + padding_multiples + "px") // padding with second scatter
+        .style("height", height_multiples + margin_multiples.bottom + margin_multiples.top + "px")  //svg defalt size: 300*150
+        .append("g")
+
+      var legendSelection = multiplesPlot.select(".smallMultiplesLegend").selectAll(".smallMultiplesLegendElement")
+        .data(multiplesData)
+
+
+      smallMultiplesPlots = multiplesPlot.selectAll(".smallMultiplesGraph");
+
+      legendSelection.enter().append("g")
+        .attr("class", "smallMultiplesLegendElement")
+        .attr("transform", function(d, i) {
+          return "translate(" + (padding_multiples - 0) + "," + i * 13 + ")";
+        })
+
+      legendSelection.append("rect")
+          .attr("x", width_multiples - 50)
+          .attr("width", 18)
+          .attr("height", 14)
+          .attr("transform", "translate(0," + 50 + ")")
+          .style("fill", function(d) {
+            return color(cValue(d));
+          })
+          .style("opacity", 0)
+          .on("mouseover", function(d) {
+            highlight(smallMultiplesPlots, ".rect", d['subreddit'])
+          })
+          .on("mouseout", function(d) {
+            unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
+          })
+          .transition()
+          .duration(2000)
+          .style("opacity", 1);
+
+      legendSelection.append("text")
+          .attr("x", width_multiples - 55)
+          .attr("y", 10)
+          .attr("dy", "0em")
+          .attr("fill", "white")
+          .style("text-anchor", "end")
+          .attr("transform", "translate(0," + 50 + ")")
+          .text(function(d) {
+            return d['subreddit'];
+          })
+          .style("opacity", 0)
+          .on("mouseover", function(d) {
+            highlight(smallMultiplesPlots, ".rect", d['subreddit'])
+          })
+          .on("mouseout", function(d) {
+            unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
+          })
+          .transition()
+          .duration(2000)
+          .style("opacity", 1);
+    }
   }
 
   multiplesPlot = d3.select("." + yMultiples)
@@ -2040,32 +2102,8 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .duration(1000)
     .call(yAxis)
 
-  multiplesPlot.selectAll(".x.axis .tick text")
-    .style("text-anchor", "left")
-    .style("font-size", function(d) {
-        size = 11;
-        if ((cur_subreddit1.length > 13 && cur_subreddit2.length > 13) || (cur_subreddit1.length > 15 || cur_subreddit2.length > 15)) {
-          size = 7;
-        }
-        else if (cur_subreddit1.length > 9 || cur_subreddit2.length > 9) {
-          size = 9;
-        }
-        return size + "px"
-    })
-    .on("mouseover", function(subreddit) {
-      d = multiplesData[indexOfSubreddit(multiplesData, subreddit)]
-      tooltip.style("opacity", 1);
-      tooltip.html(getToolTip(d))
-        .style("left", d3.event.pageX + 5 + "px")
-        .style("top", d3.event.pageY + 5 + "px")
-    })
-    .on("mouseout", function() {
-      return tooltip.style("opacity", 0);
-    })
-    .text(function(d) {
-      return d;
-      //return abbreviateSubreddit(d);
-    })
+  multiplesPlot.selectAll(".x.axis .tick text").remove()
+  multiplesPlot.selectAll(".x.axis .tick").remove()
 
   multiplesPlot.selectAll(".y.axis .tick text")
   .text(function(d) {
