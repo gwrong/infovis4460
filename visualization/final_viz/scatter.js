@@ -802,6 +802,7 @@ var createCharts = function() {
       refreshSmallMultiples(compare_core_dataset, axisOptions[keys[i]])
     }
   }
+  refreshSmallMultiplesLegend(compare_core_dataset)
   
   if (!initialized_heatmap) {
     initialized_heatmap = true;
@@ -1921,7 +1922,7 @@ var yAxisPadding_multiples = 40;
 var smallMultiplesInit = 0;
 
 var refreshSmallMultiples = function(data, yMultiples) {
-  multiplesData = data;
+  var multiplesData = data;
   if (multiplesData[0].subreddit !== cur_subreddit1) {
     multiplesData.reverse();
   }
@@ -1963,70 +1964,6 @@ var refreshSmallMultiples = function(data, yMultiples) {
       .style("text-anchor", "middle")
       .attr("fill", "white")
       .text(inverseAxisOptions[yMultiples]);
-
-    if (smallMultiplesInit == 7) {
-      multiplesPlot = d3.selectAll(".smallMultiples")
-      multiplesPlot.select(".smallMultiplesLegend")
-        .remove();
-
-      multiplesPlot.append("svg")
-        .attr("class", "smallMultiplesLegend")
-        .style("width", width_multiples + padding_multiples + "px") // padding with second scatter
-        .style("height", height_multiples + margin_multiples.bottom + margin_multiples.top + "px")  //svg defalt size: 300*150
-        .append("g")
-
-      var legendSelection = multiplesPlot.select(".smallMultiplesLegend").selectAll(".smallMultiplesLegendElement")
-        .data(multiplesData)
-
-
-      smallMultiplesPlots = multiplesPlot.selectAll(".smallMultiplesGraph");
-
-      legendSelection.enter().append("g")
-        .attr("class", "smallMultiplesLegendElement")
-        .attr("transform", function(d, i) {
-          return "translate(" + (padding_multiples - 0) + "," + i * 13 + ")";
-        })
-
-      legendSelection.append("rect")
-          .attr("x", width_multiples - 50)
-          .attr("width", 18)
-          .attr("height", 14)
-          .attr("transform", "translate(0," + 50 + ")")
-          .style("fill", function(d) {
-            return color(cValue(d));
-          })
-          .style("opacity", 0)
-          .on("mouseover", function(d) {
-            highlight(smallMultiplesPlots, ".rect", d['subreddit'])
-          })
-          .on("mouseout", function(d) {
-            unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
-          })
-          .transition()
-          .duration(2000)
-          .style("opacity", 1);
-
-      legendSelection.append("text")
-          .attr("x", width_multiples - 55)
-          .attr("y", 10)
-          .attr("dy", "0em")
-          .attr("fill", "white")
-          .style("text-anchor", "end")
-          .attr("transform", "translate(0," + 50 + ")")
-          .text(function(d) {
-            return d['subreddit'];
-          })
-          .style("opacity", 0)
-          .on("mouseover", function(d) {
-            highlight(smallMultiplesPlots, ".rect", d['subreddit'])
-          })
-          .on("mouseout", function(d) {
-            unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
-          })
-          .transition()
-          .duration(2000)
-          .style("opacity", 1);
-    }
   }
 
   multiplesPlot = d3.select("." + yMultiples)
@@ -2112,3 +2049,73 @@ var refreshSmallMultiples = function(data, yMultiples) {
   .style("font-size", "9px");
 }
 
+var refreshSmallMultiplesLegend = function(data) {
+
+  var multiplesData = data;
+  multiplesPlot = d3.selectAll(".smallMultiples")
+  multiplesPlot.select(".smallMultiplesLegend")
+    .remove();
+
+  multiplesPlot.append("svg")
+    .attr("class", "smallMultiplesLegend")
+    .style("width", width_multiples + padding_multiples + "px") // padding with second scatter
+    .style("height", height_multiples + margin_multiples.bottom + margin_multiples.top + "px")  //svg defalt size: 300*150
+    .append("g")
+
+  var legendSelection = d3.select(".smallMultiplesLegend").selectAll(".smallMultiplesLegendElement")
+    .data(multiplesData)
+
+  smallMultiplesPlots = d3.selectAll(".smallMultiplesGraph");
+
+
+  legendSelection.enter().append("g")
+    .attr("class", "smallMultiplesLegendElement")
+    .attr("transform", function(d, i) {
+      return "translate(" + (padding_multiples - 0) + "," + i * 13 + ")";
+    })
+
+  legendSelection.exit().remove();
+
+  legendSelection.append("rect")
+      .attr("x", width_multiples - 50)
+      .attr("width", 18)
+      .attr("height", 14)
+      .attr("transform", "translate(0," + 50 + ")")
+      .style("fill", function(d) {
+        return color(cValue(d));
+      })
+      .style("opacity", 0)
+      .on("mouseover", function(d) {
+        highlight(smallMultiplesPlots, ".rect", d['subreddit'])
+      })
+      .on("mouseout", function(d) {
+        unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
+      })
+      .transition()
+      .duration(2000)
+      .style("opacity", 1);;
+
+  legendSelection.append("text")
+      .attr("x", width_multiples - 55)
+      .attr("y", 10)
+      .attr("dy", "0em")
+      .attr("fill", "white")
+      .style("text-anchor", "end")
+      .attr("transform", "translate(0," + 50 + ")")
+      .attr("fill", "white")
+      .style("text-anchor", "end")
+      .attr("transform", "translate(0," + 50 + ")")
+      .text(function(d) {
+        return d['subreddit'];
+      })
+      .style("opacity", 0)
+      .on("mouseover", function(d) {
+        highlight(smallMultiplesPlots, ".rect", d['subreddit'])
+      })
+      .on("mouseout", function(d) {
+        unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
+      })
+      .transition()
+      .duration(2000)
+      .style("opacity", 1);
+}
