@@ -485,11 +485,6 @@ $(document).keydown(function(event) {
       cntrlIsPressed = true;
     } else if (event.which == "81") {
       qIsPressed = true;
-    } else if (event.which == '13') {
-        var offset = 105;
-        $('html, body').animate({
-            scrollTop: $("#compare").offset().top - offset
-        }, 800);
     }
     if (cntrlIsPressed && qIsPressed && !navBarToggled) {
       navBarToggled = true;
@@ -1001,6 +996,10 @@ var onclick_compare = function(subreddit) {
     old_cur_subreddit1 = cur_subreddit1
     cur_subreddit1 = subreddit;
   } else {
+      var offset = 105;
+      $('html, body').animate({
+          scrollTop: $("#compare").offset().top - offset
+      }, 800);
     old_cur_subreddit2 = cur_subreddit2
     cur_subreddit2 = subreddit;
   }
