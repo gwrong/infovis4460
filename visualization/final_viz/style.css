@@ -229,7 +229,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 #toggle:checked + label:after {
-  content:"Go Fullscreen"
+  content:"Hide Menu"
 }
 
 /* Header of dropdowns */
@@ -242,4 +242,14 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   position: fixed;
   bottom: 0%;
   right: 40%;
+}
+
+.leftScroll {
+  position: fixed;
+  right: 0;
+  bottom: 50%;
+}
+
+#arrow {
+  transform: rotate(-90deg);
 }

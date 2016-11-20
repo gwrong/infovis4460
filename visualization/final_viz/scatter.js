@@ -62,9 +62,9 @@ jQuery(function($) {
       }
     },
     directionThreshold: 100,
-    slideSpeed: 1000,
-    easing: 'swing', // https://matthewlein.com/experiments/easing.html
-    offset: 160,
+    slideSpeed: 800,
+    easing: 'linear', // https://matthewlein.com/experiments/easing.html
+    offset: 50,
     navigation: {
       keys: {
         nextKey: false,
@@ -88,6 +88,8 @@ $("#toggle").prop("checked", true).css({"background": "#dd6149;"});
 var nav_bar = d3.select(".navbar-fixed-top");
 var body = d3.select("body");
 
+
+
 // Toggle the static nav bar
 d3.select("#toggle").on("click", function(d) {
   var checked = $('#toggle')[0].checked;
@@ -98,7 +100,7 @@ d3.select("#toggle").on("click", function(d) {
     $(".aboutButton").hide(500)
     body.style("padding-top", "50px")
   } else {
-    nav_bar.transition().duration(1000).style("opacity", 1)
+    nav_bar.transition().duration(1000).style("opacity", 1);
     $('.navbar-fixed-top').slideDown(500);
     $(".aboutButton").show(500)
     body.style("padding-top", "160px")
@@ -472,6 +474,7 @@ var inverseAxisOptions = {
   'swear_score': 'Swear Score',
 }
 
+
 // Do our CTRL handling for when we want to compare a second subreddit
 var cntrlIsPressed = false;
 var qIsPressed = false;
@@ -482,6 +485,11 @@ $(document).keydown(function(event) {
       cntrlIsPressed = true;
     } else if (event.which == "81") {
       qIsPressed = true;
+    } else if (event.which == '13') {
+        var offset = 105;
+        $('html, body').animate({
+            scrollTop: $("#compare").offset().top - offset
+        }, 800);
     }
     if (cntrlIsPressed && qIsPressed && !navBarToggled) {
       navBarToggled = true;
@@ -501,6 +509,7 @@ $(document).keydown(function(event) {
       
     }
 });
+
 
 $(document).keyup(function(event) {
   if (event.which == "17") {
@@ -815,26 +824,30 @@ var createCharts = function() {
 
 
 // Do some one-time HTML setup for input things
+
 var initialize_pickers = function() {
 
-  d3.selectAll(".scatterButton, .barButton").on("click", function() {
-    show_chord = true;
-    $(".mainVizContainer").hide(500);
-    $(".chordContainer").show(500);
-    $(".xPickerHolder, .yPickerHolder").hide(500);
-    $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
-    filter_label.hide();
-    refresh();
-  })
+    d3.selectAll("#arrow").on("click", function (e) {
+        if (!show_chord) {
+            $("#arrow").css("transform", "rotate(90deg)");
+            show_chord = true;
+            $(".mainVizContainer").hide(500);
+            $(".chordContainer").show(500);
+            $(".xPickerHolder, .yPickerHolder").hide(500);
+            $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+            filter_label.hide();
+            refresh();
+        } else {
+            $("#arrow").css("transform", "rotate(-90deg)");
+            show_chord = false;
+            $(".chordContainer").hide(500);
+            $(".mainVizContainer").show(500);
+            $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+            filter_label.show();
+            refresh();
+        }
+    });
 
-  d3.select(".chordButton").on("click", function() {
-    show_chord = false;
-    $(".chordContainer").hide(500);
-    $(".mainVizContainer").show(500);
-    $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
-    filter_label.show();
-    refresh();
-  })
 
 
   subreddit_toggle = d3.select("#toggleSubreddits").selectAll("option")
@@ -982,6 +995,7 @@ function indexOfSubreddit(data, subreddit) {
 
 
 // Assign the current subreddit based on the type of click
+var chosen = false;
 var onclick_compare = function(subreddit) {
   if (!cntrlIsPressed) {
     old_cur_subreddit1 = cur_subreddit1
@@ -1283,7 +1297,7 @@ var refreshBarChart = function(data) {
 
   //Create the bars
   var barDataSelection = barchart.selectAll(".rect")
-    .data(data)
+    .data(data);
 
   var popupToggled = false;
 
@@ -1307,7 +1321,7 @@ var refreshBarChart = function(data) {
     })
     .attr("width", xScale.rangeBand())
     .on("mouseover", function(d) {
-      tooltip.style("opacity", 1);
+      tooltip.style("opacity", .9);
       tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")

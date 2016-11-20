@@ -49,41 +49,34 @@
         <br><br>
     </div>
 
-    <div class="menu element">
-        <a href="/mainVizPanel" data-panel="mainVizPanel" style="margin-right: 25px">Main Viz</a>
-        <a href="/comparePanel" data-panel="comparePanel" style="margin-right: 25px">Compare 2 Subreddits</a>
-    </div>
-
     <input type="checkbox" name="toggle" id="toggle" checked="checked"/>
+
     <label for="toggle"></label>
-
-    <h4 class="filterLabel">Current Filter: All Comments</h4>
-
 
     <section data-panel="mainVizPanel">
         <div class="mainVizContainer">
             <div class="barchart sameLine">
-                <h4 class="wrap">Which subreddits dominate each variable/category? <i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><button type="button" title="Switch to a network view of subreddits" class="btn btn-default barButton" style="margin-left: 14px; vertical-align: middle;"><span style="vertical-align: middle;">Network</span><i style="font-size: 16px; vertical-align: middle; margin-left: 10px; cursor: pointer;" class='glyphicon glyphicon-menu-right barArrow'></i></button></h4><br>
+                <h4 class="wrap">Which subreddits dominate each variable/category?</h4><br>
             </div>
             <div class="scatterplot sameLine">
-                <h4>Are there relationships between certain variables?<i style="font-size: 18px; vertical-align: middle; margin-left: 10px;" class='glyphicon glyphicon-question-sign mainVizQuestion'></i><button type="button" title="Switch to a network view of subreddits" class="btn btn-default scatterButton" style="margin-left: 14px; vertical-align: middle;"><span style="vertical-align: middle;">Network</span><i style="font-size: 16px; vertical-align: middle; margin-left: 10px; cursor: pointer;" class='glyphicon glyphicon-menu-right barArrow'></i></button></h4><br>
+                <h4>Are there relationships between certain variables?</h4>
             </div>
         </div>
         <div class="chordContainer">
-            <h4 class="chordQuestion"><button type="button" title="Switch to a network view of subreddits" class="btn btn-default chordButton" style="margin-left: 14px; vertical-align: middle;"><i style="font-size: 16px; vertical-align: middle; cursor: pointer;" class='glyphicon glyphicon-menu-left barArrow'></i><span style="vertical-align: middle; margin-left: 5px;">Bar/Scatter</span></button><span style="margin-left: 10px;">How connected is Reddit?</span></select><i style="font-size: 18px; vertical-align: middle; margin-left: 10px" class='glyphicon glyphicon-question-sign chordInfo'></i></h4>
+            <h4 class="chordQuestion">How Connected Are Reddit Communities?</h4>
             <h5 style="margin-bottom: 0px" class="chordTitle">Network of subreddit mentions</h5>
             <div class="redditChord" align="center"></div>
         </div>
     </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <section data-panel="comparePanel">
+    <br><br><br><br><br><br><br>
+    <section data-panel="comparePanel" id="compare">
         <table>
             <tr>
                 <td width="50%" style="vertical-align: top; text-align: center;">
                     <div>
                         <center><h4 style="margin-top: 0px">How do subreddit comments compare across all dimensions?</h4></center>
                         <br>
-                        <div class="smallMultiples"></div>
+                        <div class="smallMultiples" align="right"></div>
                     </div>
                 </td>
                 <td style="text-align: center; vertical-align: top;">
@@ -117,7 +110,6 @@
             </tr>
         </table>
     </section>
-    <br><br><br><br><br><br><br><br><br><br><br><br>
 
     <!-- About popup modal -->
     <div id="aboutModal" class="modal fade" role="dialog">
@@ -165,6 +157,10 @@
       </div>
     </div>
 
+    <div class="leftScroll">
+        <img src="arrow.png" width="30%" height="30%" id="arrow">
+    </div>
+
     <script
         src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
@@ -185,6 +181,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.3.0/bootstrap-slider.min.js"></script>
 
     <script src="http://spin.js.org/spin.min.js"></script>
+
 
     
   </body>
