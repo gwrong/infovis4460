@@ -253,3 +253,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 #arrow {
   transform: rotate(-90deg);
 }
+
+.slider-tick, .slider-handle {
+  cursor: pointer;
+}

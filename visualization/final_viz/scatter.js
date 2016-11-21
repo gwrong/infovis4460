@@ -1291,6 +1291,7 @@ var refreshBarChart = function(data) {
     return +d[yVariable];
   })
   minY *= 0.75
+  minY = 0;
   yScale.domain([minY, maxY]).nice();
 
   xAxis = d3.svg.axis().scale(xScale).orient("bottom");
