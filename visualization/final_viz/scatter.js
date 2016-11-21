@@ -684,7 +684,9 @@ var createCharts = function() {
   
   if (!show_chord) {
     $(".chordContainer").hide();
+    d3.select(".chordToggle").attr("title", "Click to view subreddit network data")
   } else {
+    d3.select(".chordToggle").attr("title", "Click to view an overview of subreddit data")
     create_chord(full_chord_lookup_dataset, full_chord_matrix_dataset, cur_chosen_subreddits);
   }
 
