@@ -1,3 +1,7 @@
+"""
+This file deals with the partitioning of the raw Reddit comments data set
+"""
+
 import json
 import os
 from string import ascii_lowercase
@@ -51,8 +55,6 @@ def write_to_files(comments):
     letter_index = 0
     letter_file = open(os.path.join(OUTPUT_PATH, alphabet[letter_index]), 'a')
     for comment in comments:
-        #print(comment['subreddit'])
-        #print(letter_index)
         if (comment['subreddit'][0].lower() != alphabet[letter_index]):
             while (comment['subreddit'][0].lower() != alphabet[letter_index]):
                 letter_index += 1

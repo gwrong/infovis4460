@@ -254,6 +254,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   transform: rotate(-90deg);
 }
 
+/* Month slider */
 .slider-tick, .slider-handle {
   cursor: pointer;
 }

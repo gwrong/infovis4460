@@ -606,13 +606,13 @@ yDrop.text(function(d) {
 
 // Create word clouds
 var wordcloud1 = d3.select(".wordcloud1")
-    .attr("src", "RC_2016-08/" + cur_subreddit1)
+    .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit1)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
     .attr("width", "10%")
     .attr("height", "50%")
 
 var wordcloud2 = d3.select(".wordcloud2")
-    .attr("src", "RC_2016-08/" + cur_subreddit2)
+    .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit2)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
     .attr("width", "10%")
     .attr("height", "50%")
@@ -739,7 +739,7 @@ var createCharts = function() {
   if (old_cur_subreddit1 != cur_subreddit1) {
     // Put the actual image path. We set our default comparison subreddits
     wordcloud1.style("opacity", 0)
-      .attr("src", "RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
+      .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
       .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
       .transition()
       .duration(2000)
@@ -762,7 +762,7 @@ var createCharts = function() {
   if (old_cur_subreddit2 != cur_subreddit2) {
 
     wordcloud2.style("opacity", 0)
-    .attr("src", "RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
+    .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
     .transition()
     .duration(2000)
@@ -823,33 +823,32 @@ var createCharts = function() {
 // Do some one-time HTML setup for input things
 var initialize_pickers = function() {
 
+  // Set up the arrow which transitions from the bar/scatter plot to the chord diagram
+  d3.select("#arrow").on("click", function (e) {
+      if (!show_chord) {
+          $("#arrow").css("transform", "rotate(90deg)");
+          show_chord = true;
+          $(".mainVizContainer").hide(500);
+          $(".chordContainer").show(500);
+          $(".xPickerHolder, .yPickerHolder").hide(500);
+          $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+          d3.select(this).attr("title", "Click to view an overview of subreddit data")
+          filter_label.hide();
+          refresh();
+      } else {
+          $("#arrow").css("transform", "rotate(-90deg)");
+          show_chord = false;
+          $(".chordContainer").hide(500);
+          $(".mainVizContainer").show(500);
+          $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+          d3.select(this).attr("title", "Click to view subreddit network data")
+          filter_label.show();
+          refresh();
+      }
+  })
+  .attr("title", "Click to view subreddit network data");
 
-    d3.select("#arrow").on("click", function (e) {
-        if (!show_chord) {
-            $("#arrow").css("transform", "rotate(90deg)");
-            show_chord = true;
-            $(".mainVizContainer").hide(500);
-            $(".chordContainer").show(500);
-            $(".xPickerHolder, .yPickerHolder").hide(500);
-            $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
-            d3.select(this).attr("title", "Click to view an overview of subreddit data")
-            filter_label.hide();
-            refresh();
-        } else {
-            $("#arrow").css("transform", "rotate(-90deg)");
-            show_chord = false;
-            $(".chordContainer").hide(500);
-            $(".mainVizContainer").show(500);
-            $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
-            d3.select(this).attr("title", "Click to view subreddit network data")
-            filter_label.show();
-            refresh();
-        }
-    })
-    .attr("title", "Click to view subreddit network data");
-
-
-
+  // Populate the dropdown which lets you select which subreddits to show
   subreddit_toggle = d3.select("#toggleSubreddits").selectAll("option")
     .data(all_subreddits)
     .enter()
@@ -873,6 +872,7 @@ var initialize_pickers = function() {
     refresh()
   });
 
+  // Set up the dropdown to let the user set preset subreddit subsets
   var subredditsubsetpicker = d3.select("#subredditsubset-picker").selectAll("option")
     .data(Object.keys(subreddit_subsets));
 
@@ -898,6 +898,7 @@ var initialize_pickers = function() {
   });
   $('#subredditsubset-picker').selectpicker('refresh');
 
+  // Set up the slider which selects the month of data we are looking at
   var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
     .data(dataset_labels);
 
@@ -918,6 +919,8 @@ var initialize_pickers = function() {
     refresh();
   });
   
+  // Set up the dropdown which selects the subset of comments we are
+  // looking at
   var filterpicker = d3.select("#filter-picker").selectAll("option")
     .data(Object.keys(filter_labels));
 
@@ -945,6 +948,7 @@ var initialize_pickers = function() {
   });
   $('#filter-picker').selectpicker('refresh');
 
+  // Set up the info button next to the comment subset dropdown
   d3.select(".commentSubsetInfo")
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
@@ -956,6 +960,7 @@ var initialize_pickers = function() {
       tooltip.style("opacity", 0);
     })
 
+  // Set up the info hover icon by the chord
   d3.select(".chordInfo")
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
@@ -968,6 +973,7 @@ var initialize_pickers = function() {
       tooltip.style("opacity", 0);
     })
 
+  // Set up the info hover on the man viz
   d3.selectAll(".mainVizQuestion")
     .on("mouseover", function(d) {
       tooltip.style("opacity", 1);
@@ -975,7 +981,6 @@ var initialize_pickers = function() {
       tooltip.html(getToolTipMainVizQuestion(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
-
     })
     .on("mouseout", function(d) {
       tooltip.style("opacity", 0);
@@ -1013,10 +1018,12 @@ var onclick_compare = function(subreddit) {
 }
 
 // http://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
+// Just show 2 decimal places on numbers
 var format_decimal = function(number) {
   return Number(Math.round(number + 'e2') + 'e-2').toFixed(2)
 }
 
+// Abbreviate numbers to use k for 1000s, m for millions
 function abbreviate_thousands(num) {
   if (typeof(num) === 'object') {
     return num['subreddit']
@@ -1028,7 +1035,7 @@ function abbreviate_thousands(num) {
   return num;
 }
 
-// Align table elements on the decimal
+// Align table elements on the decimal to make it prettier
 var align_decimal = function(decimal) {
   decimal = decimal.toString();
   var parts = decimal.split(".")
@@ -1042,7 +1049,7 @@ var align_decimal = function(decimal) {
   return result
 }
 
-// Centralized tooltip function
+// Centralized tooltip function for regular bar/scatter elements
 var getToolTip = function(d) {
   return "<center><b>" + d["subreddit"] +'</b>: ' + numberWithCommas(d["num_comments" + cur_filter]) + ' comments'  + '<hr style="margin-top: 5px; margin-bottom: 5px"><table class="hoverTooltip">'
   + '<tr><td align="middle" width="150px">Average Word Length: </td>' + align_decimal(format_decimal(d["avg_word_length" + cur_filter])) + "</tr>"
@@ -1054,7 +1061,7 @@ var getToolTip = function(d) {
 }
 
 
-// Centralized tooltip function
+// Centralized tooltip function for the comment subset info hover
 var getToolTipCommentsSubset = function(d) {
   return "<p>Here we can filter on special subsets of the comments within each subreddit:<br><br>" + 
   "<b>All Comments</b>: All the comments!<br>" + 
@@ -1068,21 +1075,22 @@ var getToolTipCommentsSubset = function(d) {
   "</p>"
 }
 
-// Centralized tooltip function
+// Centralized tooltip function for images
 var getToolTipImage = function(subreddit) {
-  return '<center><b>Word cloud for ' + subreddit + '</b></center><br><img src="RC_2016-08/' + subreddit + '_wordcloud.png"/>'
+  return '<center><b>Word cloud for ' + subreddit + '</b></center><br><img src="word_clouds/RC_2016-08/' + subreddit + '_wordcloud.png"/>'
 }
 
-// Centralized tooltip function
+// Centralized tooltip function for chord info hover
 var getToolTipChord = function(d) {
   return "<b>Tip</b>: Hover over a subreddit arc to view its network of subreddit mentions. Press the <b>esc</b> key to unfade all chords."
 }
 
+// Info tooltip for main viz
 var getToolTipMainVizQuestion = function(d) {
   return "<p><b>Tip</b>: Choose the x and y variables that interest you. Hover over the data for more details. Left click one subreddit and ctrl/cmd + left click another subreddit to compare them further down the page.</p>"
 }
 
-// Highlight the chosen subreddit
+// Highlight the chosen subreddit in the graphs (bar/scatter)
 var highlight = function(selector, theClass, subreddit) {
   var chosen_subreddit = subreddit;
   selector.selectAll(theClass)
@@ -1160,11 +1168,11 @@ var flash_subreddit_change = function() {
     .style("left", (1300 / 2) + "px")
     .style("top", (700 / 2) + "px")
   setTimeout(function() {
-      flash_count = flash_count - 1;
-      if (flash_count == 0) {
-        tooltip2.transition().duration(1000).style("opacity", 0);
-      }
-    }, 1500)
+    flash_count = flash_count - 1;
+    if (flash_count == 0) {
+      tooltip2.transition().duration(1000).style("opacity", 0);
+    }
+  }, 1500)
 }
 
 // Wraps text to multiple lines
@@ -1201,6 +1209,7 @@ var scatter_padding = 140;
 var bar_padding = 65;
 var yAxisPadding = 150;
 
+// Initialize the bar/scatter svg elements
 var barchart = d3.select(".barchart")
   .append("svg")
   .style("width", width_batter + bar_padding + "px")
@@ -1213,13 +1222,11 @@ var scatterplot = d3.select(".scatterplot")
   .style("height", height_batter + margin_batter.bottom + "px")
   .append("g")
 
-
 var hasBatterLegend = false;
 var barChartInit = false;
 
 var xScale, xAxis, yScale, yAxis;
 var refreshBarChart = function(data) {
-
   // Hide the scatterplot
   d3.select(".scatterplot")
     .style("display", "none")
@@ -1227,6 +1234,7 @@ var refreshBarChart = function(data) {
     .style("display", "inline")
   scatterPlotInit = false;
 
+  // Do some initialization if we haven't
   if (!barChartInit) {
     barChartInit = true;
     xScale = d3.scale.ordinal().rangeRoundBands([yAxisPadding, width_batter], 0.15);
@@ -1290,7 +1298,6 @@ var refreshBarChart = function(data) {
   var maxY = d3.max(data, function(d) {
     return +d[yVariable];
   })
-  minY *= 0.75
   minY = 0;
   yScale.domain([minY, maxY]).nice();
 
@@ -1306,7 +1313,6 @@ var refreshBarChart = function(data) {
 
   var popupToggled = false;
 
-  //basePlot.selectAll('.legend').remove()
   barDataSelection.exit().remove();
 
   barDataSelection.enter().append("rect")
@@ -1365,7 +1371,6 @@ var refreshBarChart = function(data) {
       }
     });
 
-
   // Set up the axes and labels
   barchart.selectAll("g.x.axis")
     .transition()
@@ -1405,6 +1410,7 @@ var refreshBarChart = function(data) {
       }
     });
 
+  // Abbreviate the axis labels so they are prettier
   barchart.selectAll(".y.axis .tick text")
       .text(function(d) {
         return abbreviate_thousands(d);
@@ -1412,12 +1418,14 @@ var refreshBarChart = function(data) {
 
   barchart.selectAll(".yVariable")
     .text(inverseAxisOptions[yVariableBase])
-    .call(wrap, 100)
-
-  //makeBatterLegend(data, barchart, '.rect')
+    .call(wrap, 100) // Wrap the y axis labels if too long
 }
 
+// Makes the scatterplot legend
+// Used to also make the bar chart legend, but we removed that
 var makeBatterLegend = function(data, selector, element) {
+
+  // Enter/update/exit with legend gets really finicky
   selector.selectAll(".legend")
     .remove();
   
@@ -1501,6 +1509,7 @@ var scatterPlotInit = false;
 
 var scatterPlot = function(data) {
 
+  // Do the initial scatter plot stuff
   if (!scatterPlotInit) {
     scatterPlotInit = true;
     xScale = d3.scale.linear().range([yAxisPadding, width_batter - 20])
@@ -1550,7 +1559,7 @@ var scatterPlot = function(data) {
       .text(inverseAxisOptions[yVariableBase] + " vs " + inverseAxisOptions[xVariableBase]);
   }
 
-  // Hide the scatterplot
+  // Hide the bar chart
   d3.select(".barchart")
     .style("display", "none")
   d3.select(".scatterplot")
@@ -1558,6 +1567,7 @@ var scatterPlot = function(data) {
   barChartInit = false;
 
   // Now create the scales for the scatterplot
+  // Don't have min at 0, otherwise the dots get too cluttered
   var minX = d3.min(data, function(d) {
     return +d[xVariable];
   })
@@ -1682,6 +1692,7 @@ var scatterPlot = function(data) {
   makeBatterLegend(data, scatterplot, '.dot')
 }
 
+// Access the count of comments, dynamically based on the current comment subset
 var count_accessor = function(d) {
     return d['count' + cur_filter]
 }
@@ -1698,14 +1709,19 @@ var heat_map_colors_lookup = {}
 var heat_svg1 = null;
 var heat_svg2 = null;
 
+// 0 -> Monday
 function dayOfWeekAsString(dayIndex) {
   return ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][dayIndex];
 }
 
+// 1000000 -> 1,000,000
+// http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+// Modified from http://bl.ocks.org/tjdecke/5558084
+// Produces heat maps of time distribution of comments
 var createHeatMap = function(id_selector) {
   var heat_svg = d3.select(id_selector).append("svg")
       .attr("width", width_heat + margin_heat.left + margin_heat.right)
@@ -1724,8 +1740,6 @@ var createHeatMap = function(id_selector) {
         .attr("class", function (d, i) {
           return "dayLabel mono axis";
         });
-        //.attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"); });
-
   var timeLabels = heat_svg.selectAll(".timeLabel")
       .data(times)
       .enter().append("text")
@@ -1741,7 +1755,6 @@ var createHeatMap = function(id_selector) {
         .attr("class", function(d, i) {
           return "timeLabel mono axis";
         });
-        //.attr("class", function(d, i) { return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis"); });
 
   if (id_selector === '#heatmap1') {
     heat_svg1 = heat_svg;
@@ -1751,7 +1764,7 @@ var createHeatMap = function(id_selector) {
 }
 
 
-// Create a custom gradient from the subreddit color
+// Create a custom gradient on the heat map from the subreddit color
 var create_color_scale = function(rgb) {
   var orig_red = rgb.r >= 255 ? 255 : rgb.r;
   var orig_green = rgb.g >= 255 ? 255 : rgb.g;
@@ -1809,6 +1822,7 @@ var refreshHeatMap = function(id_selector) {
       return d['subreddit'] == cur_subreddit;
     })
 
+    // We keep track of the color scales for each subreddit, if we don't have it then go make it
     if (!(cur_subreddit in heat_map_colors_lookup)) {
       heat_map_colors_lookup[cur_subreddit] = create_color_scale(d3.rgb(color(cValue(cur_subreddit))))
     }
@@ -1816,6 +1830,7 @@ var refreshHeatMap = function(id_selector) {
     heat_svg.selectAll(".scale").remove();
     heat_svg.selectAll(".cur_subreddit").remove();
     heat_svg.selectAll(".heatTitle").remove();
+
     /*
     heat_svg.append("text")
       .text("Number of comments gradient thresholds")
@@ -1834,6 +1849,7 @@ var refreshHeatMap = function(id_selector) {
       .attr("fill", "white")
       .text("Time distribution of comments for " + cur_subreddit);
 
+    // Set up the color gradient for the heat map
     var colorScale = d3.scale.quantile()
         .domain([0, d3.max(cur_subreddit_data, function (d) {
           return count_accessor(d);
@@ -1874,6 +1890,7 @@ var refreshHeatMap = function(id_selector) {
           return tooltip.style("opacity", 0);
         });
 
+    // Animate the colors of the heat map squares as they come in
     cards.style("fill", function(d) {
           return "white"
         })
@@ -1942,6 +1959,7 @@ var smallMultiplesInit = 0;
 
 var refreshSmallMultiples = function(data, yMultiples) {
   var multiplesData = data;
+  // Have the first subreddit be on the left at all times
   if (multiplesData[0].subreddit !== cur_subreddit1) {
     multiplesData.reverse();
   }
@@ -1952,6 +1970,9 @@ var refreshSmallMultiples = function(data, yMultiples) {
   var yScale = d3.scale.linear().range([height_multiples, margin_multiples.top])
   var yAxis = d3.svg.axis().scale(yScale).orient("left");
 
+  // Go through and initialize each small multiples - use counter to know
+  // which one we are at. The variable name is on the class name to know
+  // which one we modify
   if (smallMultiplesInit < 7) {
     smallMultiplesInit += 1;
     var multiplesPlot = d3.select(".smallMultiples")
@@ -2068,6 +2089,8 @@ var refreshSmallMultiples = function(data, yMultiples) {
   .style("font-size", "9px");
 }
 
+// Have a small legend at the end which shows the 2 subreddits by color
+// They got too small to have a horizontal subreddit label
 var refreshSmallMultiplesLegend = function(data) {
 
   var multiplesData = data;

@@ -1,10 +1,19 @@
+/*
+Just chord specific stuff 
+Adapted from https://bost.ocks.org/mike/uberdata/
+*/
+
 var chord;
 
 var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
   // enter-update-exit is nearly impossible for the chord
+  // http://stackoverflow.com/questions/21813723/change-and-transition-dataset-in-chord-diagram-with-d3
   d3.selectAll(".redditChord").remove()
   
+  // Filter the chord subreddit overview data to get only data concerning
+  // the currently selected subreddit subset
+  // This just deals with the subreddit name in a list
   var indices = []
   var new_subreddit_lookup = []
   var new_matrix = []
@@ -16,6 +25,8 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     }
   }
 
+  // We have to now get the 2d array of mentions for only
+  // the selected subreddits above
   var cur_index = -1;
   for (var i = 0; i < matrix.length; i++) {
     if (indices.indexOf(i) < 0) {
@@ -37,6 +48,9 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
   matrix = new_matrix;
   subreddit_lookup = new_subreddit_lookup;
 
+  // Now we need to total the overall mentions and overall mentions
+  // by subreddit in order to calculate percentages of mentions
+  // between/among subreddits
   var overall_mentions = 0;
   var dest_mention_totals = []
   for (var i = 0; i < matrix.length; i++) {
@@ -51,6 +65,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     }
   }
 
+  // Subreddit subsets such as university subreddits don't have any references between them
   if (overall_mentions == 0) {
     d3.select(".chordContainer").append("div")
       .attr("class", "redditChord")
@@ -78,7 +93,6 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
   var path = d3.svg.chord()
       .radius(innerRadius);
 
-  // Change this to enter-update-exit
   d3.select(".chordContainer").append("div")
     .attr("class", "redditChord")
 
@@ -94,19 +108,17 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
   // Compute the chord layout.
   layout.matrix(matrix);
 
-  // Add a group per neighborhood.
   var group = svg.selectAll(".group")
     .data(layout.groups)
     .enter().append("g")
       .attr("class", "group")
       .on("mouseover", mouseover);
 
-  // Add a mouseover title.
+  // Add a mouseover title on the arcs
   group.append("title").text(function(d, i) {
     return subreddit_lookup[i].subreddit + ": " + d.value + " mention origins (" + formatPercent(d.value / overall_mentions) + " of all mention origins)";
   });
 
-  // Add the group arc.
   var groupPath = group.append("path")
     .style("fill", function(d) {
       return "hsl(" + Math.random() * 360 + ",100%,50%)"
@@ -120,6 +132,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
       return color(cValue(subreddit_lookup[i].subreddit));
     });
 
+  // Spiral the subreddits around the chord
   group.append("text")
     .attr("transform", function(d,i) {
         return "rotate(0)";
@@ -148,7 +161,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
       return subreddit_lookup[i].subreddit;
     });
 
-  // Add the chords.
+  // Add the chords between arcs
   chord = svg.selectAll(".chord")
       .data(layout.chords)
 
@@ -167,7 +180,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
       .style("opacity", 1)
       .attr("d", path)
 
-  // Mouseover
+  // Mouseover to show stats on mentions
   chord.append("title").text(function(d) {
     return subreddit_lookup[d.source.index].subreddit
         + " → " + subreddit_lookup[d.target.index].subreddit
@@ -177,6 +190,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
         + ": " + d.target.value + " mentions (" + formatPercent(d.target.value / dest_mention_totals[d.source.index]) + " of destination mentions)";
   });
 
+  // Show/hide certain chords on mouseover
   function mouseover(d, i) {
     chord.transition()
       .delay(function(p, j) {
@@ -192,6 +206,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     });
   }
 
+  // Show chords again
   function remove_fade() {
     chord.transition()
       .delay(function(p, j) {
@@ -211,5 +226,3 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     }
   });
 }
-
-//create_chord();

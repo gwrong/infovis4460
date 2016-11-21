@@ -1,3 +1,7 @@
+"""
+This file contains the logic to actually analyze the comments in the Reddit comments data set
+"""
+
 import ast
 import datetime
 from dateutil import tz
@@ -21,6 +25,7 @@ MONTH_FILE = 'RC_2016-01'
 LOOKUP_PATH = 'lookup_data'
 RESULTS_PATH = 'results'
 
+# Comment subset cutoffs
 TOP_POS_CUTOFF = 25
 TOP_NEG_CUTOFF = 15
 TOP_GODWIN_CUTOFF = 0
@@ -32,6 +37,7 @@ negative_emotion_words = set()
 godwins_law_words = set()
 swear_words = set()
 
+# Try to get the scores to be similarly distributed score-wise
 POSITIVE_MULTIPLIER = 1000
 NEGATIVE_MULTIPLIER = 1000
 GODWIN_MULTIPLIER = 1000000
@@ -521,8 +527,6 @@ def process_comments(month_file):
     format_adj_matrix(mention_adjacency_matrix, LOOKUP_PATH, month_file)
 
 
-        
-
 """
 Takes the final output per subreddit and writes the
 data to the given file handle
@@ -967,7 +971,8 @@ def word_clouds(month_file):
         print('Saved word cloud to {}'.format(file_path))
 
 """
-Create word clouds for the list of subreddits
+Create percentiles for comment scores and author comment counts
+This is used for the top/bottom comment/author comment subsets
 """
 def comment_author_percentiles(month_file):
 
@@ -1090,6 +1095,10 @@ def sort_sentiment_dicts():
         file = open(file_name, 'w')
         file.write(repr(words))
 
+'''
+Simply combine the produced month files into a single file
+Same for the time data
+'''
 def combine_files():
     path = './visualization/final_viz/core_files'
     core_files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and 'RC' in f]
@@ -1144,8 +1153,6 @@ if __name__ == "__main__":
     t0 = time()
     #create_subreddit_lookup();
     #combine_files();
-
-    print(json.load(open("lookup_data/mention_adj_matrix_RC_2016-09.json")))
 
     '''
     for month_file in MONTH_FILES:
