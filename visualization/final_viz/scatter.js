@@ -927,7 +927,7 @@ var initialize_pickers = function() {
     .attr("value", function(d) {
       return "" + d;
     })
-    .attr("title", "Comment Filters")
+    //.attr("title", "Comment Filters")
     .html(function(d) {
       return "" + d;
     });
