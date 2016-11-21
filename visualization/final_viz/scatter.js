@@ -30,7 +30,7 @@ $(window).on('beforeunload', function() {
 });
 
 // Creates loading spinner
-$( document ).ready(function() {
+$(document).ready(function() {
   var target = document.getElementById('spinner')
   var spinner = new Spinner(opts).spin(target);
 });
@@ -77,7 +77,7 @@ jQuery(function($) {
       wrapAround: false
     }
   };
-
+  // Initialize the panel snapping
   $('body').panelSnap(options);
 });
 
@@ -85,17 +85,14 @@ jQuery(function($) {
 // doesn't update
 $("#toggle").prop("checked", true).css({"background": "#dd6149;"});
 
+// Keep these selections so we can reuse them throughout the code
 var nav_bar = d3.select(".navbar-fixed-top");
 var body = d3.select("body");
 
-
-
-// Toggle the static nav bar
+// Toggle the static nav bar through the Show Menu button
 d3.select("#toggle").on("click", function(d) {
   var checked = $('#toggle')[0].checked;
   if (!checked) {
-    //d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
-    //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
     $('.navbar-fixed-top').slideUp(500);
     $(".aboutButton").hide(500)
     body.style("padding-top", "50px")
@@ -143,6 +140,7 @@ var full_chord_matrix_dataset = null;
 
 var show_chord = false;
 
+// This is where we lookup the subreddit presets
 var subreddit_subsets = {
   "Top 25 by Comments": [
     'relationships',
@@ -343,8 +341,8 @@ all_subreddits.sort(function (a, b) {
   return a.toLowerCase().localeCompare(b.toLowerCase());
 })
 
-//We have to hack the bootstrap select picker
-//Need to lookup the index of the subreddit later on
+// We have to hack the bootstrap select picker
+// Need to lookup the index of the subreddit later on
 all_subreddits_lookup = {}
 for (var i = 0; i < all_subreddits.length; i++) {
   all_subreddits_lookup[i] = all_subreddits[i];
@@ -426,13 +424,14 @@ var filters = [
 ]
 var subreddits = [];
 
-// Circle size will vary on the scatterplot
+// Controls the circle size of the scatterplot
 var circleSize = function(d) {
   return 7;
   //return Math.log(d['num_comments'] / 100) * 0.8;
 }
 
 // Assign a color to every subreddit
+// You can pass in the subreddit name or the object
 var color = d3.scale.category20();
 var cValue = function(d) {
   if (typeof(d) === 'object') {
@@ -452,6 +451,7 @@ var tooltip2 = body.append("div")
     .attr("class", "tooltip2")
     .style("opacity", 0);
 
+// Provide labels for the data base variables
 var axisOptions = {
   'Subreddit': 'subreddit',
   'Avg. Word Length': 'avg_word_length',
@@ -475,7 +475,8 @@ var inverseAxisOptions = {
 }
 
 
-// Do our CTRL handling for when we want to compare a second subreddit
+// Do our CTRL handling for when we want to compare a second subreddit (ctrl+left click)
+// CTRL+q toggles the menu (this could be phased out)
 var cntrlIsPressed = false;
 var qIsPressed = false;
 var navBarHidden = false;
@@ -489,8 +490,6 @@ $(document).keydown(function(event) {
     if (cntrlIsPressed && qIsPressed && !navBarToggled) {
       navBarToggled = true;
       if (!navBarHidden) {
-        //d3.select(".navbar-fixed-top").transition().duration(1000).style("opacity", 0)
-        //d3.select(".navbar-fixed-top").transition().duration(1000).style("height", 0)
         $('.navbar-fixed-top').slideUp();
        body.style("padding-top", "25px")
         options.offset = 0;
@@ -501,11 +500,10 @@ $(document).keydown(function(event) {
         body.style("padding-top", "220px")
         navBarHidden = false;
       }
-      
     }
 });
 
-
+// Track if we press a key of interest
 $(document).keyup(function(event) {
   if (event.which == "17") {
     cntrlIsPressed = false;
@@ -547,6 +545,7 @@ var axisChange = function(picker, options, axis) {
     }
 }
 
+// Keep the selection for reuse
 var filter_label = $(".filterLabel")
 
 // Add the select list for department filtering
@@ -575,6 +574,7 @@ var yDrop = yPicker.selectAll("option")
     .append("option")
     .attr("title", "Y Variable");
 
+// Respond to changes in x and y variables
 xPicker.on("change", function() {
     axisChange(xPicker, xDrop, 'x')
   })
@@ -657,6 +657,7 @@ d3.csv(core_file_path, function(error, core_dataset) {
   })
 });
 
+// Load the chord data into memory once
 var load_chord_matrix_data = function(callback) {
   chord_file = chord_files[cur_month_label];
   d3.json("chord_files/" + chord_file, function(matrix) {
@@ -684,9 +685,7 @@ var createCharts = function() {
   
   if (!show_chord) {
     $(".chordContainer").hide();
-    d3.select(".chordToggle").attr("title", "Click to view subreddit network data")
   } else {
-    d3.select(".chordToggle").attr("title", "Click to view an overview of subreddit data")
     create_chord(full_chord_lookup_dataset, full_chord_matrix_dataset, cur_chosen_subreddits);
   }
 
@@ -695,6 +694,7 @@ var createCharts = function() {
     return cur_chosen_subreddits.indexOf(d['subreddit']) > -1;
   })
 
+  // Grab the curret month's time data
   time_dataset = full_time_dataset.filter(function(d) {
     return +d['month'] == month_label_to_number(cur_month_label);
   });
@@ -821,10 +821,10 @@ var createCharts = function() {
 
 
 // Do some one-time HTML setup for input things
-
 var initialize_pickers = function() {
 
-    d3.selectAll("#arrow").on("click", function (e) {
+
+    d3.select("#arrow").on("click", function (e) {
         if (!show_chord) {
             $("#arrow").css("transform", "rotate(90deg)");
             show_chord = true;
@@ -832,6 +832,7 @@ var initialize_pickers = function() {
             $(".chordContainer").show(500);
             $(".xPickerHolder, .yPickerHolder").hide(500);
             $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+            d3.select(this).attr("title", "Click to view an overview of subreddit data")
             filter_label.hide();
             refresh();
         } else {
@@ -840,10 +841,12 @@ var initialize_pickers = function() {
             $(".chordContainer").hide(500);
             $(".mainVizContainer").show(500);
             $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+            d3.select(this).attr("title", "Click to view subreddit network data")
             filter_label.show();
             refresh();
         }
-    });
+    })
+    .attr("title", "Click to view subreddit network data");
 
 
 
