@@ -748,7 +748,7 @@ var createCharts = function() {
     wordcloud1.on("mouseover", function() {
       tooltip.style("opacity", 1);
       tooltip.html(getToolTipImage(cur_subreddit1))
-        .style("left", d3.event.pageX - 900 + "px")
+        .style("left", d3.event.pageX - 840 + "px")
         .style("top", d3.event.pageY - 500 + "px")
       })
       .on("mouseout", function() {
@@ -771,7 +771,7 @@ var createCharts = function() {
     wordcloud2.on("mouseover", function() {
       tooltip.style("opacity", 1);
       tooltip.html(getToolTipImage(cur_subreddit2))
-        .style("left", d3.event.pageX - 900 + "px")
+        .style("left", d3.event.pageX - 840 + "px")
         .style("top", d3.event.pageY - 500 + "px")
     })
     .on("mouseout", function() {
