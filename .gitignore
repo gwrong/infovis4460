@@ -24,5 +24,6 @@ data/RC_2016-07/by_subreddit
 
 data/RC_2016-09/RC_2016-09.bz2
 data/RC_2016-09/by_subreddit
-wordclouds/*
+visualization/final_viz/word_clouds/*
+!visualization/final_viz/word_clouds/September 2016
 *.pyc

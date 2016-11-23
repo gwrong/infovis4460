@@ -119,6 +119,8 @@ var sort_by = null;
 var cur_chosen_subreddits = null;
 var initialized_pickers = false;
 
+var month_changed = false;
+
 // Set up some variable defaults
 var subsetSuffix = ''
 var xVariableLabel = 'Subreddit'
@@ -275,7 +277,7 @@ var subreddit_subsets = {
     'HistoryPorn',
     'badhistory',
   ],
-
+  /*
   "NSFW": [
     'gonewild',
     'nsfw',
@@ -303,6 +305,7 @@ var subreddit_subsets = {
     'WatchItForThePlot',
     'dirtysmall',
   ],
+  */
 
   "Miscellaneous": [
     'meirl',
@@ -606,13 +609,13 @@ yDrop.text(function(d) {
 
 // Create word clouds
 var wordcloud1 = d3.select(".wordcloud1")
-    .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit1)
+    .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit1)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
     .attr("width", "10%")
     .attr("height", "50%")
 
 var wordcloud2 = d3.select(".wordcloud2")
-    .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit2)
+    .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit2)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
     .attr("width", "10%")
     .attr("height", "50%")
@@ -736,10 +739,10 @@ var createCharts = function() {
     })
   }
 
-  if (old_cur_subreddit1 != cur_subreddit1) {
+  if (old_cur_subreddit1 != cur_subreddit1 || month_changed) {
     // Put the actual image path. We set our default comparison subreddits
     wordcloud1.style("opacity", 0)
-      .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit1 + "_wordcloud.png")
+      .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit1 + "_wordcloud.png")
       .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
       .transition()
       .duration(2000)
@@ -759,10 +762,10 @@ var createCharts = function() {
       .html("Word cloud for " + cur_subreddit1)
     old_cur_subreddit1 = cur_subreddit1
   }
-  if (old_cur_subreddit2 != cur_subreddit2) {
+  if (old_cur_subreddit2 != cur_subreddit2 || month_changed) {
 
     wordcloud2.style("opacity", 0)
-    .attr("src", "word_clouds/RC_2016-08/" + cur_subreddit2 + "_wordcloud.png")
+    .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit2 + "_wordcloud.png")
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
     .transition()
     .duration(2000)
@@ -782,6 +785,7 @@ var createCharts = function() {
       .html("Word cloud for " + cur_subreddit2)
     old_cur_subreddit2 = cur_subreddit2;
   }
+  month_changed = false;
   
   if (cur_filter == null) {
     cur_filter_label = 'All Comments';
@@ -898,24 +902,10 @@ var initialize_pickers = function() {
   });
   $('#subredditsubset-picker').selectpicker('refresh');
 
-  // Set up the slider which selects the month of data we are looking at
-  var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
-    .data(dataset_labels);
-
-  // Add buttons for each month data set
-  datasetpicker.enter()
-    .append("input")
-    .attr("value", function(d){ return "" + d })
-    .attr("type", "button")
-    .attr("class", "dataset-button btn btn-primary")
-    .on("click", function(month) {
-      cur_month_label = month;
-      refresh();
-    });
-
   $("#month-slider").on("change", function(slideEvt) {
     var month = month_lookup[slideEvt.value.newValue];
     cur_month_label = month;
+    month_changed = true;
     refresh();
   });
   
@@ -1077,7 +1067,7 @@ var getToolTipCommentsSubset = function(d) {
 
 // Centralized tooltip function for images
 var getToolTipImage = function(subreddit) {
-  return '<center><b>Word cloud for ' + subreddit + '</b></center><br><img src="word_clouds/RC_2016-08/' + subreddit + '_wordcloud.png"/>'
+  return '<center><b>Word cloud for ' + subreddit + '</b></center><br><img src="word_clouds/' + cur_month_label + '/' + subreddit + '_wordcloud.png"/>'
 }
 
 // Centralized tooltip function for chord info hover
@@ -1167,6 +1157,7 @@ var flash_subreddit_change = function() {
   tooltip2.html('<table style="width: 250px"><tr><td rowspan="2"><i style="font-size: 22px" class="glyphicon glyphicon-arrow-down"></i></td><td style="text-align: center;">Updated compare subreddits to:</td></tr><tr><td style="text-align: center;"><b>' + cur_subreddit1 + '</b> vs <b>' + cur_subreddit2 + '</b></td></tr></table>')
     .style("left", (1300 / 2) + "px")
     .style("top", (700 / 2) + "px")
+    .style("position", "fixed")
   setTimeout(function() {
     flash_count = flash_count - 1;
     if (flash_count == 0) {
@@ -1428,6 +1419,11 @@ var makeBatterLegend = function(data, selector, element) {
   // Enter/update/exit with legend gets really finicky
   selector.selectAll(".legend")
     .remove();
+
+  // Have scatterplot in alphabetical order
+  data.sort(function (a, b) {
+    return a['subreddit'].toLowerCase().localeCompare(b['subreddit'].toLowerCase());
+  });
   
   var legendSelection = selector.selectAll(".legend")
     .data(data)

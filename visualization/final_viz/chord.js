@@ -123,6 +123,9 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     .style("fill", function(d) {
       return "hsl(" + Math.random() * 360 + ",100%,50%)"
     })
+    .on("click", function(d, i) {
+      onclick_compare(subreddit_lookup[i].subreddit)
+    })
     .transition().duration(2500)
     .attr("id", function(d, i) {
       return "group" + i;
@@ -130,6 +133,23 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     .attr("d", arc)
     .style("fill", function(d, i) {
       return color(cValue(subreddit_lookup[i].subreddit));
+    })
+    .style("stroke", function(d, i) {
+      console.log(d)
+      chosen = subreddit_lookup[i].subreddit;
+      if (chosen == cur_subreddit1 || chosen == cur_subreddit2) {
+        return "white"
+      } else {
+        return color(cValue(d));
+      }
+    })
+    .style("stroke-width", function(d, i) {
+      chosen = subreddit_lookup[i].subreddit;
+      if (chosen == cur_subreddit1 || chosen == cur_subreddit2) {
+        return 1;
+      } else {
+        return 0;
+      }
     });
 
   // Spiral the subreddits around the chord
@@ -138,6 +158,9 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
         return "rotate(0)";
     })
     .attr("fill", "white")
+    .on("click", function(d, i) {
+      onclick_compare(subreddit_lookup[i].subreddit)
+    })
     .transition().duration(2500)
     .each(function(d) {
       d.angle = ((d.startAngle + d.endAngle) / 2);
@@ -150,7 +173,14 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     .attr("text-anchor", function(d) {
       return d.angle > Math.PI ? "end" : null;
     })
-    .attr("fill", "white")
+    .style("fill", function(d, i) {
+      chosen = subreddit_lookup[i].subreddit;
+      if (chosen == cur_subreddit1 || chosen == cur_subreddit2) {
+        return "gold"
+      } else {
+        return "white";
+      }
+    })
     .attr("transform", function(d,i) {
         var c = arc.centroid(d + 10);
         return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
