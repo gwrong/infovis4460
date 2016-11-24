@@ -258,3 +258,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 .slider-tick, .slider-handle {
   cursor: pointer;
 }
+
+.slider-tick-label {
+  font-size: 11px;
+}
