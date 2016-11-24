@@ -361,6 +361,7 @@ var dataset_labels = [
   "July 2016",
   "August 2016",
   "September 2016",
+  "October 2016"
 ]
 
 var chord_files = {
@@ -373,6 +374,7 @@ var chord_files = {
   "July 2016": "mention_adj_matrix_d3_RC_2016-07.json",
   "August 2016": "mention_adj_matrix_d3_RC_2016-08.json",
   "September 2016": "mention_adj_matrix_d3_RC_2016-09.json",
+  "October 2016": "mention_adj_matrix_d3_RC_2016-10.json",
 }
 
 var month_label_to_number = function(label) {
@@ -394,7 +396,9 @@ var month_label_to_number = function(label) {
     return 8;
   } else if (label === "September 2016") {
     return 9;
-  } 
+  } else if (label === "October 2016") {
+    return 10;
+  }
 }
 
 // For the month slider, it is indexed by integers, so here's a lookup

@@ -6,7 +6,7 @@ import json
 import os
 from string import ascii_lowercase
 
-DATA_FILE_NAME = 'RC_2016-09'
+DATA_FILE_NAME = 'RC_2016-10'
 DATA_FILE_PATH = os.path.join('data', DATA_FILE_NAME)
 OUTPUT_PATH = os.path.join(DATA_FILE_PATH, 'by_subreddit')
 
@@ -55,6 +55,9 @@ def write_to_files(comments):
     letter_index = 0
     letter_file = open(os.path.join(OUTPUT_PATH, alphabet[letter_index]), 'a')
     for comment in comments:
+        # For some reason there is a subreddit _en_nvr
+        if (comment['subreddit'][0] == '_'):
+            continue;
         if (comment['subreddit'][0].lower() != alphabet[letter_index]):
             while (comment['subreddit'][0].lower() != alphabet[letter_index]):
                 letter_index += 1
