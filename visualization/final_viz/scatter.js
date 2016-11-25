@@ -1,5 +1,5 @@
 // Spinner to show while loading data
-// From http://spin.js.org/
+// Options copied from http://spin.js.org/
 var opts = {
   lines: 13 // The number of lines to draw
 , length: 28 // The length of each line
@@ -36,7 +36,8 @@ $(document).ready(function() {
 });
 
 // Initialize scroll snapping
-// https://github.com/guidobouman/jquery-panelsnap
+// Outline of options copied from https://github.com/guidobouman/jquery-panelsnap
+// We modified many of the options ourselves
 var options;
 jQuery(function($) {
   options = {
@@ -51,8 +52,8 @@ jQuery(function($) {
       var activatedPanel = $target[0].attributes[0].nodeValue;
       if (activatedPanel == 'mainVizPanel') {
         if (show_chord) {
-          $(".xPickerHolder, .yPickerHolder").hide(500);
-          $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+          $(".xPickerHolder, .yPickerHolder .filterHolder").hide(500);
+          $(".toggleSubredditsHolder, .subredditSubsetHolder").show(500);
         } else {
           $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
         }
@@ -278,6 +279,9 @@ var subreddit_subsets = {
     'badhistory',
   ],
   /*
+  // NSFW subreddits are a core part of Reddit. We figure in order to not
+  // surprise the professor/TAs/students, we should keep this excluded
+  // for the project itself.
   "NSFW": [
     'gonewild',
     'nsfw',
@@ -377,6 +381,7 @@ var chord_files = {
   "October 2016": "mention_adj_matrix_d3_RC_2016-10.json",
 }
 
+// Our time data uses indices for months
 var month_label_to_number = function(label) {
   if (label === "January 2016") {
     return 1;
@@ -523,6 +528,7 @@ $(document).keyup(function(event) {
 
 // Shorten long subreddit names if needed
 // Useful in small multiples x axis labels
+// however we stopped using this
 var abbreviateSubreddit = function(subreddit) {
   if (subreddit.length > 9) {
     return subreddit.substring(0, 8) + "...";
@@ -611,7 +617,7 @@ yDrop.text(function(d) {
   return d === yVariableLabel;
 })
 
-// Create word clouds
+// Initialize word clouds
 var wordcloud1 = d3.select(".wordcloud1")
     .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit1)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
@@ -655,7 +661,7 @@ d3.csv(core_file_path, function(error, core_dataset) {
       full_chord_lookup_dataset = subreddit_lookup;
       load_chord_matrix_data(function() {
         refresh();
-        // Kills the loading spinner
+        // Kills the loading spinner since we are done loading stuff
         var target = document.getElementById('spinner');
         target.remove();
       });
@@ -701,7 +707,7 @@ var createCharts = function() {
     return cur_chosen_subreddits.indexOf(d['subreddit']) > -1;
   })
 
-  // Grab the curret month's time data
+  // Grab the current month's time data
   time_dataset = full_time_dataset.filter(function(d) {
     return +d['month'] == month_label_to_number(cur_month_label);
   });
@@ -743,6 +749,7 @@ var createCharts = function() {
     })
   }
 
+  // We will selectively update the word clouds when appropriate
   if (old_cur_subreddit1 != cur_subreddit1 || month_changed) {
     // Put the actual image path. We set our default comparison subreddits
     wordcloud1.style("opacity", 0)
@@ -838,8 +845,8 @@ var initialize_pickers = function() {
           show_chord = true;
           $(".mainVizContainer").hide(500);
           $(".chordContainer").show(500);
-          $(".xPickerHolder, .yPickerHolder").hide(500);
-          $(".filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+          $(".xPickerHolder, .yPickerHolder, .filterHolder").hide(500);
+          $(".toggleSubredditsHolder, .subredditSubsetHolder").show(500);
           d3.select(this).attr("title", "Click to view an overview of subreddit data")
           filter_label.hide();
           refresh();
@@ -848,7 +855,7 @@ var initialize_pickers = function() {
           show_chord = false;
           $(".chordContainer").hide(500);
           $(".mainVizContainer").show(500);
-          $(".xPickerHolder, .yPickerHolder, .filterHolder, .toggleSubredditsHolder, .subredditSubsetHolder").show(500);
+          $(".xPickerHolder, .yPickerHolder, .toggleSubredditsHolder, .subredditSubsetHolder, .filterHolder").show(500);
           d3.select(this).attr("title", "Click to view subreddit network data")
           filter_label.show();
           refresh();
@@ -1011,7 +1018,7 @@ var onclick_compare = function(subreddit) {
   refresh();
 }
 
-// http://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
+// Copied from http://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
 // Just show 2 decimal places on numbers
 var format_decimal = function(number) {
   return Number(Math.round(number + 'e2') + 'e-2').toFixed(2)
@@ -1171,7 +1178,7 @@ var flash_subreddit_change = function() {
 }
 
 // Wraps text to multiple lines
-//Taken from https://bl.ocks.org/mbostock/7555321
+// Taken from https://bl.ocks.org/mbostock/7555321
 function wrap(text, width) {
   text.each(function() {
     var text = d3.select(this),
@@ -1270,6 +1277,7 @@ var refreshBarChart = function(data) {
       .style("text-anchor", "end")
       .text("Subreddit");
 
+    // Set the bar chart title
     if (barchart.selectAll(".barTitle").size() < 1) {
       barchart.append("text")
       .attr("x", width_batter / 2 + 100)             
@@ -1438,6 +1446,7 @@ var makeBatterLegend = function(data, selector, element) {
       return "translate(" + (scatter_padding - 0) + "," + i * 13 + ")";
     })
 
+  // Little rectangles on the legend for each subreddit
   legendSelection.append("rect")
       .attr("x", width_batter - 20)
       .attr("width", 18)
@@ -1611,6 +1620,7 @@ var scatterPlot = function(data) {
   var scatterSelection = scatterplot.selectAll(".dot")
     .data(data)
 
+  // Do some wacky exit animations
   scatterSelection.exit()
     .transition("disappear")
     .duration(1500)
@@ -1625,7 +1635,7 @@ var scatterPlot = function(data) {
 
   scatterSelection.enter().append("circle")
     .attr("fill", function() {
-      return "hsl(" + Math.random() * 360 + ",100%,50%)"
+      return "hsl(" + Math.random() * 360 + ", 100%, 50%)"
     })
     .attr("cx", function(d) {
       return Math.random() * (width_batter - 100) + 100;
@@ -1715,7 +1725,7 @@ function dayOfWeekAsString(dayIndex) {
 }
 
 // 1000000 -> 1,000,000
-// http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+// Taken from http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -1948,7 +1958,7 @@ var refreshHeatMap = function(id_selector) {
     } 
   };
 
-// small multiples constants
+// Small multiples constants
 var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
 var width_multiples = 140 - margin_multiples.left - margin_multiples.right;
 var height_multiples = 170 - margin_multiples.top - margin_multiples.bottom;
@@ -2079,6 +2089,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
     .duration(1000)
     .call(yAxis)
 
+  // No x labels, just use legend
   multiplesPlot.selectAll(".x.axis .tick text").remove()
   multiplesPlot.selectAll(".x.axis .tick").remove()
 

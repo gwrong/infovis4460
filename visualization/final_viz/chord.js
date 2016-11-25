@@ -81,6 +81,7 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
   var formatPercent = d3.format(".2%");
 
+  // Utilize built in d3 functions for managing the chord
   var arc = d3.svg.arc()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius);
@@ -119,9 +120,10 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
     return subreddit_lookup[i].subreddit + ": " + d.value + " mention origins (" + formatPercent(d.value / overall_mentions) + " of all mention origins)";
   });
 
+  // This creates the arc where the subreddit labels radiate out from
   var groupPath = group.append("path")
     .style("fill", function(d) {
-      return "hsl(" + Math.random() * 360 + ",100%,50%)"
+      return "hsl(" + Math.random() * 360 + ",100%, 50%)"
     })
     .on("click", function(d, i) {
       onclick_compare(subreddit_lookup[i].subreddit)
@@ -135,7 +137,6 @@ var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
       return color(cValue(subreddit_lookup[i].subreddit));
     })
     .style("stroke", function(d, i) {
-      console.log(d)
       chosen = subreddit_lookup[i].subreddit;
       if (chosen == cur_subreddit1 || chosen == cur_subreddit2) {
         return "white"
