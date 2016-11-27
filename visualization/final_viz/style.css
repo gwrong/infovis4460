@@ -1,3 +1,8 @@
+/*
+Approximately 5% of this code was adapted from online resources
+The remaining 95% was written by our team.
+*/
+
 body {
   font: 12px sans-serif;
   font-weight: 400;
@@ -152,7 +157,7 @@ rect {
   margin-left: -50px; //Half of the width of the loading graphic
 }
 
-/* http://stackoverflow.com/questions/1363239/aligning-decimal-points-in-html */
+/* Inspired from http://stackoverflow.com/questions/1363239/aligning-decimal-points-in-html */
 table.hoverTooltip {
   border-collapse: collapse;
 }

@@ -1,3 +1,8 @@
+/*
+Approximately 70% of this code was imported from
+the chord example https://bost.ocks.org/mike/uberdata/
+*/
+
 #circle circle {
     fill: none;
     pointer-events: all;

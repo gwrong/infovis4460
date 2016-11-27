@@ -1,3 +1,9 @@
+/*
+bar_scatter.js: Just bar/scatter plot specific stuff
+
+100% of this code was written by our team.
+*/
+
 // Highlight the chosen subreddit in the graphs (bar/scatter)
 var highlight = function(selector, theClass, subreddit) {
   var chosen_subreddit = subreddit;

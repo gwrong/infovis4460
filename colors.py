@@ -1,3 +1,10 @@
+"""
+This file has a list of HTML colors so we
+can randomly give colors to subreddits. However
+we don't use this anymore.
+100% of this code was written by our team.
+"""
+
 colors = [
 'AliceBlue',
 'AntiqueWhite',

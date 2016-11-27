@@ -1,5 +1,7 @@
 """
 This file contains the logic to actually analyze the comments in the Reddit comments data set
+
+100% of this code was written by our team
 """
 
 import ast

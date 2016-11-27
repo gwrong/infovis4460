@@ -1,5 +1,7 @@
 """
 This file deals with the partitioning of the raw Reddit comments data set
+
+100% of this code was written by our team
 """
 
 import json

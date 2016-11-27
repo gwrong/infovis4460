@@ -1,13 +1,21 @@
 /*
-Just chord specific stuff 
-Adapted from https://bost.ocks.org/mike/uberdata/
+core.js has core logic for the visualization page.
+This includes things like loading data sets,
+initializing dropdowns, listening for keys,
+and in general any one time initializations.
+
+Approximately 70% of the lines in this file were
+modified from the following online example: https://bost.ocks.org/mike/uberdata/
+The remaining 30% was written all by our team.
 */
+
 
 var chord;
 
 var create_chord = function(subreddit_lookup, matrix, cur_subreddits) {
 
   // enter-update-exit is nearly impossible for the chord
+  // Example explanation of how complex it is:
   // http://stackoverflow.com/questions/21813723/change-and-transition-dataset-in-chord-diagram-with-d3
   d3.selectAll(".redditChord").remove()
   

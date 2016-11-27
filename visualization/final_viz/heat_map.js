@@ -1,3 +1,11 @@
+/*
+heat_map.js: Just heat map specific stuff
+
+Approximately 40% of the lines in this file were
+modified from the following online example: http://bl.ocks.org/tjdecke/5558084
+The remaining 60% was written all by our team.
+*/
+
 var margin_heat = {top: 40, right: 0, bottom: 50, left: 22};
 var width_heat = 500 - margin_heat.left - margin_heat.right;
 var height_heat = 198 - margin_heat.top - margin_heat.bottom;

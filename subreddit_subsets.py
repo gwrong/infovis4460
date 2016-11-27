@@ -1,3 +1,8 @@
+"""
+This file lists all the subreddits we are interested in.
+100% of this code was written by our team.
+"""
+
 top_25_comment_subreddits = [
     'relationships',
     'gifs',

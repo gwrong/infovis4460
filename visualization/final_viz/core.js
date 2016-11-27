@@ -1,5 +1,17 @@
+/*
+core.js has core logic for the visualization page.
+This includes things like loading data sets,
+initializing dropdowns, listening for keys,
+and in general any one time initializations.
+
+Approximately 94% of the lines in this file were
+written by our team.
+The remaining 6% was copied from online resources or libraries.
+*/
+
 // Spinner to show while loading data
-// Options copied from http://spin.js.org/
+// Options copied from http://spin.js.org/ just for easier tweaking
+// These are just the defaults anyways
 var opts = {
   lines: 13 // The number of lines to draw
 , length: 28 // The length of each line
@@ -281,7 +293,8 @@ var subreddit_subsets = {
   /*
   // NSFW subreddits are a core part of Reddit. We figure in order to not
   // surprise the professor/TAs/students, we should keep this excluded
-  // for the project itself.
+  // for the project itself. However, uncommenting this block will include
+  // them again.
   "NSFW": [
     'gonewild',
     'nsfw',
