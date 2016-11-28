@@ -18,40 +18,47 @@
   <body>
     <div id="spinner" style="text-align: center;">
     </div>
-    <div class="navbar-fixed-top" style="border-style: solid; vertical-align: center;">
-        <br>
-        <img src="redditicon.png" width="5%" height="5%">
-        <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
-        <!-- Trigger the modal with a button -->
-        <button type="button" class="aboutButton btn btn-info about" data-toggle="modal" data-target="#aboutModal">About</button>
-        <h1 style="margin-bottom: 10px; margin-top: 10px">2016 Reddit Comments</h1>
-        <input id="month-slider" type="text" style="width: 800px; fill: white;"
-          data-provide="slider"
-          data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-          data-slider-ticks-labels='["January 2016", "February 2016", "March 2016", "April 2016", "May 2016", "June 2016", "July 2016", "August 2016", "September 2016", "October 2016"]'
-          data-slider-min="1"
-          data-slider-max="10"
-          data-slider-step="1"
-          data-slider-value="9"
-          data-slider-tooltip="hide"
-          data-slider-rangeHighlights='[{ "start": 0, "end": 10 }]' />
-        <br><br>
-        <span class="filterHolder">
+    <div class="navbar-fixed-top" style="vertical-align: center;">
+        <div class="row">
+            <div class="col-xs-2" id="logoNav" align="center">
+                <div id="logoBg">
+                    <img src="redditicon.png" width="50%" height="50%">
+                </div>
+                <div>
+                    <button type="button" align="center" class="aboutButton btn" data-toggle="modal" data-target="#aboutModal" id="openModal">About</button>
+                </div>
+            </div>
+            <div class="col-xs-10" id="navbar-fixed-top">
+                <br>
+                <h1 style="margin-bottom: 10px; margin-top: 10px">2016 Reddit Comments</h1>
+                <input id="month-slider" type="text" style="width: 800px; fill: white;"
+                       data-provide="slider"
+                       data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                       data-slider-ticks-labels='["January 2016", "February 2016", "March 2016", "April 2016", "May 2016", "June 2016", "July 2016", "August 2016", "September 2016", "October 2016"]'
+                       data-slider-min="1"
+                       data-slider-max="10"
+                       data-slider-step="1"
+                       data-slider-value="9"
+                       data-slider-tooltip="hide"
+                       data-slider-rangeHighlights='[{ "start": 0, "end": 10 }]' />
+                <br><br>
+                <span class="filterHolder">
             <select class="selectpicker" id="filter-picker" data-width="fit" data-header="Filter Comments"></select><i style="font-size: 22px; vertical-align: middle; margin-left: 5px; margin-right: 25px;" class='glyphicon glyphicon-info-sign commentSubsetInfo'></i>
         </span>
-        <span class="xPickerHolder">
+                <span class="xPickerHolder">
             <select class="selectpicker" id="xPicker" data-width="fit" data-header="Set the X Axis"></select>
         </span>
-        <span class="yPickerHolder">
+                <span class="yPickerHolder">
             <select class="selectpicker" id="yPicker" data-width="fit" data-header="Set the Y Axis"></select><span style="margin-right: 25px;"></span>
         </span>
-        <span class="toggleSubredditsHolder">
+                <span class="toggleSubredditsHolder">
             <select multiple class="selectpicker" id="toggleSubreddits" title="Choose Subreddits" data-live-search="true" data-max-options="25" data-size="10" data-selected-text-format="static" data-width="fit"></select>
         </span>
-        <span class="subredditSubsetHolder">
+                <span class="subredditSubsetHolder">
             <select class="selectpicker" id="subredditsubset-picker" data-width="fit" data-header="Load Subreddits"></select>
         </span>
-        <br><br>
+            </div>
+        </div>
     </div>
 
     <input type="checkbox" name="toggle" id="toggle" checked="checked"/>

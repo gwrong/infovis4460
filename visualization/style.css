@@ -117,11 +117,6 @@ td {
     vertical-align: middle;
 }
 
-.navbar-fixed-top {
-  background: #202020;
-}
-
-
 rect {
   stroke: 10px;
 }
@@ -173,6 +168,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 .navbar-fixed-top {
+  background-color: #303030 ;
 
 }
 
@@ -208,12 +204,6 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   cursor:pointer;
   left:100%;
   top:100%;
-}
-
-.aboutButton {
-  position: fixed;
-  top: 1%;
-  right: 1%;
 }
 
 #toggle + label:after {
@@ -329,4 +319,24 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 #closeModal {
   background-color: #dd6149;
   border: none;
+}
+
+#openModal {
+  background-color: black;
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+  border-radius: 0 !important;
+  font-size: 18px;
+  color: #A0A0A0 !important;
+}
+
+#logoNav {
+  background-color: black;
+  height: 100% !important;
+  padding: 0px;
+}
+
+#logoBg {
+  background-color: #FF4006;
 }
