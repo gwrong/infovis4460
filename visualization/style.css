@@ -168,8 +168,10 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 .navbar-fixed-top {
-  background-color: #303030 ;
-
+  background-color: #202020 ;
+  border-bottom-color: black;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 
 .element {
