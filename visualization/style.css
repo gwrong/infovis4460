@@ -262,8 +262,22 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 /* Month slider */
 .slider-tick, .slider-handle {
   cursor: pointer;
+  opacity: 1;
+}
+
+.slider-handle {
+  background: #dd6149;
+}
+
+.in-selection {
+  background: white !important;
+}
+
+.slider .slider-selection {
+  background: white;
 }
 
 .slider-tick-label {
   font-size: 11px;
 }
+

@@ -76,7 +76,7 @@ jQuery(function($) {
     },
     directionThreshold: 100,
     slideSpeed: 800,
-    easing: 'linear', // https://matthewlein.com/experiments/easing.html
+    easing: 'linear', // Easing examples: https://matthewlein.com/experiments/easing.html
     offset: 50,
     navigation: {
       keys: {
