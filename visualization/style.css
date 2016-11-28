@@ -168,7 +168,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 .navbar-fixed-top {
-  background-color: #202020 ;
+  background-color: #383838 ;
   border-bottom-color: black;
   border-bottom-width: 1px;
   border-bottom-style: solid;
@@ -340,5 +340,5 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 #logoBg {
-  background-color: #FF4006;
+  background-color: #F14511;
 }
