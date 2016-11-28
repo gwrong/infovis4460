@@ -19,11 +19,12 @@
     <div id="spinner" style="text-align: center;">
     </div>
     <div class="navbar-fixed-top" style="border-style: solid; vertical-align: center;">
+        <br>
+        <img src="redditicon.png" width="5%" height="5%">
         <!-- <p style="font-size: 18px"><b>2016 Reddit Comments</b></p>-->
         <!-- Trigger the modal with a button -->
         <button type="button" class="aboutButton btn btn-info about" data-toggle="modal" data-target="#aboutModal">About</button>
         <h1 style="margin-bottom: 10px; margin-top: 10px">2016 Reddit Comments</h1>
-        <span class="h4" style="margin-right: 50px">Month:</span>
         <input id="month-slider" type="text" style="width: 800px; fill: white;"
           data-provide="slider"
           data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
@@ -120,41 +121,64 @@
       <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header" id="mheader">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <center>
-                <p class="modal-title h2" style="text-align: center">2016 Reddit Comments Visualization</p>
-            </center>
+              <h2>2016 Reddit Comments Visualization</h2>
           </div>
           <div class="modal-body">
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This project aims to visualize how various subreddits differ in comment volume, comment sentiment, and comment time distributions throughout the first 9 months of 2016. You will also find other variables that concern the nature of the comments. We utilized the publicly available Reddit comments datasets found on <a href="http://files.pushshift.io/reddit/comments/">pushshift.io</a>.
-            <br><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There are a few different components to our visualization: an overview of subreddits, smaller visualizations that compare two subreddits in detail, and an extra visualization of how often subreddits mention each other. Relevant filters will be visible for the appropriate visualizations.
-            <br><br>Left clicking or control+left clicking on subreddits in the main visualization will choose the first and second subreddits to compare, respectively. 
-            The comment subset filter allows for filtering on special subsets of the comments for a given subreddit:
+              <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+                  <li><a data-toggle="tab" href="#menu1">Tools and Tips</a></li>
+                  <li><a data-toggle="tab" href="#menu2">Contributors</a></li>
+              </ul>
 
-            <ul>
-                <li><b>All Comments</b>: All the comments!</li>
-                <li><b>Top Score Comments</b>: Only the top 5% of comments by score within each subreddit</li>
-                <li><b>Bottom Score Comments</b>: Only the bottom 5% of comments by scoe within each subreddit</li>
-                <li><b>Most Popular Authors</b>: Only the top 5% of authors by comment volume within each subreddit</li>
-                <li><b>Top Positive Comments</b>: Only comments with a positive score of at least 25</li>
-                <li><b>Top Negative Comments</b>: Only comments with a negative score of at least 15</li>
-                <li><b>Top Godwin Comments</b>: Only comments with a positive Godwin score</li>
-                <li><b>Top Swear Comments</b>: Only comments with a swear score of at least 35</li>
-            </ul>
+              <!-- http://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tabs_dynamic&stacked=h -->
+              <!-- styling http://stackoverflow.com/questions/28296517/how-to-customize-bootstrap-3-tab-color -->
 
-            <p>This visualization was implemented by four undergraduate students for the class Intro to Information Visualization (CS 4460). You can find our code on <a href="https://github.com/gwrong/infovis4460">GitHub</a>. Members include:
-                <ul>
-                    <li>Graham Wright</li>
-                    <li>Kim Nguyen</li>
-                    <li>Forester Vosburgh</li>
-                    <li>Eric Wan</li>
-                </ul>
-            </p>
+              <div class="tab-content">
+                  <div id="home" class="tab-pane fade in active">
+                      <h3>About</h3>
+                      <p>
+                          This project aims to visualize how various subreddits differ in comment volume, comment sentiment, and comment time distributions throughout the first 9 months of 2016. You will also find other variables that concern the nature of the comments. We utilized the publicly available Reddit comments datasets found on <a href="http://files.pushshift.io/reddit/comments/">pushshift.io</a>
+                      </p>
+                  </div>
+                  <div id="menu1" class="tab-pane fade">
+                      <h3>Tools and Tips</h3>
+                      <p>
+                          There are a few different components to our visualization: an overview of subreddits, smaller visualizations that compare two subreddits in detail, and an extra visualization of how often subreddits mention each other. Relevant filters will be visible for the appropriate visualizations.
+                          <br><br>Left clicking or control+left clicking on subreddits in the main visualization will choose the first and second subreddits to compare, respectively.
+                          The comment subset filter allows for filtering on special subsets of the comments for a given subreddit:
+
+                      <ul>
+                          <li><b>All Comments</b>: All the comments!</li>
+                          <li><b>Top Score Comments</b>: Only the top 5% of comments by score within each subreddit</li>
+                          <li><b>Bottom Score Comments</b>: Only the bottom 5% of comments by scoe within each subreddit</li>
+                          <li><b>Most Popular Authors</b>: Only the top 5% of authors by comment volume within each subreddit</li>
+                          <li><b>Top Positive Comments</b>: Only comments with a positive score of at least 25</li>
+                          <li><b>Top Negative Comments</b>: Only comments with a negative score of at least 15</li>
+                          <li><b>Top Godwin Comments</b>: Only comments with a positive Godwin score</li>
+                          <li><b>Top Swear Comments</b>: Only comments with a swear score of at least 35</li>
+                      </ul>
+                      </p>
+                  </div>
+                  <div id="menu2" class="tab-pane fade">
+                      <h3>Contributors</h3>
+                      <p>This visualization was implemented by four undergraduate students for the class Intro to Information Visualization (CS 4460). You can find our code on <a href="https://github.com/gwrong/infovis4460">GitHub</a>. Members include:
+                      <ul>
+                          <li>Graham Wright</li>
+                          <li>Kim Nguyen</li>
+                          <li>Forester Vosburgh</li>
+                          <li>Eric Wan</li>
+                      </ul>
+                      </p>
+                  </div>
+
+              </div>
+
+
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="closeModal">Close</button>
           </div>
         </div>
 

@@ -281,3 +281,52 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   font-size: 11px;
 }
 
+#mheader {
+  color: #202020;
+  background-color: #dd6149;
+  border-width: 0px;
+}
+#mheader h2 {
+  font-size: 24px;
+}
+.modal-body {
+  color: #C8C8C8;
+  background-color: #202020;
+}
+
+.modal-body a {
+  color: #C8C8C8;
+}
+
+.modal-footer {
+  border-width: 0px;
+  background-color: #202020;
+}
+
+.nav-tabs{
+  background-color:#202020;
+  color: #C8C8C8;
+}
+.tab-content{
+  background-color:#202020;
+  color:#A0A0A0;
+  padding:5px
+}
+.nav-tabs > li > a{
+  background-color: #202020 !important;
+  border: medium none;
+  border-radius: 0;
+  color:#A0A0A0 !important;
+}
+
+.nav-tabs > li > a:hover{
+  background-color: #202020 !important;
+  border: medium none;
+  border-radius: 0;
+  color:#A0A0A0;
+}
+
+#closeModal {
+  background-color: #dd6149;
+  border: none;
+}
