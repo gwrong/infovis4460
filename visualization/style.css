@@ -252,7 +252,11 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   transform: rotate(-90deg);
 }
 
-/* Month slider */
+/*
+Month slider changes
+Make all white except for
+chosen circle, which is red
+*/
 .slider-tick, .slider-handle {
   cursor: pointer;
   opacity: 1;
@@ -274,6 +278,9 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   font-size: 11px;
 }
 
+/*
+Style the about modal
+*/
 #mheader {
   color: #202020;
   background-color: #dd6149;
@@ -334,7 +341,9 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   color: #A0A0A0 !important;
 }
 
-
+/*
+Reddit icon/about button
+*/
 #logoNav {
   background-color: black;
   height: 100% !important;
