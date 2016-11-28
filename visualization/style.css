@@ -168,7 +168,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 }
 
 .navbar-fixed-top {
-  background-color: #383838 ;
+  background-color: #202020 ;
   border-bottom-color: black;
   border-bottom-width: 1px;
   border-bottom-style: solid;
@@ -223,6 +223,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 
 #toggle:checked + label {
   background:#dd6149;
+
 }
 
 #toggle:checked + label:after {
@@ -243,7 +244,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
 
 .leftScroll {
   position: fixed;
-  right: 0;
+  right: 0%;
   bottom: 50%;
 }
 
@@ -332,6 +333,7 @@ td.hoverTooltip, td.hoverTooltip + td.hoverTooltip + td.hoverTooltip {
   font-size: 18px;
   color: #A0A0A0 !important;
 }
+
 
 #logoNav {
   background-color: black;
