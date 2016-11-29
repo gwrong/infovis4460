@@ -511,6 +511,12 @@ $(document).keydown(function(event) {
       cntrlIsPressed = true;
     } else if (event.which == "81") {
       qIsPressed = true;
+    } else if (event.which == "13") {
+      // Scroll to compare subreddits if enter is chosen
+      var offset = 105;
+      $('html, body').animate({
+          scrollTop: $("#compare").offset().top - offset
+      }, 800);
     }
     if (cntrlIsPressed && qIsPressed && !navBarToggled) {
       navBarToggled = true;
@@ -1026,10 +1032,10 @@ var onclick_compare = function(subreddit) {
     old_cur_subreddit1 = cur_subreddit1
     cur_subreddit1 = subreddit;
   } else {
-      var offset = 105;
-      $('html, body').animate({
-          scrollTop: $("#compare").offset().top - offset
-      }, 800);
+    var offset = 105;
+    $('html, body').animate({
+        scrollTop: $("#compare").offset().top - offset
+    }, 800);
     old_cur_subreddit2 = cur_subreddit2
     cur_subreddit2 = subreddit;
   }
@@ -1102,7 +1108,11 @@ var getToolTipImage = function(subreddit) {
 
 // Centralized tooltip function for chord info hover
 var getToolTipChord = function(d) {
-  return "<b>Tip</b>: Hover over a subreddit arc to view its network of subreddit mentions. Press the <b>esc</b> key to unfade all chords."
+  return "<b>Tip</b>: Hover over a subreddit arc to view its network of subreddit mentions. The " + getColoredColor() + " of the chord indicates the source of the subreddit mention. Press the <b>esc</b> key to unfade all chords. Left click one subreddit and ctrl/cmd + left click another subreddit to compare them further down the page."
+}
+
+var getColoredColor = function(d) {
+  return '<b><span style="color: DarkBlue">c</span><span style="color: Orange">o</span><span style="color: Black">l</span><span style="color: Maroon">o</span><span style="color: Green">r</span></b>'
 }
 
 // Info tooltip for main viz
