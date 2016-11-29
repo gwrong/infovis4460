@@ -143,7 +143,7 @@ var refreshBarChart = function(data) {
     // Set the bar chart title
     if (barchart.selectAll(".barTitle").size() < 1) {
       barchart.append("text")
-      .attr("x", width_batter / 2 + 100)             
+      .attr("x", width_batter / 2 + 50)             
       .attr("y", margin_batter.top - 10)
       .style("font-size", "14px") 
       .style("text-anchor", "middle")
