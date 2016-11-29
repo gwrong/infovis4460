@@ -326,6 +326,10 @@ Style the about modal
   color:#A0A0A0;
 }
 
+.tab-pane li b{
+  color: #DCDCDC;
+}
+
 #closeModal {
   background-color: #dd6149;
   border: none;

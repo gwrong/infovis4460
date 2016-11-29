@@ -85,11 +85,11 @@
     </section>
     <br><br><br><br><br><br><br>
     <section data-panel="comparePanel" id="compare">
+        <h4 style="margin-top: 0px">How do subreddit comments compare across all dimensions?</h4><br>
         <table>
             <tr>
-                <td width="50%" style="vertical-align: top; text-align: center;">
+                <td width="50%" style="vertical-align: top; text-align: center;" align="center">
                     <div>
-                        <center><h4 style="margin-top: 0px">How do subreddit comments compare across all dimensions?</h4></center>
                         <br>
                         <div class="smallMultiples" align="right"></div>
                     </div>
@@ -138,8 +138,9 @@
           <div class="modal-body">
               <ul class="nav nav-tabs">
                   <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-                  <li><a data-toggle="tab" href="#menu1">Tools and Tips</a></li>
-                  <li><a data-toggle="tab" href="#menu2">Contributors</a></li>
+                  <li><a data-toggle="tab" href="#menu1">Filters Glossary</a></li>
+                  <li><a data-toggle="tab" href="#menu2">Tools</a></li>
+                  <li><a data-toggle="tab" href="#menu3">Contributors</a></li>
               </ul>
 
               <!-- http://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tabs_dynamic&stacked=h -->
@@ -153,25 +154,36 @@
                       </p>
                   </div>
                   <div id="menu1" class="tab-pane fade">
-                      <h3>Tools and Tips</h3>
+                      <h3>Glossary</h3>
                       <p>
-                          There are a few different components to our visualization: an overview of subreddits, smaller visualizations that compare two subreddits in detail, and an extra visualization of how often subreddits mention each other. Relevant filters will be visible for the appropriate visualizations.
-                          <br><br>Left clicking and control/cmd + left clicking on subreddits in the main visualization will choose the first and second subreddits to compare, respectively.
                           The comment subset filter allows for filtering on special subsets of the comments for a given subreddit:
-
                       <ul>
                           <li><b>All Comments</b>: All the comments!</li>
-                          <li><b>Top Score Comments</b>: Only the top 5% of comments by score within each subreddit</li>
-                          <li><b>Bottom Score Comments</b>: Only the bottom 5% of comments by scoe within each subreddit</li>
-                          <li><b>Most Popular Authors</b>: Only the top 5% of authors by comment volume within each subreddit</li>
-                          <li><b>Top Positive Comments</b>: Only comments with a positive score of at least 25</li>
-                          <li><b>Top Negative Comments</b>: Only comments with a negative score of at least 15</li>
-                          <li><b>Top Godwin Comments</b>: Only comments with a positive Godwin score</li>
-                          <li><b>Top Swear Comments</b>: Only comments with a swear score of at least 35</li>
+                          <li><b>Top Score Comments</b>: Top 5% of comments by score within each subreddit</li>
+                          <li><b>Bottom Score Comments</b>: Bottom 5% of comments by scoe within each subreddit</li>
+                          <li><b>Most Popular Authors</b>: Top 5% of authors by comment volume within each subreddit</li>
+                          <li><b>Top Positive Comments</b>: Comments with a positive score of at least 25</li>
+                          <li><b>Top Negative Comments</b>: Comments with a negative score of at least 15</li>
+                          <li><b>Top Godwin Comments</b>: Comments with a positive Godwin score</li>
+                          <li><b>Top Swear Comments</b>: Comments with a swear score of at least 35</li>
                       </ul>
                       </p>
                   </div>
                   <div id="menu2" class="tab-pane fade">
+                      <h3>Tools</h3>
+                      <p> To navigate through the info visualizations:
+                      <ul>
+                          <li><b>Show Bar Chart</b>: Choose "subreddit" as X-variable.</li>
+                          <li><b>Show Scatter Plot</b>: Choose X-variable that is <u>NOT</u> "subreddit".</li>
+                          <li><b>Show Chord: Click on left arrow</b>. Righ arrow returns to bar or scatter.</li>
+                          <li><b>Select Two Subreddits</b>: CTRL + LEFT on first subreddit then LEFT CLICK on second subreddit</li>
+                          <li><b>Reset Chord:</b> press ESC</li>
+                      </ul>
+                      <br>
+                      Enjoy!
+                      </p>
+                  </div>
+                  <div id="menu3" class="tab-pane fade">
                       <h3>Contributors</h3>
                       <p>This visualization was implemented by four undergraduate students for the class Intro to Information Visualization (CS 4460). You can find our code on <a href="https://github.com/gwrong/infovis4460">GitHub</a>. Members include:
                       <ul>
