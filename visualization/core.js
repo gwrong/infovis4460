@@ -809,7 +809,7 @@ var createCharts = function() {
       .html("Word cloud for " + cur_subreddit2)
     old_cur_subreddit2 = cur_subreddit2;
   }
-  month_changed = false;
+  
   
   if (cur_filter == null) {
     cur_filter_label = 'All Comments';
@@ -836,7 +836,13 @@ var createCharts = function() {
       refreshSmallMultiples(compare_core_dataset, axisOptions[keys[i]])
     }
   }
-  refreshSmallMultiplesLegend(compare_core_dataset)
+
+  // Don't update legend if just the month changed
+  if (!month_changed) {
+    refreshSmallMultiplesLegend(compare_core_dataset)
+  }
+  
+  month_changed = false;
   
   if (!initialized_heatmap) {
     initialized_heatmap = true;
