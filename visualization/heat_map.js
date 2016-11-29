@@ -214,7 +214,8 @@ var refreshHeatMap = function(id_selector) {
         .data([0].concat(colorScale.quantiles()), function(d) { return d; });
 
     legend.enter().append("g")
-        .attr("class", "heatLegend");
+      .attr("class", "heatLegend")
+      .append("title").html("Gradient colors for number of comments thresholds");
 
     legend.append("rect")
       .attr("x", function(d, i) {

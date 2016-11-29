@@ -67,7 +67,7 @@ var refreshSmallMultiples = function(data, yMultiples) {
   var maxY = d3.max(multiplesData, function(d) {
     return +d[yMultiples + cur_filter];
   })
-  yScale.domain([0, maxY]).nice();
+  yScale.domain([0, maxY]).nice()
 
   xAxis = d3.svg.axis().scale(xScale).orient("bottom");
   yAxis = d3.svg.axis().scale(yScale).orient("left");
@@ -139,6 +139,16 @@ var refreshSmallMultiples = function(data, yMultiples) {
     return abbreviate_thousands(d);
   })
   .style("font-size", "9px");
+
+  // Remove .5 for average word length
+  multiplesPlot.selectAll(".y.axis .tick")
+  .filter(function(d) {
+    if (d.toString().indexOf(".") > -1) {
+      return true;
+    }
+    return false
+  }).remove();
+
 }
 
 // Have a small legend at the end which shows the 2 subreddits by color
