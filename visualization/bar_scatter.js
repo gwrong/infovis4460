@@ -448,7 +448,7 @@ var scatterPlot = function(data) {
     return +d[xVariable];
   })
   maxX *= 1.1
-  xScale.domain([minX, maxX]);
+  xScale.domain([0, maxX]);
 
   var minY = d3.min(data, function(d) {
     return +d[yVariable];
@@ -457,7 +457,7 @@ var scatterPlot = function(data) {
   var maxY = d3.max(data, function(d) {
     return +d[yVariable];
   })
-  yScale.domain([minY, maxY]).nice();
+  yScale.domain([0, maxY]).nice();
 
   xAxis = d3.svg.axis().scale(xScale).orient("bottom");
   yAxis = d3.svg.axis().scale(yScale).orient("left");
