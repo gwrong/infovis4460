@@ -1,4 +1,35 @@
 
+// Also fade word cloud and heatmap
+var highlightMultiples = function(selector, theClass, subreddit, otherSubreddit) {
+  highlight(selector, theClass, subreddit)
+
+  d3.selectAll("#" + otherSubreddit + "WordCloud")
+    .transition()
+    .duration(250)
+    .style("opacity", 0.25);
+
+  d3.selectAll("#" + otherSubreddit + "HeatMap")
+    .transition()
+    .duration(250)
+    .style("opacity", 0.25);
+}
+
+// Also unfade word cloud and heatmap
+var unHighlightMultiples = function(selector, theClass, subreddit, otherSubreddit) {
+  unHighlight(selector, theClass, subreddit);
+
+  d3.selectAll("#" + otherSubreddit + "WordCloud")
+    .transition()
+    .duration(250)
+    .style("opacity", 1);
+
+  d3.selectAll("#" + otherSubreddit + "HeatMap")
+    .transition()
+    .duration(250)
+    .style("opacity", 1);
+}
+
+
 // Small multiples constants
 var margin_multiples = {top: 25, right: 0, bottom: 10, left: 0};
 var width_multiples = 140 - margin_multiples.left - margin_multiples.right;
@@ -103,10 +134,10 @@ var refreshSmallMultiples = function(data, yMultiples) {
       tooltip.html(getToolTip(d))
         .style("left", d3.event.pageX + 5 + "px")
         .style("top", d3.event.pageY + 5 + "px")
-      highlight(multiplesPlot, ".rect", d['subreddit'])
+      highlightMultiples(multiplesPlot, ".rect", d['subreddit'], multiplesData[0].subreddit == d['subreddit'] ? cur_subreddit2 : cur_subreddit1)
     })
     .on("mouseout", function(d) {
-      unHighlight(multiplesPlot, ".rect", d['subreddit'])
+      unHighlightMultiples(multiplesPlot, ".rect", d['subreddit'], multiplesData[0].subreddit == d['subreddit'] ? cur_subreddit2 : cur_subreddit1)
       return tooltip.style("opacity", 0);
     })
     .transition("grow")
@@ -151,11 +182,9 @@ var refreshSmallMultiples = function(data, yMultiples) {
 
 }
 
-// Have a small legend at the end which shows the 2 subreddits by color
-// They got too small to have a horizontal subreddit label
-var refreshSmallMultiplesLegend = function(data) {
-
-  var multiplesData = data;
+// Add DOM element placeholder for legend in middle
+var smallMultiplesLegendPlaceholder = function() {
+  
   multiplesPlot = d3.selectAll(".smallMultiples")
   multiplesPlot.select(".smallMultiplesLegend")
     .remove();
@@ -165,7 +194,12 @@ var refreshSmallMultiplesLegend = function(data) {
     .style("width", width_multiples + padding_multiples + "px") // padding with second scatter
     .style("height", height_multiples + margin_multiples.bottom + margin_multiples.top + "px")  //svg defalt size: 300*150
     .append("g")
+}
 
+// Have a small legend at the end which shows the 2 subreddits by color
+// They got too small to have a horizontal subreddit label
+var refreshSmallMultiplesLegend = function(data) {
+  var multiplesData = data;
   var legendSelection = d3.select(".smallMultiplesLegend").selectAll(".smallMultiplesLegendElement")
     .data(multiplesData)
 
@@ -190,10 +224,10 @@ var refreshSmallMultiplesLegend = function(data) {
       })
       .style("opacity", 0)
       .on("mouseover", function(d) {
-        highlight(smallMultiplesPlots, ".rect", d['subreddit'])
+        highlightMultiples(smallMultiplesPlots, ".rect", d['subreddit'], multiplesData[0].subreddit == d['subreddit'] ? cur_subreddit2 : cur_subreddit1)
       })
       .on("mouseout", function(d) {
-        unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
+        unHighlightMultiples(smallMultiplesPlots, ".rect", d['subreddit'], multiplesData[0].subreddit == d['subreddit'] ? cur_subreddit2 : cur_subreddit1)
       })
       .transition()
       .duration(2000)
@@ -214,10 +248,10 @@ var refreshSmallMultiplesLegend = function(data) {
       })
       .style("opacity", 0)
       .on("mouseover", function(d) {
-        highlight(smallMultiplesPlots, ".rect", d['subreddit'])
+        highlightMultiples(smallMultiplesPlots, ".rect", d['subreddit'], multiplesData[0].subreddit == d['subreddit'] ? cur_subreddit2 : cur_subreddit1)
       })
       .on("mouseout", function(d) {
-        unHighlight(smallMultiplesPlots, ".rect", d['subreddit'])
+        unHighlightMultiples(smallMultiplesPlots, ".rect", d['subreddit'], multiplesData[0].subreddit == d['subreddit'] ? cur_subreddit2 : cur_subreddit1)
       })
       .transition()
       .duration(2000)

@@ -143,6 +143,8 @@ var refreshHeatMap = function(id_selector) {
       .style('fill', 'white')
     */
 
+    heat_svg.attr("id", cur_subreddit + "HeatMap")
+
     heat_svg.append("text")
       .attr("x", width_heat / 2 - 5)             
       .attr("y", margin_heat.top - 64)

@@ -642,12 +642,14 @@ var wordcloud1 = d3.select(".wordcloud1")
     .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
     .attr("width", "10%")
     .attr("height", "50%")
+    .attr("id", cur_subreddit1 + "WordCloud")
 
 var wordcloud2 = d3.select(".wordcloud2")
     .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit2)
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
     .attr("width", "10%")
     .attr("height", "50%")
+    .attr("id", cur_subreddit2 + "WordCloud")
 
 // Refreshes all the data on the screen
 var refresh = function() {
@@ -774,6 +776,7 @@ var createCharts = function() {
     wordcloud1.style("opacity", 0)
       .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit1 + "_wordcloud.png")
       .attr("title", "Top occurring words in subreddit " + cur_subreddit1)
+      .attr("id", cur_subreddit1 + "WordCloud")
       .transition()
       .duration(2000)
       .style("opacity", 1)
@@ -797,9 +800,11 @@ var createCharts = function() {
     wordcloud2.style("opacity", 0)
     .attr("src", "word_clouds/" + cur_month_label + "/" + cur_subreddit2 + "_wordcloud.png")
     .attr("title", "Top occurring words in subreddit " + cur_subreddit2)
+    .attr("id", cur_subreddit2 + "WordCloud")
     .transition()
     .duration(2000)
     .style("opacity", 1)
+
 
     wordcloud2.on("mouseover", function() {
       tooltip.style("opacity", 1);
@@ -839,18 +844,19 @@ var createCharts = function() {
   var keys = Object.keys(axisOptions);
   for (var i = 0; i < keys.length; i++) {
     if (axisOptions[keys[i]] !== 'subreddit') {
+      // Place legend in middle of all the bar charts
       if (i == keys.length / 2 + 1 && !month_changed) {
-        refreshSmallMultiplesLegend(compare_core_dataset)
+        smallMultiplesLegendPlaceholder()
       }
       refreshSmallMultiples(compare_core_dataset, axisOptions[keys[i]])
     }
   }
-  /*
+
   // Don't update legend if just the month changed
   if (!month_changed) {
     refreshSmallMultiplesLegend(compare_core_dataset)
   }
-  */
+  
   month_changed = false;
   
   if (!initialized_heatmap) {
