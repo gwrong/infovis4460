@@ -459,7 +459,38 @@ var circleSize = function(d) {
 
 // Assign a color to every subreddit
 // You can pass in the subreddit name or the object
-var color = d3.scale.category20();
+//var color = d3.scale.category20();
+
+colors = [
+  
+  "#cedb9c",
+  "#bd9e39",
+  "#1f77b4",
+  "#ff7f0e",
+  "#ffbb78",
+  "#2ca02c",
+  "#98df8a",
+  "#d62728",
+  "#8c6d31",
+  "#ff9896",
+  "#9467bd",
+  "#c5b0d5",
+  "#8c564b",
+  "#c49c94",
+  "#e377c2",
+  "#e7ba52",
+  "#7f7f7f",
+  "#aec7e8",
+  "#c7c7c7",
+  "#bcbd22",
+  "#dbdb8d",
+  "#393b79",
+  "#17becf",
+  "#9edae5",
+  "#ffffff"
+]
+color = d3.scale.ordinal().range(colors)
+console.log(color)
 var cValue = function(d) {
   if (typeof(d) === 'object') {
     return d['subreddit']
