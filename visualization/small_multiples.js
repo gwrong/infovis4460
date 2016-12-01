@@ -98,6 +98,9 @@ var refreshSmallMultiples = function(data, yMultiples) {
   var maxY = d3.max(multiplesData, function(d) {
     return +d[yMultiples + cur_filter];
   })
+  if (maxY == 0) {
+    maxY = 10;
+  }
   yScale.domain([0, maxY]).nice()
 
   xAxis = d3.svg.axis().scale(xScale).orient("bottom");
