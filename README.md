@@ -9,4 +9,7 @@ python subset_data.py
 Analyze data. You need to get comment/author percentiles, create word clouds, run core pipeline
 python -u analyze_data.py >> test_run.txt
 
+Download all word clouds and place them in visualization/wordclouds:
+https://drive.google.com/drive/folders/0B6IE1OWETfAwMS1PMVdwb0NtLWc?usp=sharing
+
 Open visualization in visualization/final_viz.html

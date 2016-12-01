@@ -119,7 +119,7 @@ d3.select("#toggle").on("click", function(d) {
 
 // Global variables are changed and graph refreshes
 // pick up the new variables
-var cur_month_label = 'September 2016';
+var cur_month_label = 'October 2016';
 var cur_subreddit = null;
 var cur_subreddit1 = null;
 var cur_subreddit2 = null;
@@ -839,15 +839,18 @@ var createCharts = function() {
   var keys = Object.keys(axisOptions);
   for (var i = 0; i < keys.length; i++) {
     if (axisOptions[keys[i]] !== 'subreddit') {
+      if (i == keys.length / 2 + 1 && !month_changed) {
+        refreshSmallMultiplesLegend(compare_core_dataset)
+      }
       refreshSmallMultiples(compare_core_dataset, axisOptions[keys[i]])
     }
   }
-
+  /*
   // Don't update legend if just the month changed
   if (!month_changed) {
     refreshSmallMultiplesLegend(compare_core_dataset)
   }
-  
+  */
   month_changed = false;
   
   if (!initialized_heatmap) {
