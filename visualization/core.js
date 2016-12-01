@@ -480,7 +480,7 @@ colors = [
   "#e377c2",
   "#e7ba52",
   "#7f7f7f",
-  "#aec7e8",
+  "#8fbc8f",
   "#c7c7c7",
   "#bcbd22",
   "#dbdb8d",
