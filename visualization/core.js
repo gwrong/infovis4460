@@ -150,6 +150,8 @@ var full_time_dataset = null;
 var compare_core_dataset = null;
 var compare_time_dataset = null;
 
+var smallMultiplesLegend = false;
+
 var full_chord_lookup_dataset = null;
 var full_chord_matrix_dataset = null;
 
@@ -845,8 +847,9 @@ var createCharts = function() {
   for (var i = 0; i < keys.length; i++) {
     if (axisOptions[keys[i]] !== 'subreddit') {
       // Place legend in middle of all the bar charts
-      if (i == keys.length / 2 + 1 && !month_changed) {
+      if (i == keys.length / 2 + 1 && !month_changed && !smallMultiplesLegend) {
         smallMultiplesLegendPlaceholder()
+        smallMultiplesLegend = true;
       }
       refreshSmallMultiples(compare_core_dataset, axisOptions[keys[i]])
     }

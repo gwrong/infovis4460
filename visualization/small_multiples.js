@@ -203,6 +203,8 @@ var refreshSmallMultiplesLegend = function(data) {
   var legendSelection = d3.select(".smallMultiplesLegend").selectAll(".smallMultiplesLegendElement")
     .data(multiplesData)
 
+  legendSelection.selectAll("rect, text").remove()
+
   smallMultiplesPlots = d3.selectAll(".smallMultiplesGraph");
 
 
